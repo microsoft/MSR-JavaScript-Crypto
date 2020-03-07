@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.formatOnPaste": true,
+		"javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+		"javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false
+	}
+}

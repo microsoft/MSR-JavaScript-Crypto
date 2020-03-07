@@ -1,0 +1,117 @@
+﻿<!--
+//*******************************************************************************
+//
+//    Copyright 2020 Microsoft
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
+//*******************************************************************************
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Subtle Tests</title>
+    <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.23.1.css">
+    <!-- <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.9.2.css"> -->
+</head>
+
+<body style="background-color: gray">
+    <!-- qunit test runner -->
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="https://code.jquery.com/qunit/qunit-1.23.1.js"></script>
+    <!--<script src="https://code.jquery.com/qunit/qunit-2.9.2.js"></script> -->
+
+    <script>
+        QUnit.config.autostart = false;
+    </script>
+
+    <!-- load msrCrypto & ie11 wrapper by default -->
+    <script id="msrCrypto" type="text/javascript" src="../lib/msrcrypto.js"></script>
+
+    <!--
+    <script type="text/javascript" src="../lib/IE11PromiseWrapper.js"></script>
+ -->
+
+    <!-- <script src="../scripts/qunit/testoptions.js"></script> -->
+
+    <!-- test vectors -->
+    <script src="../scripts/testVectors/tv_aes_cbc.js"></script>
+    <!-- <script src="../scripts/testVectors/tv_rsa.js"></script> -->
+    <script src="../scripts/testVectors/tv_aes_gcm.js"></script>
+    <script src="../scripts/testVectors/tv_ecdh.js"></script>
+    <script src="../scripts/testVectors/tv_ecdsa.js"></script>
+    <script src="../scripts/testVectors/tv_hmac.js"></script>
+    <script src="../scripts/testVectors/tv_sha2.js"></script>
+    <script src="../scripts/testVectors/tv_rsa_oaep.js"></script>
+    <script src="../scripts/testVectors/tv_rsa_pkcs15.js"></script>
+    <script src="../scripts/testVectors/tv_rsa_pss.js"></script>
+    <!-- <script src="../scripts/testVectors/tv_hmac_sha256.js"></script>
+    <script src="../scripts/testVectors/tv_hmac_sha384.js"></script>
+    <script src="../scripts/testVectors/tv_hmac_sha512.js"></script>
+    <script src="../scripts/testVectors/tv_ecdsa.sign.js"></script>
+    <script src="../scripts/testVectors/tv_ecdsa.verify.js"></script>
+    <script src="../scripts/testVectors/tv_sha224_short.js"></script>
+    <script src="../scripts/testVectors/tv_sha224_long.js"></script>
+    <script src="../scripts/testVectors/tv_sha256_short.js"></script>
+    <script src="../scripts/testVectors/tv_sha256_long.js"></script>
+    <script src="../scripts/testVectors/tv_sha384_short.js"></script>
+    <script src="../scripts/testVectors/tv_sha384_long.js"></script>
+    <script src="../scripts/testVectors/tv_sha512_short.js"></script>
+    <script src="../scripts/testVectors/tv_sha512_long.js"></script>
+    <script src="../scripts/testVectors/tv_sha1_short.js"></script>
+    <script src="../scripts/testVectors/tv_sha1_long.js"></script>
+    <script src="../scripts/testVectors/tv_rsa.sign.pkcs15.js"></script>
+    <script src="../scripts/testVectors/tv_rsa.verify.pkcs15.js"></script>
+    <script src="../scripts/testVectors/tv_rsa.sign.pss.js"></script>
+    <script src="../scripts/testVectors/tv_rsa.verify.pss.js"></script>-->
+
+    <!-- test scripts -->
+    <script src="../scripts/utilities.js"></script>
+    <script src="../scripts/tests/Test.Shared.js"></script>
+    <script src="../scripts/tests/Test.Promise.js"></script>
+    <script src="../scripts/tests/Test.Encoding.js"></script>
+    <script src="../scripts/tests/Test.Aes.Cbc.js"></script>
+    <script src="../scripts/tests/Test.Aes.Gcm.js"></script>
+    <script src="../scripts/tests/Test.Rsa.Oaep.js"></script>
+    <script src="../scripts/tests/Test.Rsa.Pkcs15.js"></script>
+    <script src="../scripts/tests/Test.Rsa.Pss.js"></script>
+    <script src="../scripts/tests/Test.Sha2.js"></script>
+    <script src="../scripts/tests/Test.Ecdh.js"></script>
+    <script src="../scripts/tests/Test.Ecdsa.js"></script>
+    <script src="../scripts/tests/Test.Hmac.js"></script>
+
+    <!--<script src="../scripts/tests/Test.Rsa.js"></script>
+    <script src="../scripts/tests/Test.Rsa.sign.pkcs15.js"></script>
+    <script src="../scripts/tests/Test.Rsa.verify.pkcs15.js"></script>
+    <script src="../scripts/tests/Test.Rsa.sign.pss.js"></script>
+    <script src="../scripts/tests/Test.Rsa.verify.pss.js"></script>
+    <script src="../scripts/tests/Test.Sha256.js"></script>
+    <script src="../scripts/tests/Test.Sha512.js"></script>
+    <script src="../scripts/tests/Test.Sha1.js"></script>
+    <script src="../scripts/tests/Test.hmac.js"></script>
+    <script src="../scripts/tests/Test.Ecdsa.sign.js"></script>
+    <script src="../scripts/tests/Test.Ecdsa.verify.js"></script>
+    <script src="../scripts/tests/Test.Ecdh.js"></script>
+    <script src="../scripts/tests/Test.kdf.js"></script>
+ -->
+
+    <input type="button" onclick="QUnit.start();"></input>
+
+</body>
+
+</html>

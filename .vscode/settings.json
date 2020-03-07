@@ -1,0 +1,14 @@
+{
+  "files.exclude": {},
+  "cSpell.words": [
+    "Ciphertext",
+    "HMAC",
+    "NIST",
+    "PRNG",
+    "Precomputation",
+    "bitlength",
+    "gctr",
+    "msrcrypto",
+    "qunit"
+  ]
+}
