@@ -1,7 +1,7 @@
+const fs = require("fs");
 const gulp = require("gulp");
 const concat = require("gulp-concat");
 const strip = require("gulp-strip-comments");
-const fs = require("fs");
 const header = require("gulp-header");
 const beautify = require("gulp-beautify");
 const minify = require("gulp-minify");
@@ -28,6 +28,7 @@ const fullBuild = [
     "scripts/operations.js",
     "scripts/global.js",
     "scripts/utilities.js",
+    "scripts/asn1.js",
     "scripts/worker.js",
     "scripts/jwk.js",
     "scripts/cryptoMath.js",
@@ -52,6 +53,7 @@ const fullBuild = [
     "scripts/rsa-pss.js",
     "scripts/rsa.js",
     "scripts/kdf.js",
+    "scripts/pbkdf2.js",
     "scripts/ecdh.js",
     "scripts/ecdsa.js",
     "scripts/subtle.js",

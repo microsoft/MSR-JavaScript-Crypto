@@ -48,7 +48,7 @@ msrcryptoSubtle = (function() {
             postMessage: postMessage,
             onmessage: null,
             onerror: null,
-            terminate: function() {}
+            terminate: function() { /* not implemented */}
         };
     }
 
@@ -435,6 +435,7 @@ msrcryptoSubtle = (function() {
 
                 var op = worker.operation;
 
+                // tslint:disable-next-line: no-unused-expression
                 e.target || (e.target = {
                     data: worker.data
                 });
@@ -716,7 +717,7 @@ msrcryptoSubtle = (function() {
             actualParam,
             i;
 
-        if (operationName === "importKey" && parameterSet[0] === "raw") {
+        if (operationName === "importKey" && (parameterSet[0] === "raw" || parameterSet[0] === "spki")) {
             operationName = "importKeyRaw";
         }
 
@@ -864,7 +865,7 @@ msrcryptoSubtle = (function() {
                             "sha-256": 64,
                             "sha-384": 128,
                             "sha-512": 128
-                        } [derivedKeyType.hash.name.toLowerCase()];
+                        } [derivedKeyType.hash.name.toLowerCase()] * 8;
                         break;
                     default:
                         reject(new Error("No Supported"));
@@ -877,6 +878,7 @@ msrcryptoSubtle = (function() {
                     })
                     .then(function(key) {
                         resolve(key);
+                    // tslint:disable-next-line: no-string-literal
                     })["catch"](function(err) {
                         reject(err);
                     });
@@ -921,6 +923,7 @@ msrcryptoSubtle = (function() {
                         resolve(cipherArrayBuffer);
                     })
 
+                // tslint:disable-next-line: no-string-literal
                 ["catch"](function(err) {
                     reject(err);
                 });
@@ -950,6 +953,7 @@ msrcryptoSubtle = (function() {
                         resolve(key);
                     })
 
+                // tslint:disable-next-line: no-string-literal
                 ["catch"](function(err) {
                     reject(err);
                 });

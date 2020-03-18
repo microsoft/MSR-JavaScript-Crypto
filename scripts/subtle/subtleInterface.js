@@ -78,7 +78,7 @@ function buildParameterCollection(operationName, parameterSet) {
         actualParam,
         i;
 
-    if (operationName === "importKey" && parameterSet[0] === "raw") {
+    if (operationName === "importKey" && (parameterSet[0] === "raw" || parameterSet[0] === "spki")) {
         operationName = "importKeyRaw";
     }
 
@@ -364,8 +364,8 @@ var publicMethods = {
                     keyLength = derivedKeyType.length;
                     break;
                 case "HMAC":
-                    keyLength = derivedKeyType.length ||
-                        { "sha-1": 64, "sha-224": 64, "sha-256": 64, "sha-384": 128, "sha-512": 128 }[derivedKeyType.hash.name.toLowerCase()];
+                    keyLength = derivedKeyType.length || // hmac length defaults to hash block size
+                        { "sha-1": 512, "sha-224": 512, "sha-256": 512, "sha-384": 1024, "sha-512": 1024 }[derivedKeyType.hash.name.toLowerCase()];
                     break;
                 default:
                     reject(new Error("No Supported"));
@@ -393,7 +393,7 @@ var publicMethods = {
         ///     <summary>Generate an array of bytes from a given baseKey as input.</summary>
         ///     <param name="algorithm" type="Algorithm"></param>
         ///     <param name="baseKey" type="Key"></param>
-        ///     <param name="length" type="Number">Number of bytes to return.</param>
+        ///     <param name="length" type="Number">Number of bits to return.</param>
         ///     <returns type="CryptoOperation" />
         /// </signature>
 

@@ -36,10 +36,70 @@ rsaOaepTests();
 
 function rsaOaepTests() {
 
-    QUnit.module( "RSA-OAEP" );
+    QUnit.module("RSA-OAEP");
 
     var ts = testShared;
     var context = ts.testContext;
+
+    QUnit.test(label + " key import/export spki 1024 sha-1 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._1024.sha1.spki, undefined, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki 1024 sha-256 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._1024.sha256.spki, undefined, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki 1024 sha-384 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._1024.sha384.spki, undefined, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki 1024 sha-512 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._1024.sha512.spki, undefined, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki 2048 sha-1 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._2048.sha1.spki, undefined, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki 2048 sha-256 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._2048.sha256.spki, undefined, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki 2048 sha-384 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._2048.sha384.spki, undefined, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki 2048 sha-512 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._2048.sha512.spki, undefined, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki 4096 sha-1 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._4096.sha1.spki, undefined, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki 4096 sha-256 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._4096.sha256.spki, undefined, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki 4096 sha-384 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._4096.sha384.spki, undefined, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki 4096 sha-512 ", function(assert) {
+        ts.keyImportExportTestSpki(
+            rsa.oaep._4096.sha512.spki, undefined, undefined, context(iterations, assert));
+    });
 
     QUnit.test( label + " key import/export jwk 1024 sha-1 ", function( assert ) {
         ts.keyPairImportExportTest(
@@ -264,11 +324,11 @@ function rsaOaepTests() {
     } );
 }
 
-function rsaOaepKeyAlg( modulusLength, hashAlg ) {
+function rsaOaepKeyAlg(modulusLength, hashAlg) {
     return {
         name: "RSA-OAEP",
         modulusLength: modulusLength,
-        publicExponent: testShared.arr( [0x01, 0x00, 0x01] ),
+        publicExponent: testShared.arr([0x01, 0x00, 0x01]),
         hash: {
             name: hashAlg
         }
@@ -281,15 +341,15 @@ function rsaOaepEncryptAlg() {
     };
 
     // add a random label half the time
-    if ( testShared.chance( 0.5 ) ) {
-        alg.label = testShared.arr( testShared.getRandomBytes( 1, 100 ) );
+    if (testShared.chance(0.5)) {
+        alg.label = testShared.arr(testShared.getRandomBytes(1, 100));
     }
 
     return alg;
 }
 
 var inspectRsaOaepKey = {
-    public: function( keyObj, algorithm, usages, reason ) {
+    public: function(keyObj, algorithm, usages, reason) {
         //     "publicKey": {
         //         "alg": "RSA-OAEP-256",
         //         "e": "AQAB",
@@ -304,50 +364,50 @@ var inspectRsaOaepKey = {
         var fail = [];
 
         var hashName = algorithm.hash.name.toUpperCase();
-        var hashLen = hashName === "SHA-1" ? "" : "-" + hashName.slice( hashName.indexOf( "-" ) + 1 );
+        var hashLen = hashName === "SHA-1" ? "" : "-" + hashName.slice(hashName.indexOf("-") + 1);
 
         var expLenMax = algorithm.modulusLength / 8;
         var expLenMin = expLenMax - 2;
 
         // has alg property RSA-OAEP-256 (just RSA-OAEP when hash is SHA-1)
-        if ( !validation.prop.string( keyObj, "alg", algorithm.name + hashLen ) ) {
-            fail.push( "key.alg !== " + algorithm.name + hashLen );
+        if (!validation.prop.string(keyObj, "alg", algorithm.name + hashLen)) {
+            fail.push("key.alg !== " + algorithm.name + hashLen);
         }
 
         // has ext property equal to true
-        if ( !validation.prop.boolean( keyObj, "ext", true ) ) {
-            fail.push( "key.ext !== true" );
+        if (!validation.prop.boolean(keyObj, "ext", true)) {
+            fail.push("key.ext !== true");
         }
 
         // has e property that is base64url
-        if ( !validation.prop.isBase64Url( keyObj, "e" ) ) {
-            fail.push( "key.e !== true" );
+        if (!validation.prop.isBase64Url(keyObj, "e")) {
+            fail.push("key.e !== true");
         }
 
         // has n property that is base64url
-        if ( !validation.prop.isBase64Url( keyObj, "n", expLenMin, expLenMax ) ) {
-            fail.push( "key.n !== true" );
+        if (!validation.prop.isBase64Url(keyObj, "n", expLenMin, expLenMax)) {
+            fail.push("key.n !== true");
         }
 
         // has key_ops property with expected usages
-        if ( Object.prototype.toString.call( keyObj.key_ops ) !== "[object Array]" ) {
-            fail.push( "key.key_ops missing or not Array" );
+        if (Object.prototype.toString.call(keyObj.key_ops) !== "[object Array]") {
+            fail.push("key.key_ops missing or not Array");
         }
 
-        if ( keyObj.key_ops && !testShared.compareUsages( keyObj.key_ops, usages ) ) {
-            fail.push( "key.key_ops invalid usage(s)" );
+        if (keyObj.key_ops && !testShared.compareUsages(keyObj.key_ops, usages)) {
+            fail.push("key.key_ops invalid usage(s)");
         }
 
         // has kty property equal to 'RSA'
-        if ( !validation.prop.string( keyObj, "kty", "RSA" ) ) {
-            fail.push( "key.kty !== RSA" );
+        if (!validation.prop.string(keyObj, "kty", "RSA")) {
+            fail.push("key.kty !== RSA");
         }
 
-        reason.message = fail.join( ";  " );
+        reason.message = fail.join(";  ");
 
-        return ( fail.length === 0 );
+        return (fail.length === 0);
     },
-    private: function( keyObj, algorithm, usages, reason ) {
+    private: function(keyObj, algorithm, usages, reason) {
         //   "privateKey": {
         //       "alg": "RSA-OAEP-256",
         //       "d": "Aw88kbpBrHNKD73kLSmr8-Kg8wGBESdEA2SwRk6JLYhQjUmqwed7nW2WfR69ZY5dulPhl1BpGy...",
@@ -369,48 +429,48 @@ var inspectRsaOaepKey = {
         var expLenMin;
         var expLenMax;
 
-        this.public( keyObj, algorithm, ["decrypt"], reason );
+        this.public(keyObj, algorithm, ["decrypt"], reason);
 
-        var fail = reason.message ? reason.message.split( ";  " ) : [];
+        var fail = reason.message ? reason.message.split(";  ") : [];
 
         expLenMax = algorithm.modulusLength / 8;
         expLenMin = expLenMax - 2;
 
         // d property is base64url bytes
-        if ( !validation.prop.isBase64Url( keyObj, "d", expLenMin, expLenMax ) ) {
-            fail.push( "key.d !== true" );
+        if (!validation.prop.isBase64Url(keyObj, "d", expLenMin, expLenMax)) {
+            fail.push("key.d !== true");
         }
 
         expLenMax = algorithm.modulusLength / 16;
         expLenMin = expLenMax - 2;
 
         // dp property is base64url bytes
-        if ( !validation.prop.isBase64Url( keyObj, "dp", expLenMin, expLenMax ) ) {
-            fail.push( "key.dp !== true" );
+        if (!validation.prop.isBase64Url(keyObj, "dp", expLenMin, expLenMax)) {
+            fail.push("key.dp !== true");
         }
 
         // dq property is base64url bytes
-        if ( !validation.prop.isBase64Url( keyObj, "dq", expLenMin, expLenMax ) ) {
-            fail.push( "key.dq !== true" );
+        if (!validation.prop.isBase64Url(keyObj, "dq", expLenMin, expLenMax)) {
+            fail.push("key.dq !== true");
         }
 
         // p property is base64url bytes
-        if ( !validation.prop.isBase64Url( keyObj, "p", expLenMin, expLenMax ) ) {
-            fail.push( "key.p !== true" );
+        if (!validation.prop.isBase64Url(keyObj, "p", expLenMin, expLenMax)) {
+            fail.push("key.p !== true");
         }
 
         // q property is base64url bytes
-        if ( !validation.prop.isBase64Url( keyObj, "q", expLenMin, expLenMax ) ) {
-            fail.push( "key.q !== true" );
+        if (!validation.prop.isBase64Url(keyObj, "q", expLenMin, expLenMax)) {
+            fail.push("key.q !== true");
         }
 
         // qi property is base64url bytes
-        if ( !validation.prop.isBase64Url( keyObj, "qi", expLenMin, expLenMax ) ) {
-            fail.push( "key.qi fail" );
+        if (!validation.prop.isBase64Url(keyObj, "qi", expLenMin, expLenMax)) {
+            fail.push("key.qi fail");
         }
 
-        reason.message = fail.join( ";  " );
+        reason.message = fail.join(";  ");
 
-        return ( fail.length === 0 );
+        return (fail.length === 0);
     }
 };

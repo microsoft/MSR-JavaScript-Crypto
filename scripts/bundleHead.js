@@ -37,6 +37,6 @@ var msrCryptoVersion = "1.6.0";
 }(this, function(global) {
 
     // tslint:disable-next-line: no-bitwise
-    global = global | {};
+    global = global || {};
 
     var msrCrypto = function() {

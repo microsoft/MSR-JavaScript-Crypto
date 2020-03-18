@@ -58,9 +58,9 @@ function slowTest() {
 //     });
 
 var UseNative = false;
-var useWebWorkers = true;
+var useWebWorkers = false;
 var iterations = 10;
-var skipSlowTests = false;
+var skipSlowTests = true;
 var subtle = (UseNative && nativeCrypto) ? crypto.subtle : msrCrypto.subtle;
 var label = UseNative ? "(native)" : useWebWorkers ? "msrCrypto (workers)" : "msrCrypto";
 var VERIFY = "verify";
@@ -229,15 +229,52 @@ var testShared = {
         };
     },
 
+    keyImportExportTestSpki: function(vectorSet, usages, keyValidationFunc, context) {
+
+        // spki tests have a public key in spki format and a verify key in jwk format
+        // The spki key is imported, then exported as jwk and compared against the jwk verify key.
+
+        var format = vectorSet.format;
+        var vector = vectorSet.vectors[(context.count - 1) % vectorSet.vectors.length];
+        var usage = vector.verify.key_ops;
+        var algorithm = vectorSet.algorithm;
+        var keyData = testShared.arr(msrCrypto.fromBase64(vector.publicKey));
+
+        if (--context.count > 0) { // recursively call to start the next iteration
+            testShared.keyImportExportTestSpki(vectorSet, usages, keyValidationFunc, context);
+        }
+
+        return subtle.importKey(format, keyData, algorithm, true, usage)
+            .then(exportKey)
+            .then(validateKey)
+            // tslint:disable-next-line: no-string-literal
+            ["catch"](fail); // any errors above will get handled here
+
+        function exportKey(cryptoKey) {
+            return subtle.exportKey("jwk", cryptoKey);
+        }
+
+        function validateKey(actualKey) {
+            context.assert.propEqual(actualKey, vector.verify, JSON.stringify(actualKey));
+            if (--context.leftToRun === 0) { context.done(); } // call done() if the final test iteration
+        }
+
+        function fail(error) {
+            context.assert.ok(false, error ? error.toString() : "unexpected error");
+            if (--context.leftToRun === 0) { context.done(); } // call done() if the final test iteration
+        }
+
+    },
+
     keyImportExportTest: function(vectorSet, usages, keyValidationFunc, context) {
 
         var format = vectorSet.format;
         var vector = vectorSet.vectors[(context.count - 1) % vectorSet.vectors.length];
-        var usage = vector.key_ops || usages[(context.count - 1) % usages.length] || []; // cycle through possible usages
+        var usage = vector.key_ops || (vector.verify && vector.verify.key_ops) || usages[(context.count - 1) % usages.length] || []; // cycle through possible usages
         var algorithm = vectorSet.algorithm;
-        var keyData = format === "raw" ? testShared.arr(msrCrypto.fromBase64(vector)) : vector;
+        var keyData = format !== "jwk" ? testShared.arr(msrCrypto.fromBase64(vector)) : vector;
 
-        if (--context.count > 0) { // recursivley call to start the next iteration
+        if (--context.count > 0) { // recursively call to start the next iteration
             testShared.keyImportExportTest(vectorSet, usages, keyValidationFunc, context);
         }
 
@@ -248,6 +285,9 @@ var testShared = {
         ["catch"](fail); // any errors above will get handled here
 
         function exportKey(cryptoKey) {
+            if (vector.verify) { // export spki key as jwk for validation
+                return subtle.exportKey("jwk", cryptoKey);
+            }
             return subtle.exportKey(format, cryptoKey);
         }
 
@@ -259,7 +299,8 @@ var testShared = {
 
             var actualKey = format === "raw" ? testShared.toArray(exportedKey) : exportedKey;
 
-            var startingKey = testShared.toArray(keyData);
+            // if a verify key is specified, use it (for spki we use a jwk key to verify the export)
+            var startingKey = vector.verify || testShared.toArray(keyData);
 
             context.assert.deepEqual(actualKey, startingKey, JSON.stringify(actualKey));
 
@@ -583,10 +624,20 @@ var testShared = {
             testShared.deriveKeyTest(vectorSet, keyValidationFunc, context);
         }
 
-        return Promise.all([
-            subtle.importKey("jwk", vector.publicKey, vectorSet.algorithm, true, []),
-            subtle.importKey("jwk", vector.privateKey, vectorSet.algorithm, true, ["deriveKey"])
-        ])
+        var keyPromises;
+
+        if (vector.privateKey && vector.publicKey) {
+            keyPromises = [
+                subtle.importKey("jwk", vector.publicKey, vectorSet.algorithm, true, []),
+                subtle.importKey("jwk", vector.privateKey, vectorSet.algorithm, true, ["deriveKey"])
+            ];
+        } else {
+            keyPromises = [  // for now this will always be pbkdf2 until we add additional algorithms.
+                subtle.importKey("raw", msrCrypto.fromBase64(vector.params.password), vectorSet.algorithm, false, ["deriveKey"])
+            ];
+        }
+
+        return Promise.all(keyPromises)
             .then(deriveKey)
             .then(exportKey)
             .then(validateKey)
@@ -594,9 +645,14 @@ var testShared = {
         // tslint:disable-next-line: no-string-literal
         ["catch"](fail); // any errors above will get handled here
 
-        function deriveKey(keyPairArray) {
-            vectorSet.algorithm.public = keyPairArray[0];
-            return subtle.deriveKey(vectorSet.algorithm, keyPairArray[1], vectorSet.derivedKeyAlg, true, ["encrypt", "decrypt"]);
+        function deriveKey(keys) {
+            if (keys.length > 1) { //ecdh
+                vectorSet.algorithm.public = keys[0];
+                return subtle.deriveKey(vectorSet.algorithm, keys[1], vectorSet.derivedKeyAlg, true, ["encrypt", "decrypt"]);
+            } else {  //pbkdf2
+                vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
+                return subtle.deriveKey(vector.params.algorithm, keys[0], vectorSet.derivedKeyAlg, true, vector.derivedKey.key_ops);
+            }
         }
 
         function exportKey(derivedKey) {
@@ -604,7 +660,7 @@ var testShared = {
         }
 
         function validateKey(exportedKey) {
-            context.assert.deepEqual(exportedKey, vector.derivedKey, JSON.stringify(exportedKey));
+            context.assert.propEqual(exportedKey, vector.derivedKey, JSON.stringify(exportedKey));
             if (--context.leftToRun === 0) { context.done(); } // call done() if the final test iteration
         }
 
@@ -622,19 +678,37 @@ var testShared = {
             testShared.deriveBitsTest(vectorSet, context);
         }
 
-        return Promise.all([
-            subtle.importKey("jwk", vector.publicKey, vectorSet.algorithm, true, []),
-            subtle.importKey("jwk", vector.privateKey, vectorSet.algorithm, true, ["deriveBits"])
-        ])
-            .then(deriveKey)
+        var keyPromises;
+
+        if (vector.privateKey && vector.publicKey) {
+            keyPromises = [
+                subtle.importKey("jwk", vector.publicKey, vectorSet.algorithm, true, []),
+                subtle.importKey("jwk", vector.privateKey, vectorSet.algorithm, true, ["deriveKey"])
+            ];
+        } else {
+            keyPromises = [  // for now this will always be pbkdf2 until we add additional algorithms.
+                subtle.importKey("raw", msrCrypto.fromBase64(vector.params.password), vectorSet.algorithm, false, ["deriveKey"])
+            ];
+        }
+
+        return Promise.all(keyPromises)
+            .then(derivedBits)
             .then(validateBits)
         // IE8 will not allow .catch()
         // tslint:disable-next-line: no-string-literal
         ["catch"](fail); // any errors above will get handled here
 
-        function deriveKey(keyPairArray) {
-            vectorSet.algorithm.public = keyPairArray[0];
-            return subtle.deriveBits(vectorSet.algorithm, keyPairArray[1], vector.bits);
+        function derivedBits(keys) {
+            // vectorSet.algorithm.public = keyPairArray[0];
+            //return subtle.deriveBits(vectorSet.algorithm, keyPairArray[1], vector.bits);
+
+            if (keys.length > 1) { //ecdh
+                vectorSet.algorithm.public = keys[0];
+                return subtle.deriveBits(vectorSet.algorithm, keys[1], vector.bits);
+            } else {  //pbkdf2
+                vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
+                return subtle.deriveBits(vector.params.algorithm, keys[0], vector.bits);
+            }
         }
 
         function validateBits(bits) {

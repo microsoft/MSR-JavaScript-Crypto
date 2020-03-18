@@ -121,6 +121,8 @@ var publicMethods = {
         return msrcryptoUtilities.bytesToString(byteArray);
     },
 
+    asn1 : asn1,
+
     /// <field type = 'String'>URL of the this msrCrypto script.</field>
     url : scriptUrl,
 

@@ -52,10 +52,10 @@ var msrcryptoRsa = function(keyStruct, mode, /*@optional*/ hashFunction) {
 
         case "raw":
             padding = {
-                pad   : function(mb) {
+                pad: function(mb) {
                     return mb;
                 },
-                unpad : function(eb) {
+                unpad: function(eb) {
                     return eb;
                 }
             };
@@ -71,7 +71,7 @@ var msrcryptoRsa = function(keyStruct, mode, /*@optional*/ hashFunction) {
     }
 
     var returnObj = {
-        encrypt         : function(/*@type(Array)*/ dataBytes, /*@optional*/ labelBytes) {
+        encrypt: function(/*@type(Array)*/ dataBytes, /*@optional*/ labelBytes) {
             var paddedData;
             var encryptedData;
 
@@ -92,7 +92,7 @@ var msrcryptoRsa = function(keyStruct, mode, /*@optional*/ hashFunction) {
             return encryptedData;
         },
 
-        decrypt         : function(/*@type(Array)*/ cipherBytes, /*@optional*/ labelBytes) {
+        decrypt: function(/*@type(Array)*/ cipherBytes, /*@optional*/ labelBytes) {
             var /*@type(Array)*/ decryptedData = rsaBase.decrypt(cipherBytes);
 
             if (unPaddingFunction !== null) {
@@ -107,11 +107,11 @@ var msrcryptoRsa = function(keyStruct, mode, /*@optional*/ hashFunction) {
             return decryptedData;
         },
 
-        signData        : function(/*@type(Array)*/ messageBytes, /*@optional*/ saltLength, /*@optional*/ salt) {
+        signData: function(/*@type(Array)*/ messageBytes, /*@optional*/ saltLength, /*@optional*/ salt) {
             return rsaBase.decrypt(paddingFunction(messageBytes, saltLength, salt));
         },
 
-        verifySignature : function(
+        verifySignature: function(
             /*@type(Array)*/ signature,
             /*@type(Array)*/ messageBytes,
             /*@optional   */ saltLength
@@ -121,11 +121,11 @@ var msrcryptoRsa = function(keyStruct, mode, /*@optional*/ hashFunction) {
             return unPaddingFunction(decryptedSig, messageBytes, saltLength);
         },
 
-        generateKeyPair : function(bits) {
+        generateKeyPair: function(bits) {
             var keyPair = genRsaKeyFromRandom(bits);
         },
 
-        mode            : mode
+        mode: mode
     };
 
     return returnObj;
@@ -199,12 +199,55 @@ if (typeof operations !== "undefined") {
 
     msrcryptoRsa.importKey = function(/*@dynamic*/ p) {
 
-        var keyObject = msrcryptoJwk.jwkToKey(p.keyData, p.algorithm, ["n", "e", "d", "q", "p", "dq", "dp", "qi"]);
+        var keyObject;
 
-        // if a private key, attach a MontgomeryMultiplier(n);
-        if (keyObject.d) {
-            keyObject.ctxp = new cryptoMath.MontgomeryMultiplier(cryptoMath.bytesToDigits(keyObject.p)).ctx;
-            keyObject.ctxq = new cryptoMath.MontgomeryMultiplier(cryptoMath.bytesToDigits(keyObject.q)).ctx;
+        if (p.format === "jwk") {
+
+            keyObject = msrcryptoJwk.jwkToKey(p.keyData, p.algorithm, ["n", "e", "d", "q", "p", "dq", "dp", "qi"]);
+
+            // if a private key, attach a MontgomeryMultiplier(n);
+            if (keyObject.d) {
+                keyObject.ctxp = new cryptoMath.MontgomeryMultiplier(cryptoMath.bytesToDigits(keyObject.p)).ctx;
+                keyObject.ctxq = new cryptoMath.MontgomeryMultiplier(cryptoMath.bytesToDigits(keyObject.q)).ctx;
+            }
+
+        } else if (p.format === "spki") {
+
+            var publicKeyInfo = asn1.parse(p.keyData);
+
+            if (publicKeyInfo == null) {
+                throw new Error("invalid key data.");
+            }
+
+            var bitString = publicKeyInfo[1];
+            // +1 to skip the leading zero that will always be there if the bitstring contains a sequence.
+            var keySequence = asn1.parse(bitString.data.slice(bitString.header + 1), true);
+
+            if (keySequence == null) {
+                throw new Error("invalid key data.");
+            }
+
+            var n = keySequence[0],
+                e = keySequence[1];
+
+            if (n.type !== "INTEGER" || e.type !== "INTEGER") {
+                throw new Error("invalid key data.");
+            }
+
+            n = n.data.slice(n.header);
+            e = e.data.slice(e.header);
+
+            // asn.1 integer may have a leading zero if the high-order bit is set in the data bytes
+            // this is intended to show the number is positive since a high-order bit may imply it's negative.
+            // tslint:disable-next-line: no-bitwise
+            if (n[0] === 0 && n[1] & 128) { n = n.slice(1); }
+            // tslint:disable-next-line: no-bitwise
+            if (e[0] === 0 && e[1] & 128) { e = e.slice(1); }
+
+            keyObject = { n: n, e: e };
+
+        } else {
+            throw new Error("unsupported key import format.");
         }
 
         return {
@@ -212,8 +255,8 @@ if (typeof operations !== "undefined") {
             keyData: keyObject,
             keyHandle: {
                 algorithm: p.algorithm,
-                extractable: p.extractable || keyObject.extractable,
-                usages: null || p.usages, // IE11 returns null here
+                extractable: p.extractable,
+                usages: p.usages, // IE11 returns null here
                 type: keyObject.d || keyObject.dq ? "private" : "public"
             }
         };
@@ -222,12 +265,12 @@ if (typeof operations !== "undefined") {
     msrcryptoRsa.exportKey = function(/*@dynamic*/ p) {
         var jsonKeyStringArray = msrcryptoJwk.keyToJwk(p.keyHandle, p.keyData);
 
-        return {type: "keyExport", keyHandle: jsonKeyStringArray};
+        return { type: "keyExport", keyHandle: jsonKeyStringArray };
     };
 
     msrcryptoRsa.genRsaKeyFromRandom = function(bits, e) {
         // public exponent
-        var exp = e ? cryptoMath.bytesToDigits(e) : [ 65537 ];
+        var exp = e ? cryptoMath.bytesToDigits(e) : [65537];
 
         do {
             // generate p
@@ -248,11 +291,11 @@ if (typeof operations !== "undefined") {
             // compute p-1 & q-1
             // tslint:disable-next-line: variable-name
             var p_1 = [];
-            cryptoMath.subtract(p, [ 1 ], p_1);
+            cryptoMath.subtract(p, [1], p_1);
 
             // tslint:disable-next-line: variable-name
             var q_1 = [];
-            cryptoMath.subtract(q, [ 1 ], q_1);
+            cryptoMath.subtract(q, [1], q_1);
 
             // tslint:disable-next-line: variable-name
             var p_1q_1 = [];
@@ -281,7 +324,7 @@ if (typeof operations !== "undefined") {
         var d2b = cryptoMath.digitsToBytes;
 
         return {
-            privateKey : {
+            privateKey: {
                 n: d2b(n),
                 e: d2b(exp),
                 d: d2b(d),
@@ -291,7 +334,7 @@ if (typeof operations !== "undefined") {
                 dq: d2b(dq),
                 qi: d2b(qi)
             },
-            publicKey  : {n: d2b(n), e: d2b(exp)}
+            publicKey: { n: d2b(n), e: d2b(exp) }
         };
     };
 
