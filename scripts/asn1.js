@@ -60,7 +60,7 @@ var asn1 = (function() {
         obj.header = header;
         //obj.length = dataLen + header;
         obj.data = bytes.slice(0, dataLen + header);
-        obj.class = _class;
+        //obj.class = _class;
 
         if (constructed || force) {
             if (obj.type === "BIT STRING" && bytes[header] === 0) { i++; }

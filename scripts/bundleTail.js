@@ -127,7 +127,7 @@ var publicMethods = {
     url : scriptUrl,
 
     /// <field type = 'String'>Library version</field>
-    version: "1.6.0",
+    version: msrCryptoVersion,
 
     useWebWorkers : function(useWebWorkers) {
         /// <signature>

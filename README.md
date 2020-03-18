@@ -39,6 +39,7 @@ Hash
 
 Derive Key/Bits  
 - ECDH
+- PBKDF2
 - Concat-KDF
 
 KeyWrap  
