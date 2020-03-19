@@ -1,6 +1,12 @@
 {
   "name": "msrcrypto",
   "version": "1.6.0",
+  "description": "MSR JavaScript Cryptography Library",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/microsoft/MSR-JavaScript-Crypto"
+  },
   "devDependencies": {
     "@types/gulp": "^4.0.6",
     "@types/gulp-concat": "0.0.32",
@@ -14,11 +20,7 @@
     "gulp-header": "^2.0.9",
     "gulp-minify": "^3.1.0",
     "gulp-strip-code": "^0.1.4",
-    "gulp-strip-comments": "^2.5.2",
-    "tslint": "^5.20.1",
-    "tslint-microsoft-contrib": "^6.2.0"
+    "gulp-strip-comments": "^2.5.2"
   },
-  "dependencies": {
-    "typescript": "^3.8.3"
-  }
+  "dependencies": {}
 }
