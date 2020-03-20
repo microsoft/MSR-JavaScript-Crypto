@@ -497,8 +497,7 @@ function msrcryptoMath() {
         // Constant-time compare digits
         // The time will be different for different lengths of input, but will be constant for a given length.
         // We expect any secret data passing through to be of some standard non-varying length.
-        // The arrays need not be the same length. Accessing non-existent elements returns 'undefined'.
-        // using the '|0' or-zero will cast 'undefined' to a '0'
+        // result will equal the difference of the highest order digit where left !== right
         var result = 0,
             val, i;
 
@@ -1403,7 +1402,9 @@ function msrcryptoMath() {
             var k = this.m.length,
                 q1, q2, q3,
                 r1, r2,
-                i;
+                i,
+                needSubtract,
+                temp = [];
 
             // overwrite input if output not supplied
             result = result || x;
@@ -1418,16 +1419,15 @@ function msrcryptoMath() {
             r2 = []; multiply(q3, m, r2); r2 = r2.slice(0, k + 1);
 
             //3. If r < 0 then r←r + bk+1.
-            if (compareDigits(r1, r2) < 0) {
-                r1[k + 1] = 1;
-            }
+            r1[k + 1] = compareDigits(r1, r2) >>> 31;
+
             for (i = 0; i < result.length; i++) { result[i] = 0; }
             subtract(r1, r2, result);
 
-            //4. While r ≥ m do: r←r − m.
-            while (compareDigits(result, m) > 0) {
-                subtract(result, m, result);
-            }
+            //4. If r ≥ m do: r←r − m.
+            needSubtract = +(compareDigits(result, m) > 0);
+            cryptoMath.subtract(result, m, temp);
+            ctSetArray(needSubtract, result, temp);
 
             normalizeDigitArray(result);
 
