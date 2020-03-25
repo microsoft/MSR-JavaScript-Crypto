@@ -1,5 +1,5 @@
 {
-  "name": "msrcrypto",
+  "name": "@microsoft/msrcrypto",
   "version": "1.6.0",
   "description": "MSR JavaScript Cryptography Library",
   "license": "Apache-2.0",
