@@ -7,12 +7,18 @@
     "type": "git",
     "url": "https://github.com/microsoft/MSR-JavaScript-Crypto.git"
   },
+  "scripts": {
+    "preinstall": "npx npm-force-resolutions"
+  },
+  "resolutions": {
+    "minimist": "1.2.3",
+    "mkdir": "0.5.3"
+  },
   "devDependencies": {
     "@types/gulp": "^4.0.6",
     "@types/gulp-concat": "0.0.32",
     "@types/gulp-header": "^2.0.0",
     "@types/gulp-strip-comments": "^2.5.0",
-    "es6-promise-promise": "^1.0.0",
     "gulp": "^4.0.2",
     "gulp-beautify": "^3.0.0",
     "gulp-clean": "^0.4.0",
