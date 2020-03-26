@@ -1396,7 +1396,7 @@ function msrcryptoMath() {
         function reduce(x, result) {
             // Barrett Reduction
 
-            // Requires µ = b^2k/m. µ is precomputed when MontgomeryMultiplier is initialized.
+            // Requires mu = b^2k/m. mu is precomputed when MontgomeryMultiplier is initialized.
             // Therefore this will only reduce by the modulus used for initialization.
 
             var k = this.m.length,
@@ -1409,9 +1409,9 @@ function msrcryptoMath() {
             // overwrite input if output not supplied
             result = result || x;
 
-            // 1. q1←[x/b^k−1], q2←q1 · µ, q3←bq2/bk+1c.
+            // 1. q1←[x/b^k−1], q2←q1 · mu, q3←bq2/bk+1c.
             q1 = x.slice(k - 1);
-            q2 = []; multiply(q1, this.µ, q2);
+            q2 = []; multiply(q1, this.mu, q2);
             q3 = q2.slice(k + 1);
 
             // 2. r1←x mod bk + 1, r2←q3 · m mod bk + 1, r←r1 − r2.
@@ -1453,7 +1453,7 @@ function msrcryptoMath() {
 
             // Barrett pre-computation
             var R = createArray(modulus.length * 2); R[R.length] = 1;
-            ctx.µ = []; divRem(R, modulus, ctx.µ, []);
+            ctx.mu = []; divRem(R, modulus, ctx.mu, []);
 
             // Create r and compute r mod m
             // Since we are base b integers of length s, we want
@@ -1490,7 +1490,7 @@ function msrcryptoMath() {
         var m = context.m;
 
         // Barrett pre-computation of this modulus
-        var µ = context.µ;
+        var mu = context.mu;
 
         // First digit of modulus
         var m0 = context.m0;
@@ -1540,7 +1540,7 @@ function msrcryptoMath() {
 
             // Compute m' = -(m^-1) mod b used by CIOS
             mPrime: mPrime,
-            µ: µ,
+            mu: mu,
 
             rSquaredModm: rSquaredModm,
             s: s,

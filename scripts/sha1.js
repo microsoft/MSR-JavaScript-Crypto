@@ -123,8 +123,8 @@ if (typeof operations !== "undefined") {
 
     };
 
-    operations.register("digest", "sha-1", msrcryptoSha1.hash);
+    operations.register("digest", "SHA-1", msrcryptoSha1.hash);
 
 }
 
-msrcryptoHashFunctions["sha-1"] = msrcryptoSha1.sha1;
+msrcryptoHashFunctions["SHA-1"] = msrcryptoSha1.sha1;

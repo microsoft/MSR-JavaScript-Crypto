@@ -63,7 +63,7 @@ if (typeof operations !== "undefined") {
 
         var hashName = p.algorithm.hash.name;
 
-        var hashFunction = msrcryptoHashFunctions[hashName.toLowerCase()]();
+        var hashFunction = msrcryptoHashFunctions[hashName.toUpperCase()]();
 
         msrcryptoKdfInstance = msrcryptoKdf(hashFunction);
 
@@ -98,7 +98,7 @@ if (typeof operations !== "undefined") {
 
         var hashName = p.algorithm.hash.name;
 
-        var hashFunction = msrcryptoHashFunctions[hashName.toLowerCase()]();
+        var hashFunction = msrcryptoHashFunctions[hashName.toUpperCase()]();
 
         msrcryptoKdfInstance = msrcryptoKdf(hashFunction);
 

@@ -37,13 +37,13 @@ var msrcryptoJwk = (function() {
 
     function getKeyType(keyHandle) {
 
-        var algType = keyHandle.algorithm.name.slice(0, 3).toLowerCase();
+        var algType = keyHandle.algorithm.name.slice(0, 3).toUpperCase();
 
-        if (algType === "rsa") {
+        if (algType === "RSA") {
             return "RSA";
         }
 
-        if (algType === "ecd") {
+        if (algType === "ECD") {
             return "EC";
         }
 
@@ -56,32 +56,32 @@ var msrcryptoJwk = (function() {
 
     var algorithmMap = {
 
-        "hmac": function(algorithm) {
+        "HMAC": function(algorithm) {
             return "HS" + hashSize(algorithm);
         },
 
-        "aes-cbc": function(algorithm) {
+        "AES-CBC": function(algorithm) {
             return "A" + algorithm.length.toString() + "CBC";
         },
 
-        "aes-gcm": function(algorithm) {
+        "AES-GCM": function(algorithm) {
             return "A" + algorithm.length.toString() + "GCM";
         },
 
-        "rsassa-pkcs1-v1_5": function(algorithm) {
+        "RSASSA-PKCS1-V1_5": function(algorithm) {
             return "RS" + hashSize(algorithm);
         },
 
-        "rsa-oaep": function(algorithm) {
+        "RSA-OAEP": function(algorithm) {
             if (algorithm.hash.name.toUpperCase() === "SHA-1") { return "RSA-OAEP"; }
             return "RSA-OAEP-" + hashSize(algorithm);
         },
 
-        "rsa-pss": function(algorithm) {
+        "RSA-PSS": function(algorithm) {
             return "PS" + hashSize(algorithm);
         },
 
-        "ecdsa": function(algorithm) {
+        "ECDSA": function(algorithm) {
             return "EC-" + algorithm.namedCurve.substring(algorithm.namedCurve.indexOf("-") + 1);
         }
     };
@@ -92,8 +92,8 @@ var msrcryptoJwk = (function() {
 
         key.kty = getKeyType(keyHandle);
         key.ext = keyHandle.extractable;
-        if ( algorithmMap[keyHandle.algorithm.name.toLowerCase()] ) {
-            key.alg = algorithmMap[keyHandle.algorithm.name.toLowerCase()]( keyHandle.algorithm );
+        if ( algorithmMap[keyHandle.algorithm.name.toUpperCase()] ) {
+            key.alg = algorithmMap[keyHandle.algorithm.name.toUpperCase()]( keyHandle.algorithm );
         }
         key.key_ops = keyHandle.usages;
         //key.key_ops = (keyHandle.type !== "secret") ? getPublicPrivateUsage(key, keyData) : keyHandle.usages;

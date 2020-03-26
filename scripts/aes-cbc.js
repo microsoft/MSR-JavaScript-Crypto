@@ -366,9 +366,9 @@ if (typeof operations !== "undefined") {
         throw new Error("unsupported export format");
     };
 
-    operations.register("importKey", "aes-cbc", msrcryptoCbc.importKey);
-    operations.register("exportKey", "aes-cbc", msrcryptoCbc.exportKey);
-    operations.register("generateKey", "aes-cbc", msrcryptoCbc.generateKey);
-    operations.register("encrypt", "aes-cbc", msrcryptoCbc.workerEncrypt);
-    operations.register("decrypt", "aes-cbc", msrcryptoCbc.workerDecrypt);
+    operations.register("importKey", "AES-CBC", msrcryptoCbc.importKey);
+    operations.register("exportKey", "AES-CBC", msrcryptoCbc.exportKey);
+    operations.register("generateKey", "AES-CBC", msrcryptoCbc.generateKey);
+    operations.register("encrypt", "AES-CBC", msrcryptoCbc.workerEncrypt);
+    operations.register("decrypt", "AES-CBC", msrcryptoCbc.workerDecrypt);
 }

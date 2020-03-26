@@ -137,7 +137,7 @@ if ( typeof operations !== "undefined" ) {
 
     msrcryptoHmac.signHmac = function( p ) {
 
-        var hashName = p.keyHandle.algorithm.hash.name.toLowerCase(),
+        var hashName = p.keyHandle.algorithm.hash.name.toUpperCase(),
             hashAlg = msrcryptoHashFunctions[hashName](),
             result,
             id = p.workerid;
@@ -164,7 +164,7 @@ if ( typeof operations !== "undefined" ) {
 
     msrcryptoHmac.verifyHmac = function( p ) {
 
-        var hashName = p.keyHandle.algorithm.hash.name.toLowerCase(),
+        var hashName = p.keyHandle.algorithm.hash.name.toUpperCase(),
             hashAlg = msrcryptoHashFunctions[hashName](),
             result,
             id = p.workerid;
@@ -194,12 +194,12 @@ if ( typeof operations !== "undefined" ) {
     msrcryptoHmac.generateKey = function( p ) {
 
         // keyLength = hash alg block size with length is not specified
-        var defaultKeyLengths = { "sha-1": 64, "sha-224": 64, "sha-256": 64, "sha-384": 128, "sha-512": 128 };
+        var defaultKeyLengths = { "SHA-1": 64, "SHA-224": 64, "SHA-256": 64, "SHA-384": 128, "SHA-512": 128 };
 
         var keyLength = p.algorithm.length;
 
         if ( !keyLength ) {
-            keyLength = defaultKeyLengths[p.algorithm.hash.name.toLowerCase()];
+            keyLength = defaultKeyLengths[p.algorithm.hash.name.toUpperCase()];
         }
 
         return {
@@ -253,9 +253,9 @@ if ( typeof operations !== "undefined" ) {
         throw new Error( "unsupported export format" );
     };
 
-    operations.register( "importKey", "hmac", msrcryptoHmac.importKey );
-    operations.register( "exportKey", "hmac", msrcryptoHmac.exportKey );
-    operations.register( "generateKey", "hmac", msrcryptoHmac.generateKey );
-    operations.register( "sign", "hmac", msrcryptoHmac.signHmac );
-    operations.register( "verify", "hmac", msrcryptoHmac.verifyHmac );
+    operations.register( "importKey", "HMAC", msrcryptoHmac.importKey );
+    operations.register( "exportKey", "HMAC", msrcryptoHmac.exportKey );
+    operations.register( "generateKey", "HMAC", msrcryptoHmac.generateKey );
+    operations.register( "sign", "HMAC", msrcryptoHmac.signHmac );
+    operations.register( "verify", "HMAC", msrcryptoHmac.verifyHmac );
 }

@@ -473,9 +473,9 @@ if (typeof operations !== "undefined") {
         throw new Error("unsupported export format");
     };
 
-    operations.register("importKey", "aes-gcm", msrcryptoGcm.importKey);
-    operations.register("exportKey", "aes-gcm", msrcryptoGcm.exportKey);
-    operations.register("generateKey", "aes-gcm", msrcryptoGcm.generateKey);
-    operations.register("encrypt", "aes-gcm", msrcryptoGcm.encrypt);
-    operations.register("decrypt", "aes-gcm", msrcryptoGcm.decrypt);
+    operations.register("importKey", "AES-GCM", msrcryptoGcm.importKey);
+    operations.register("exportKey", "AES-GCM", msrcryptoGcm.exportKey);
+    operations.register("generateKey", "AES-GCM", msrcryptoGcm.generateKey);
+    operations.register("encrypt", "AES-GCM", msrcryptoGcm.encrypt);
+    operations.register("decrypt", "AES-GCM", msrcryptoGcm.decrypt);
 }

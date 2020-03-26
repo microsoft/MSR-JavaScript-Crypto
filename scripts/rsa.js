@@ -35,17 +35,17 @@ var msrcryptoRsa = function(keyStruct, mode, /*@optional*/ hashFunction) {
     var padding;
 
     switch (mode) {
-        case "rsassa-pkcs1-v1_5":
+        case "RSASSA-PKCS1-V1_5":
             checkHash();
             padding = rsaMode.pkcs1Sign(keyStruct, hashFunction);
             break;
 
-        case "rsa-oaep":
+        case "RSA-OAEP":
             checkHash();
             padding = rsaMode.oaep(keyStruct, hashFunction);
             break;
 
-        case "rsa-pss":
+        case "RSA-PSS":
             checkHash();
             padding = rsaMode.pss(keyStruct, hashFunction);
             break;
@@ -135,7 +135,7 @@ if (typeof operations !== "undefined") {
     msrcryptoRsa.sign = function(/*@dynamic*/ p) {
         var rsaObj,
             hashName = p.keyHandle.algorithm.hash.name,
-            hashFunc = msrcryptoHashFunctions[hashName.toLowerCase()](),
+            hashFunc = msrcryptoHashFunctions[hashName.toUpperCase()](),
             saltLength = p.algorithm.saltLength,
             salt = p.algorithm.salt;
 
@@ -146,7 +146,7 @@ if (typeof operations !== "undefined") {
 
     msrcryptoRsa.verify = function(/*@dynamic*/ p) {
         var hashName = p.keyHandle.algorithm.hash.name,
-            hashFunc = msrcryptoHashFunctions[hashName.toLowerCase()](),
+            hashFunc = msrcryptoHashFunctions[hashName.toUpperCase()](),
             rsaObj,
             saltLength = p.algorithm.saltLength;
 
@@ -159,12 +159,12 @@ if (typeof operations !== "undefined") {
         var result, rsaObj, hashFunc, hashName;
 
         switch (p.algorithm.name) {
-            case "rsa-oaep":
+            case "RSA-OAEP":
                 hashName = p.keyHandle.algorithm.hash.name; // hash is on key alg
                 if (!hashName) {
                     throw new Error("unsupported hash algorithm");
                 }
-                hashFunc = msrcryptoHashFunctions[hashName.toLowerCase()]();
+                hashFunc = msrcryptoHashFunctions[hashName.toUpperCase()]();
                 rsaObj = msrcryptoRsa(p.keyData, p.algorithm.name, hashFunc);
                 result = rsaObj.encrypt(p.buffer);
                 break;
@@ -180,12 +180,12 @@ if (typeof operations !== "undefined") {
         var result, rsaObj, hashFunc;
 
         switch (p.algorithm.name) {
-            case "rsa-oaep":
+            case "RSA-OAEP":
                 var hashName = p.keyHandle.algorithm.hash.name; // hash is on key alg
                 if (!hashName) {
                     throw new Error("unsupported hash algorithm");
                 }
-                hashFunc = msrcryptoHashFunctions[hashName.toLowerCase()]();
+                hashFunc = msrcryptoHashFunctions[hashName.toUpperCase()]();
                 rsaObj = msrcryptoRsa(p.keyData, p.algorithm.name, hashFunc);
                 result = rsaObj.decrypt(p.buffer);
                 break;
@@ -362,10 +362,10 @@ if (typeof operations !== "undefined") {
         pk.ctxq = (new cryptoMath.MontgomeryMultiplier(b2d(pk.q))).ctx;
 
         var algName = p.algorithm.name;
-        var rsaKeyType = algName.slice(algName.indexOf("-") + 1).toLowerCase();
+        var rsaKeyType = algName.slice(algName.indexOf("-") + 1).toUpperCase();
 
-        var publicUsage = rsaKeyType === "oaep" ? ["encrypt"] : ["verify"];
-        var privateUsage = rsaKeyType === "oaep" ? ["decrypt"] : ["sign"];
+        var publicUsage = rsaKeyType === "OAEP" ? ["encrypt"] : ["verify"];
+        var privateUsage = rsaKeyType === "OAEP" ? ["decrypt"] : ["sign"];
 
         return {
             type: "keyGeneration",
@@ -392,24 +392,24 @@ if (typeof operations !== "undefined") {
         };
     };
 
-    operations.register("sign", "rsassa-pkcs1-v1_5", msrcryptoRsa.sign);
-    operations.register("sign", "rsa-pss", msrcryptoRsa.sign);
+    operations.register("sign", "RSASSA-PKCS1-V1_5", msrcryptoRsa.sign);
+    operations.register("sign", "RSA-PSS", msrcryptoRsa.sign);
 
-    operations.register("verify", "rsassa-pkcs1-v1_5", msrcryptoRsa.verify);
-    operations.register("verify", "rsa-pss", msrcryptoRsa.verify);
+    operations.register("verify", "RSASSA-PKCS1-V1_5", msrcryptoRsa.verify);
+    operations.register("verify", "RSA-PSS", msrcryptoRsa.verify);
 
-    operations.register("encrypt", "rsa-oaep", msrcryptoRsa.workerEncrypt);
-    operations.register("decrypt", "rsa-oaep", msrcryptoRsa.workerDecrypt);
+    operations.register("encrypt", "RSA-OAEP", msrcryptoRsa.workerEncrypt);
+    operations.register("decrypt", "RSA-OAEP", msrcryptoRsa.workerDecrypt);
 
-    operations.register("importKey", "rsa-oaep", msrcryptoRsa.importKey);
-    operations.register("importKey", "rsassa-pkcs1-v1_5", msrcryptoRsa.importKey);
-    operations.register("importKey", "rsa-pss", msrcryptoRsa.importKey);
+    operations.register("importKey", "RSA-OAEP", msrcryptoRsa.importKey);
+    operations.register("importKey", "RSASSA-PKCS1-V1_5", msrcryptoRsa.importKey);
+    operations.register("importKey", "RSA-PSS", msrcryptoRsa.importKey);
 
-    operations.register("exportKey", "rsa-oaep", msrcryptoRsa.exportKey);
-    operations.register("exportKey", "rsassa-pkcs1-v1_5", msrcryptoRsa.exportKey);
-    operations.register("exportKey", "rsa-pss", msrcryptoRsa.exportKey);
+    operations.register("exportKey", "RSA-OAEP", msrcryptoRsa.exportKey);
+    operations.register("exportKey", "RSASSA-PKCS1-V1_5", msrcryptoRsa.exportKey);
+    operations.register("exportKey", "RSA-PSS", msrcryptoRsa.exportKey);
 
-    operations.register("generateKey", "rsa-oaep", msrcryptoRsa.generateKeyPair);
-    operations.register("generateKey", "rsassa-pkcs1-v1_5", msrcryptoRsa.generateKeyPair);
-    operations.register("generateKey", "rsa-pss", msrcryptoRsa.generateKeyPair);
+    operations.register("generateKey", "RSA-OAEP", msrcryptoRsa.generateKeyPair);
+    operations.register("generateKey", "RSASSA-PKCS1-V1_5", msrcryptoRsa.generateKeyPair);
+    operations.register("generateKey", "RSA-PSS", msrcryptoRsa.generateKeyPair);
 }

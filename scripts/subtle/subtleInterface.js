@@ -117,10 +117,10 @@ function buildParameterCollection(operationName, parameterSet) {
             throw new Error(expectedParam.name);
         }
 
-        // If this parameter is an algorithm object convert it's name to lowercase.
+        // If this parameter is an algorithm object convert it's name to upperCase.
         if (expectedParam.name === "algorithm") {
 
-            actualParam.name = actualParam.name.toLowerCase();
+            actualParam.name = actualParam.name.toUpperCase();
 
             // If the algorithm has a typed-array IV, convert it to a regular array.
             if (actualParam.iv) {
@@ -364,8 +364,8 @@ var publicMethods = {
                     keyLength = derivedKeyType.length;
                     break;
                 case "HMAC":
-                    keyLength = derivedKeyType.length || // hmac length defaults to hash block size
-                        { "sha-1": 512, "sha-224": 512, "sha-256": 512, "sha-384": 1024, "sha-512": 1024 }[derivedKeyType.hash.name.toLowerCase()];
+                    keyLength = derivedKeyType.length || // HMAC length defaults to hash block size
+                        { "SHA-1": 512, "SHA-224": 512, "SHA-256": 512, "SHA-384": 1024, "SHA-512": 1024 }[derivedKeyType.hash.name.toUpperCase()];
                     break;
                 default:
                     reject(new Error("No Supported"));

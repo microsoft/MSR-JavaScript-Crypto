@@ -265,9 +265,9 @@ if ( typeof operations !== "undefined" ) {
         throw new Error( "unsupported export format." );
     };
 
-    operations.register( "importKey", "ecdh", msrcryptoEcdh.importKey );
-    operations.register( "exportKey", "ecdh", msrcryptoEcdh.exportKey );
-    operations.register( "generateKey", "ecdh", msrcryptoEcdh.generateKey );
-    operations.register( "deriveBits", "ecdh", msrcryptoEcdh.deriveBits );
-    operations.register( "deriveKey", "ecdh", msrcryptoEcdh.deriveKey );
+    operations.register( "importKey", "ECDH", msrcryptoEcdh.importKey );
+    operations.register( "exportKey", "ECDH", msrcryptoEcdh.exportKey );
+    operations.register( "generateKey", "ECDH", msrcryptoEcdh.generateKey );
+    operations.register( "deriveBits", "ECDH", msrcryptoEcdh.deriveBits );
+    operations.register( "deriveKey", "ECDH", msrcryptoEcdh.deriveKey );
 }

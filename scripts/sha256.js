@@ -190,9 +190,9 @@ if (typeof operations !== "undefined") {
 
     };
 
-    operations.register("digest", "sha-224", msrcryptoSha256.hash224);
-    operations.register("digest", "sha-256", msrcryptoSha256.hash256);
+    operations.register("digest", "SHA-224", msrcryptoSha256.hash224);
+    operations.register("digest", "SHA-256", msrcryptoSha256.hash256);
 }
 
-msrcryptoHashFunctions["sha-224"] = msrcryptoSha256.sha224;
-msrcryptoHashFunctions["sha-256"] = msrcryptoSha256.sha256;
+msrcryptoHashFunctions["SHA-224"] = msrcryptoSha256.sha224;
+msrcryptoHashFunctions["SHA-256"] = msrcryptoSha256.sha256;

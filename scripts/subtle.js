@@ -754,7 +754,7 @@ msrcryptoSubtle = (function() {
 
             if (expectedParam.name === "algorithm") {
 
-                actualParam.name = actualParam.name.toLowerCase();
+                actualParam.name = actualParam.name.toUpperCase();
 
                 if (actualParam.iv) {
                     actualParam.iv = utils.toArray(actualParam.iv);
@@ -860,12 +860,12 @@ msrcryptoSubtle = (function() {
                         break;
                     case "HMAC":
                         keyLength = derivedKeyType.length || {
-                            "sha-1": 64,
-                            "sha-224": 64,
-                            "sha-256": 64,
-                            "sha-384": 128,
-                            "sha-512": 128
-                        } [derivedKeyType.hash.name.toLowerCase()] * 8;
+                            "SHA-1": 512,
+                            "SHA-224": 512,
+                            "SHA-256": 512,
+                            "SHA-384": 1024,
+                            "SHA-512": 1024
+                        } [derivedKeyType.hash.name.toUpperCase()];
                         break;
                     default:
                         reject(new Error("No Supported"));

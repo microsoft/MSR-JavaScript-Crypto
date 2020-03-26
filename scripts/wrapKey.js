@@ -24,7 +24,7 @@ var msrcryptoWrapKey = (function() {
         var rsaObj = msrcryptoRsa(
             params.keyData1,
             params.keyHandle1.algorithm.name,
-            msrcryptoHashFunctions["sha-1"])();
+            msrcryptoHashFunctions["SHA-1"])();
 
         var tagLength = 128;
 
@@ -103,7 +103,7 @@ var msrcryptoWrapKey = (function() {
         var ciphertext =
             b64Tobytes(keyDataJwk.ciphertext);
 
-        var hashFunc = msrcryptoHashFunctions["sha-1"]();
+        var hashFunc = msrcryptoHashFunctions["SHA-1"]();
         var rsaObj = msrcryptoRsa(params.keyData, params.keyHandle.algorithm.name, hashFunc);
         var inKey = rsaObj.decrypt(encrypted_key);
 
@@ -137,6 +137,6 @@ var msrcryptoWrapKey = (function() {
 
 })();
 if (typeof operations !== "undefined") {
-    operations.register("wrapKey", "aes-gcm", msrcryptoWrapKey.wrapKey);
-    operations.register("unwrapKey", "aes-cbc", msrcryptoWrapKey.unwrapKey);
+    operations.register("wrapKey", "AES-GCM", msrcryptoWrapKey.wrapKey);
+    operations.register("unwrapKey", "AES-CBC", msrcryptoWrapKey.unwrapKey);
 }

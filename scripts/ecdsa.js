@@ -175,7 +175,7 @@ if (typeof operations !== "undefined") {
 
         var hashName = p.algorithm.hash.name,
             curve = cryptoECC.createCurve(p.keyHandle.algorithm.namedCurve.toUpperCase()),
-            hashFunc = msrcryptoHashFunctions[hashName.toLowerCase()](),
+            hashFunc = msrcryptoHashFunctions[hashName.toUpperCase()](),
             digest = hashFunc.computeHash(p.buffer);
 
         var ecdsa = msrcryptoEcdsa(curve);
@@ -187,7 +187,7 @@ if (typeof operations !== "undefined") {
 
         var hashName = p.algorithm.hash.name,
             curve = cryptoECC.createCurve(p.keyHandle.algorithm.namedCurve.toUpperCase()),
-            hashFunc = msrcryptoHashFunctions[hashName.toLowerCase()](),
+            hashFunc = msrcryptoHashFunctions[hashName.toUpperCase()](),
             digest = hashFunc.computeHash(p.buffer);
 
         var ecdsa = msrcryptoEcdsa(curve);
@@ -334,9 +334,9 @@ if (typeof operations !== "undefined") {
 
     };
 
-    operations.register("sign", "ecdsa", msrcryptoEcdsa.sign);
-    operations.register("verify", "ecdsa", msrcryptoEcdsa.verify);
-    operations.register("generateKey", "ecdsa", msrcryptoEcdsa.generateKey);
-    operations.register("importKey", "ecdsa", msrcryptoEcdsa.importKey);
-    operations.register("exportKey", "ecdsa", msrcryptoEcdsa.exportKey);
+    operations.register("sign", "ECDSA", msrcryptoEcdsa.sign);
+    operations.register("verify", "ECDSA", msrcryptoEcdsa.verify);
+    operations.register("generateKey", "ECDSA", msrcryptoEcdsa.generateKey);
+    operations.register("importKey", "ECDSA", msrcryptoEcdsa.importKey);
+    operations.register("exportKey", "ECDSA", msrcryptoEcdsa.exportKey);
 }

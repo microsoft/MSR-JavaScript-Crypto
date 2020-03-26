@@ -127,6 +127,6 @@ if (typeof operations !== "undefined") {
 
     };
 
-    operations.register("deriveBits", "pbkdf2", msrcryptoPbkdf2.deriveBits);
-    operations.register("importKey", "pbkdf2", msrcryptoPbkdf2.importKey);
+    operations.register("deriveBits", "PBKDF2", msrcryptoPbkdf2.deriveBits);
+    operations.register("importKey", "PBKDF2", msrcryptoPbkdf2.importKey);
 }
