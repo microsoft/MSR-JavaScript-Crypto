@@ -35,6 +35,11 @@ var msrcryptoRsa = function(keyStruct, mode, /*@optional*/ hashFunction) {
     var padding;
 
     switch (mode) {
+
+        case "RSAES-PKCS1-V1_5":
+            padding = rsaMode.pkcs1Encrypt(keyStruct);
+            break;
+
         case "RSASSA-PKCS1-V1_5":
             checkHash();
             padding = rsaMode.pkcs1Sign(keyStruct, hashFunction);
@@ -100,6 +105,13 @@ var msrcryptoRsa = function(keyStruct, mode, /*@optional*/ hashFunction) {
                 ///<disable>JS3053.IncorrectNumberOfArguments</disable>
                 decryptedData = unPaddingFunction(decryptedData, labelBytes);
                 ///<enable>JS3053.IncorrectNumberOfArguments</enable>
+
+                if (decryptedData.valid === false) {
+                    throw new Error("OperationError");
+                }
+
+                decryptedData = decryptedData.data;
+
             } else {
                 decryptedData = decryptedData.slice(0);
             }
@@ -159,6 +171,12 @@ if (typeof operations !== "undefined") {
         var result, rsaObj, hashFunc, hashName;
 
         switch (p.algorithm.name) {
+
+            case "RSAES-PKCS1-V1_5":
+                rsaObj = msrcryptoRsa(p.keyData, p.algorithm.name);
+                result = rsaObj.encrypt(p.buffer);
+                break;
+
             case "RSA-OAEP":
                 hashName = p.keyHandle.algorithm.hash.name; // hash is on key alg
                 if (!hashName) {
@@ -180,6 +198,12 @@ if (typeof operations !== "undefined") {
         var result, rsaObj, hashFunc;
 
         switch (p.algorithm.name) {
+
+            case "RSAES-PKCS1-V1_5":
+                rsaObj = msrcryptoRsa(p.keyData, p.algorithm.name);
+                result = rsaObj.decrypt(p.buffer);
+                break;
+
             case "RSA-OAEP":
                 var hashName = p.keyHandle.algorithm.hash.name; // hash is on key alg
                 if (!hashName) {
@@ -356,7 +380,7 @@ if (typeof operations !== "undefined") {
                 throw new Error("invalid modulusLength");
         }
 
-        // create a MongomeryMultiplier and attach to this private key
+        // create a MontgomeryMultiplier and attach to this private key
         var pk = keyPair.privateKey;
         pk.ctxp = (new cryptoMath.MontgomeryMultiplier(b2d(pk.p))).ctx;
         pk.ctxq = (new cryptoMath.MontgomeryMultiplier(b2d(pk.q))).ctx;
@@ -364,8 +388,15 @@ if (typeof operations !== "undefined") {
         var algName = p.algorithm.name;
         var rsaKeyType = algName.slice(algName.indexOf("-") + 1).toUpperCase();
 
-        var publicUsage = rsaKeyType === "OAEP" ? ["encrypt"] : ["verify"];
-        var privateUsage = rsaKeyType === "OAEP" ? ["decrypt"] : ["sign"];
+        var publicUsage, privateUsage;
+
+        if (algName === "RSASSA-PKCS1-V1_5" || algName === "RSA-PSS") {
+            publicUsage = ["verify"];
+            privateUsage = ["sign"];
+        } else { // OAEP, RSAES
+            publicUsage = ["encrypt"];
+            privateUsage = ["decrypt"];
+        }
 
         return {
             type: "keyGeneration",
@@ -398,18 +429,23 @@ if (typeof operations !== "undefined") {
     operations.register("verify", "RSASSA-PKCS1-V1_5", msrcryptoRsa.verify);
     operations.register("verify", "RSA-PSS", msrcryptoRsa.verify);
 
+    operations.register("encrypt", "RSAES-PKCS1-V1_5", msrcryptoRsa.workerEncrypt);
+    operations.register("decrypt", "RSAES-PKCS1-V1_5", msrcryptoRsa.workerDecrypt);
     operations.register("encrypt", "RSA-OAEP", msrcryptoRsa.workerEncrypt);
     operations.register("decrypt", "RSA-OAEP", msrcryptoRsa.workerDecrypt);
 
     operations.register("importKey", "RSA-OAEP", msrcryptoRsa.importKey);
+    operations.register("importKey", "RSAES-PKCS1-V1_5", msrcryptoRsa.importKey);
     operations.register("importKey", "RSASSA-PKCS1-V1_5", msrcryptoRsa.importKey);
     operations.register("importKey", "RSA-PSS", msrcryptoRsa.importKey);
 
     operations.register("exportKey", "RSA-OAEP", msrcryptoRsa.exportKey);
+    operations.register("exportKey", "RSAES-PKCS1-V1_5", msrcryptoRsa.exportKey);
     operations.register("exportKey", "RSASSA-PKCS1-V1_5", msrcryptoRsa.exportKey);
     operations.register("exportKey", "RSA-PSS", msrcryptoRsa.exportKey);
 
     operations.register("generateKey", "RSA-OAEP", msrcryptoRsa.generateKeyPair);
+    operations.register("generateKey", "RSAES-PKCS1-V1_5", msrcryptoRsa.generateKeyPair);
     operations.register("generateKey", "RSASSA-PKCS1-V1_5", msrcryptoRsa.generateKeyPair);
     operations.register("generateKey", "RSA-PSS", msrcryptoRsa.generateKeyPair);
 }

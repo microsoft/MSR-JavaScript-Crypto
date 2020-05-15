@@ -68,6 +68,10 @@ var msrcryptoJwk = (function() {
             return "A" + algorithm.length.toString() + "GCM";
         },
 
+        "RSAES-PKCS1-V1_5": function(algorithm) {
+            return "RSA1_5";
+        },
+
         "RSASSA-PKCS1-V1_5": function(algorithm) {
             return "RS" + hashSize(algorithm);
         },

@@ -32,133 +32,133 @@
 
 "use strict";
 
-rsaPkcs15Tests();
+rsaSsaTests();
 
-function rsaPkcs15Tests() {
+function rsaSsaTests() {
 
-    QUnit.module( "RSA-PKCS15" );
+    QUnit.module( "RSASSA-PKCS1-V1_5" );
 
     var ts = testShared;
     var context = ts.testContext;
 
     QUnit.test(label + " key import/export spki 1024 sha-1 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._1024.sha1.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._1024.sha1.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test(label + " key import/export spki 1024 sha-256 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._1024.sha256.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._1024.sha256.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test(label + " key import/export spki 1024 sha-384 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._1024.sha384.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._1024.sha384.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test(label + " key import/export spki 1024 sha-512 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._1024.sha512.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._1024.sha512.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test(label + " key import/export spki 2048 sha-1 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._2048.sha1.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._2048.sha1.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test(label + " key import/export spki 2048 sha-256 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._2048.sha256.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._2048.sha256.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test(label + " key import/export spki 2048 sha-384 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._2048.sha384.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._2048.sha384.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test(label + " key import/export spki 2048 sha-512 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._2048.sha512.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._2048.sha512.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test(label + " key import/export spki 4096 sha-1 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._4096.sha1.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._4096.sha1.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test(label + " key import/export spki 4096 sha-256 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._4096.sha256.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._4096.sha256.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test(label + " key import/export spki 4096 sha-384 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._4096.sha384.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._4096.sha384.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test(label + " key import/export spki 4096 sha-512 ", function(assert) {
         ts.keyImportExportTestSpki(
-            rsa.pkcs15._4096.sha512.spki, undefined, undefined, context(iterations, assert));
+            rsa.ssa._4096.sha512.spki, undefined, undefined, context(iterations, assert));
     });
 
     QUnit.test( label + " key import/export jwk 1024 sha-1 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._1024.sha1.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._1024.sha1.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " key import/export jwk 1024 sha-256 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._1024.sha256.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._1024.sha256.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " key import/export jwk 1024 sha-384 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._1024.sha384.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._1024.sha384.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " key import/export jwk 1024 sha-512 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._1024.sha512.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._1024.sha512.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " key import/export jwk 2048 sha-1 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._2048.sha1.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._2048.sha1.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " key import/export jwk 2048 sha-256 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._2048.sha256.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._2048.sha256.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " key import/export jwk 2048 sha-384 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._2048.sha384.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._2048.sha384.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " key import/export jwk 2048 sha-512 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._2048.sha512.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._2048.sha512.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " key import/export jwk 4096 sha-1 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._4096.sha1.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._4096.sha1.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " key import/export jwk 4096 sha-256 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._4096.sha256.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._4096.sha256.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " key import/export jwk 4096 sha-384 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._4096.sha384.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._4096.sha384.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " key import/export jwk 4096 sha-512 ", function( assert ) {
         ts.keyPairImportExportTest(
-            rsa.pkcs15._4096.sha512.jwk, undefined, undefined, context( iterations, assert ) );
+            rsa.ssa._4096.sha512.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
     //=============================
@@ -277,62 +277,62 @@ function rsaPkcs15Tests() {
 
     QUnit.test( label + " verify native signature 1024 sha-1 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._1024.sha1.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._1024.sha1.signatures, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " verify native signature 1024 sha-256 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._1024.sha256.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._1024.sha256.signatures, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " verify native signature 1024 sha-384 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._1024.sha384.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._1024.sha384.signatures, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " verify native signature 1024 sha-512 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._1024.sha512.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._1024.sha512.signatures, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " verify native signature 2048 sha-1 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._2048.sha1.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._2048.sha1.signatures, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " verify native signature 2048 sha-256 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._2048.sha256.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._2048.sha256.signatures, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " verify native signature 2048 sha-384 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._2048.sha384.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._2048.sha384.signatures, context( iterations, assert ) );
     } );
 
     QUnit.test( label + " verify native signature 2048 sha-512 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._2048.sha512.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._2048.sha512.signatures, context( iterations, assert ) );
     } );
 
     slowTest( label + " verify native signature 4096 sha-1 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._4096.sha1.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._4096.sha1.signatures, context( iterations, assert ) );
     } );
 
     slowTest( label + " verify native signature 4096 sha-256 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._4096.sha256.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._4096.sha256.signatures, context( iterations, assert ) );
     } );
 
     slowTest( label + " verify native signature 4096 sha-384 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._4096.sha384.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._4096.sha384.signatures, context( iterations, assert ) );
     } );
 
     slowTest( label + " verify native signature 4096 sha-512 ", function( assert ) {
         ts.verifyNativeSignatureTest(
-            rsaPkcs15EncryptAlg, rsa.pkcs15._4096.sha512.signatures, context( iterations, assert ) );
+            rsaPkcs15EncryptAlg, rsa.ssa._4096.sha512.signatures, context( iterations, assert ) );
     } );
 }
 

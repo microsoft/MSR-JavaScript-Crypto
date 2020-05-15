@@ -229,6 +229,21 @@ var testShared = {
         };
     },
 
+    maxMessageLen: function(keyAlgorithm) {
+
+        if (keyAlgorithm.modulusLength) {
+            if (keyAlgorithm.name === "RSA-OAEP") {
+                return (keyAlgorithm.modulusLength / 8) - 2 * hashLengths[keyAlgorithm.hash.name] - 2;
+            }
+            if (keyAlgorithm.name === "RSAES-PKCS1-V1_5") {
+                return (keyAlgorithm.modulusLength / 8) - 11;
+            }
+            throw new Error("unknown algorithm.");
+        }
+
+        return 1000;
+    },
+
     keyImportExportTestSpki: function(vectorSet, usages, keyValidationFunc, context) {
 
         // spki tests have a public key in spki format and a verify key in jwk format
@@ -441,13 +456,12 @@ var testShared = {
         // alg params may be alg-generating functions or a static algorithm objects
         var encAlgorithm = typeof encryptAlg === "function" ? encryptAlg(context.count) : encryptAlg;
         var keyAlgorithm = typeof keyAlg === "function" ? keyAlg(context.count) : keyAlg;
-        var maxMessageLen = keyAlgorithm.modulusLength ?
-            keyAlgorithm.modulusLength / 8 - 2 * hashLengths[keyAlgorithm.hash.name] - 2 : 1000;
+        var maxMessageLen = testShared.maxMessageLen(keyAlg);
         var plainText = testShared.getRandomBytes(1, maxMessageLen);
         var cryptoKeyEncrypt;
         var cryptoKeyDecrypt;
 
-        if (--context.count > 0) { // recursivley call to start the next iteration
+        if (--context.count > 0) { // recursively call to start the next iteration
             testShared.encryptDecryptTest(keyAlg, encryptAlg, context);
         }
 
@@ -497,7 +511,7 @@ var testShared = {
         var cryptoKeyVerify;
         var signature;
 
-        if (--context.count > 0) { // recursivley call to start the next iteration
+        if (--context.count > 0) { // recursively call to start the next iteration
             testShared.signVerifyTest(keyAlg, signAlg, context);
         }
 
@@ -540,7 +554,7 @@ var testShared = {
         var algorithm = typeof signAlgorithm === "function" ?
             signAlgorithm(context.count) : this.clone(signAlgorithm);
 
-        if (--context.count > 0) { // recursivley call to start the next iteration
+        if (--context.count > 0) { // recursively call to start the next iteration
             testShared.verifyNativeSignatureTest(signAlgorithm, vectorSet, context);
         }
 
@@ -588,7 +602,7 @@ var testShared = {
             }
         }
 
-        if (--context.count > 0) { // recursivley call to start the next iteration
+        if (--context.count > 0) { // recursively call to start the next iteration
             testShared.decryptNativeCiphersTest(vectorSet, context);
         }
 
@@ -620,7 +634,7 @@ var testShared = {
 
         var vector = vectorSet.vectors[(context.count) % vectorSet.vectors.length];
 
-        if (--context.count > 0) { // recursivley call to start the next iteration
+        if (--context.count > 0) { // recursively call to start the next iteration
             testShared.deriveKeyTest(vectorSet, keyValidationFunc, context);
         }
 
@@ -674,7 +688,7 @@ var testShared = {
 
         var vector = vectorSet.vectors[(context.count - 1) % vectorSet.vectors.length];
 
-        if (--context.count > 0) { // recursivley call to start the next iteration
+        if (--context.count > 0) { // recursively call to start the next iteration
             testShared.deriveBitsTest(vectorSet, context);
         }
 
@@ -726,7 +740,7 @@ var testShared = {
 
         var vector = vectorSet.vectors[context.count - 1 % vectorSet.vectors.length];
 
-        if (--context.count > 0) { // recursivley call to start the next iteration
+        if (--context.count > 0) { // recursively call to start the next iteration
             testShared.hashTest(vectorSet, context);
         }
 

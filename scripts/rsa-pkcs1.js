@@ -17,6 +17,76 @@
 //*******************************************************************************
 
 var rsaMode = rsaMode || {};
+
+rsaMode.pkcs1Encrypt = function(keyStruct) {
+
+    var random = msrcryptoPseudoRandom,
+        size = keyStruct.n.length;
+
+    function pad(data) {
+
+        var randomness;
+
+        if (data.length > size - 11) {
+            throw new Error("message too long");
+        }
+
+        // A minimum of 8 random bytes
+        randomness = random.getNonZeroBytes(size - data.length - 3);
+
+        return [0, 2].concat(randomness, [0], data);
+    }
+
+    function validatePadding(paddedData) {
+        // Validate the padding:
+        //   we cannot know how much padding there should be.
+        //   we can know that:
+        //     a. the first two bytes should be 0,2
+        //     b. the next eight bytes are non-zero
+
+        // validate first 2 bytes of padding are 0, 2
+        var paddingValid = paddedData[0] === 0 && paddedData[1] === 2;
+
+        // verify no zeros from bytes 2-10
+        for (var i = 2; i < 10; i++) {
+            paddingValid = paddingValid && !!paddedData[i];
+        }
+
+        return paddingValid;
+    }
+
+    function unpad(paddedData) {
+
+        var i,
+            paddingIsValid = validatePadding(paddedData),
+            startOfData = 0;
+
+        for (i = 1; i < paddedData.length; i += 1) {
+            // scan data for first zero byte
+            startOfData = startOfData || +!paddedData[i] && i + 1;
+        }
+
+        startOfData = (-paddingIsValid && startOfData);
+
+        return {
+            data: paddedData.slice(startOfData),
+            valid: paddingIsValid
+        };
+    }
+
+    return {
+
+        pad: function(messageBytes) {
+            return pad(messageBytes);
+        },
+
+        unpad: function(encodedBytes) {
+            return unpad(encodedBytes);
+        }
+    };
+
+};
+
 rsaMode.pkcs1Sign = function(keyStruct, hashFunction) {
 
     var utils = msrcryptoUtilities,

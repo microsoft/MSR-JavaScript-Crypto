@@ -17,13 +17,13 @@
 //*******************************************************************************
 
 var rsa = rsa || {};
-rsa.pkcs15 = {
+rsa.ssa = {
     _1024: { sha1: {}, sha256: {}, sha384: {}, sha512: {} },
     _2048: { sha1: {}, sha256: {}, sha384: {}, sha512: {} },
     _4096: { sha1: {}, sha256: {}, sha384: {}, sha512: {} }
 };
 
-rsa.pkcs15._1024.sha1.spki = {
+rsa.ssa._1024.sha1.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -43,7 +43,7 @@ rsa.pkcs15._1024.sha1.spki = {
     ]
 };
 
-rsa.pkcs15._1024.sha256.spki = {
+rsa.ssa._1024.sha256.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -63,7 +63,7 @@ rsa.pkcs15._1024.sha256.spki = {
     ]
 };
 
-rsa.pkcs15._1024.sha384.spki = {
+rsa.ssa._1024.sha384.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -83,7 +83,7 @@ rsa.pkcs15._1024.sha384.spki = {
     ]
 };
 
-rsa.pkcs15._1024.sha512.spki = {
+rsa.ssa._1024.sha512.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -103,7 +103,7 @@ rsa.pkcs15._1024.sha512.spki = {
     ]
 };
 
-rsa.pkcs15._2048.sha1.spki = {
+rsa.ssa._2048.sha1.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -123,7 +123,7 @@ rsa.pkcs15._2048.sha1.spki = {
     ]
 };
 
-rsa.pkcs15._2048.sha256.spki = {
+rsa.ssa._2048.sha256.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -143,7 +143,7 @@ rsa.pkcs15._2048.sha256.spki = {
     ]
 };
 
-rsa.pkcs15._2048.sha384.spki = {
+rsa.ssa._2048.sha384.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -163,7 +163,7 @@ rsa.pkcs15._2048.sha384.spki = {
     ]
 };
 
-rsa.pkcs15._2048.sha512.spki = {
+rsa.ssa._2048.sha512.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -183,7 +183,7 @@ rsa.pkcs15._2048.sha512.spki = {
     ]
 };
 
-rsa.pkcs15._4096.sha1.spki = {
+rsa.ssa._4096.sha1.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -203,7 +203,7 @@ rsa.pkcs15._4096.sha1.spki = {
     ]
 };
 
-rsa.pkcs15._4096.sha256.spki = {
+rsa.ssa._4096.sha256.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -223,7 +223,7 @@ rsa.pkcs15._4096.sha256.spki = {
     ]
 };
 
-rsa.pkcs15._4096.sha384.spki = {
+rsa.ssa._4096.sha384.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -243,7 +243,7 @@ rsa.pkcs15._4096.sha384.spki = {
     ]
 };
 
-rsa.pkcs15._4096.sha512.spki = {
+rsa.ssa._4096.sha512.spki = {
     format: "spki",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -263,7 +263,7 @@ rsa.pkcs15._4096.sha512.spki = {
     ]
 };
 
-rsa.pkcs15._1024.sha1.jwk = {
+rsa.ssa._1024.sha1.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -287,7 +287,7 @@ rsa.pkcs15._1024.sha1.jwk = {
     ]
 };
 
-rsa.pkcs15._1024.sha256.jwk = {
+rsa.ssa._1024.sha256.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -311,7 +311,7 @@ rsa.pkcs15._1024.sha256.jwk = {
     ]
 };
 
-rsa.pkcs15._1024.sha384.jwk = {
+rsa.ssa._1024.sha384.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -335,7 +335,7 @@ rsa.pkcs15._1024.sha384.jwk = {
     ]
 };
 
-rsa.pkcs15._1024.sha512.jwk = {
+rsa.ssa._1024.sha512.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -359,7 +359,7 @@ rsa.pkcs15._1024.sha512.jwk = {
     ]
 };
 
-rsa.pkcs15._2048.sha1.jwk = {
+rsa.ssa._2048.sha1.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -383,7 +383,7 @@ rsa.pkcs15._2048.sha1.jwk = {
     ]
 };
 
-rsa.pkcs15._2048.sha256.jwk = {
+rsa.ssa._2048.sha256.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -407,7 +407,7 @@ rsa.pkcs15._2048.sha256.jwk = {
     ]
 };
 
-rsa.pkcs15._2048.sha384.jwk = {
+rsa.ssa._2048.sha384.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -431,7 +431,7 @@ rsa.pkcs15._2048.sha384.jwk = {
     ]
 };
 
-rsa.pkcs15._2048.sha512.jwk = {
+rsa.ssa._2048.sha512.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -455,7 +455,7 @@ rsa.pkcs15._2048.sha512.jwk = {
     ]
 };
 
-rsa.pkcs15._4096.sha1.jwk = {
+rsa.ssa._4096.sha1.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -479,7 +479,7 @@ rsa.pkcs15._4096.sha1.jwk = {
     ]
 };
 
-rsa.pkcs15._4096.sha256.jwk = {
+rsa.ssa._4096.sha256.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -503,7 +503,7 @@ rsa.pkcs15._4096.sha256.jwk = {
     ]
 };
 
-rsa.pkcs15._4096.sha384.jwk = {
+rsa.ssa._4096.sha384.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -527,7 +527,7 @@ rsa.pkcs15._4096.sha384.jwk = {
     ]
 };
 
-rsa.pkcs15._4096.sha512.jwk = {
+rsa.ssa._4096.sha512.jwk = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -551,7 +551,7 @@ rsa.pkcs15._4096.sha512.jwk = {
     ]
 };
 
-rsa.pkcs15._1024.sha1.signatures = {
+rsa.ssa._1024.sha1.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -575,7 +575,7 @@ rsa.pkcs15._1024.sha1.signatures = {
     ]
 };
 
-rsa.pkcs15._1024.sha256.signatures = {
+rsa.ssa._1024.sha256.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -599,7 +599,7 @@ rsa.pkcs15._1024.sha256.signatures = {
     ]
 };
 
-rsa.pkcs15._1024.sha384.signatures = {
+rsa.ssa._1024.sha384.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -623,7 +623,7 @@ rsa.pkcs15._1024.sha384.signatures = {
     ]
 };
 
-rsa.pkcs15._1024.sha512.signatures = {
+rsa.ssa._1024.sha512.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -647,7 +647,7 @@ rsa.pkcs15._1024.sha512.signatures = {
     ]
 };
 
-rsa.pkcs15._2048.sha1.signatures = {
+rsa.ssa._2048.sha1.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -671,7 +671,7 @@ rsa.pkcs15._2048.sha1.signatures = {
     ]
 };
 
-rsa.pkcs15._2048.sha256.signatures = {
+rsa.ssa._2048.sha256.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -695,7 +695,7 @@ rsa.pkcs15._2048.sha256.signatures = {
     ]
 };
 
-rsa.pkcs15._2048.sha384.signatures = {
+rsa.ssa._2048.sha384.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -719,7 +719,7 @@ rsa.pkcs15._2048.sha384.signatures = {
     ]
 };
 
-rsa.pkcs15._2048.sha512.signatures = {
+rsa.ssa._2048.sha512.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -743,7 +743,7 @@ rsa.pkcs15._2048.sha512.signatures = {
     ]
 };
 
-rsa.pkcs15._4096.sha1.signatures = {
+rsa.ssa._4096.sha1.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -767,7 +767,7 @@ rsa.pkcs15._4096.sha1.signatures = {
     ]
 };
 
-rsa.pkcs15._4096.sha256.signatures = {
+rsa.ssa._4096.sha256.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -791,7 +791,7 @@ rsa.pkcs15._4096.sha256.signatures = {
     ]
 };
 
-rsa.pkcs15._4096.sha384.signatures = {
+rsa.ssa._4096.sha384.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",
@@ -815,7 +815,7 @@ rsa.pkcs15._4096.sha384.signatures = {
     ]
 };
 
-rsa.pkcs15._4096.sha512.signatures = {
+rsa.ssa._4096.sha512.signatures = {
     format: "jwk",
     algorithm: {
         name: "RSASSA-PKCS1-V1_5",

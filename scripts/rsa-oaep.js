@@ -70,16 +70,13 @@ rsaMode.oaep = function(keyStruct, hashFunction) {
         var lHash, maskedSeed, maskeddb, seedMask;
         var seed, dbMask, db;
         var lHashp, i = 0;
+        var valid = encodedBytes[0] === 0;
 
         if (!labelBytes) {
             labelBytes = [];
         }
 
         lHash = hashFunction.computeHash(labelBytes);
-
-        if (encodedBytes[0] !== 0) {
-            throw new Error("Encryption Error");
-        }
 
         maskedSeed = encodedBytes.slice(1, lHash.length + 1);
         maskeddb = encodedBytes.slice(lHash.length + 1);
@@ -93,16 +90,17 @@ rsaMode.oaep = function(keyStruct, hashFunction) {
         lHashp = db.slice(0, lHash.length);
 
         // lHashp should equal lHash or 'Encryption Error'
-        if (!utils.arraysEqual(lHash, lHashp)) {
-            throw new Error("Encryption Error");
-        }
+        valid = valid && utils.arraysEqual(lHash, lHashp);
 
         db = db.slice(lHash.length);
 
         // There will be a bunch of zeros followed by a 1
         while (!db[i++]) { /* empty */ }
 
-        return db.slice(i);
+        return {
+            valid: valid,
+            data: db.slice(i)
+        };
     }
 
     return {
