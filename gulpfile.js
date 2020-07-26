@@ -132,10 +132,9 @@ function minifyBundle() {
             "lib/msrcrypto.js"
         ])
         .pipe(minify({
-            ext: { min: ".min.js" }
-            //compress: {
-            //    global_defs: {DEBUG: false}
-            //}
+            ext: { min: ".min.js" },
+            // Fix IE8 catch issue in Promises
+            compress: { properties: false }
         }))
         .pipe(gulp.dest("lib"));    // write the file to the lib folder
 }

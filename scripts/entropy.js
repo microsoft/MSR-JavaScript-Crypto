@@ -18,7 +18,7 @@
 
 // tslint:disable: no-bitwise
 
-function MsrcryptoEntropy() {
+function MsrcryptoEntropy(global) {
     /// <summary>Opportunistic entropy collector.</summary>
     /// <remarks>See E.Stark, M.Hamburg, D.Boneh, "Symmetric Cryptography in Javascript", ACSAC, 2009.
     /// This is not an object instantiation, but the definition of the object. The actual
@@ -35,12 +35,13 @@ function MsrcryptoEntropy() {
     var entropyPoolPrng = new MsrcryptoPrng();
     var initialized = false;
     var cryptographicPRNGPresent = false;
+    var globalScope = global;
 
     function collectEntropy() {
 
         // tslint:disable-next-line: max-line-length
         var headerList = ["Cookie", "RedirectUri", "ETag", "x-ms-client-antiforgery-id", "x-ms-client-request-id",
-                        "x-ms-client-session-id", "SubscriptionPool"];
+            "x-ms-client-session-id", "SubscriptionPool"];
 
         /// <summary>Initialize the internal pool with as much randomness as one can get in JS.
         /// In the worst case, there is zero bits of entropy.</summary>
@@ -55,7 +56,7 @@ function MsrcryptoEntropy() {
         }
 
         // For browsers that implement window.crypto.getRandomValues, use it.
-        var prngCrypto = global.crypto || global.msCrypto; // WARNING: !!! Do not put this in a function( polyfill) !!!
+        var prngCrypto = globalScope.crypto || globalScope.msCrypto; // WARNING: !!! Do not put this in a function( polyfill) !!!
         if (prngCrypto && typeof prngCrypto.getRandomValues === "function") {
             if (global.Uint8Array) {
                 var res = new global.Uint8Array(poolLength);
@@ -112,7 +113,7 @@ function MsrcryptoEntropy() {
     // to add IE8 support.
     // BUGBUG: For the time being, I am not bothering with IE8 support - fix this.
     var canCollect = (global && global.addEventListener) ||
-                    (typeof document !== "undefined" && document.attachEvent);
+        (typeof document !== "undefined" && document.attachEvent);
     var collectors = (function() {
         return {
             startCollectors: function() {
@@ -150,7 +151,7 @@ function MsrcryptoEntropy() {
                 var x = eventData.x || eventData.clientX || eventData.offsetX || 0;
                 var y = eventData.y || eventData.clientY || eventData.offsetY || 0;
                 var arr = [d & 0x0ff, (d >> 8) & 0x0ff, (d >> 16) & 0x0ff, (d >> 24) & 0x0ff,
-                        x & 0x0ff, (x >> 8) & 0x0ff, y & 0x0ff, (y >> 8) & 0x0ff];
+                x & 0x0ff, (x >> 8) & 0x0ff, y & 0x0ff, (y >> 8) & 0x0ff];
 
                 updatePool(arr);
             },
