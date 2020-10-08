@@ -646,7 +646,7 @@ var testShared = {
                 subtle.importKey("jwk", vector.privateKey, vectorSet.algorithm, true, ["deriveKey"])
             ];
         } else {
-            keyPromises = [  // for now this will always be pbkdf2 until we add additional algorithms.
+            keyPromises = [  // this is pbkdf2 or hkdf until we add additional algorithms.
                 subtle.importKey("raw", msrCrypto.fromBase64(vector.params.password), vectorSet.algorithm, false, ["deriveKey"])
             ];
         }
@@ -663,8 +663,16 @@ var testShared = {
             if (keys.length > 1) { //ecdh
                 vectorSet.algorithm.public = keys[0];
                 return subtle.deriveKey(vectorSet.algorithm, keys[1], vectorSet.derivedKeyAlg, true, ["encrypt", "decrypt"]);
-            } else {  //pbkdf2
+            } else if (vector.params.algorithm.name === "PBKDF2") {  //pbkdf2
                 vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
+                return subtle.deriveKey(vector.params.algorithm, keys[0], vectorSet.derivedKeyAlg, true, vector.derivedKey.key_ops);
+            } else if (vector.params.algorithm.name === "HKDF") {  //hkdf
+                if (vector.params.algorithm.hasOwnProperty('salt')) {
+                    vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
+                }
+                if (vector.params.algorithm.hasOwnProperty('info')) {
+                    vector.params.algorithm.info =  msrCrypto.fromBase64(vector.params.algorithm.info);
+                }
                 return subtle.deriveKey(vector.params.algorithm, keys[0], vectorSet.derivedKeyAlg, true, vector.derivedKey.key_ops);
             }
         }
@@ -700,7 +708,7 @@ var testShared = {
                 subtle.importKey("jwk", vector.privateKey, vectorSet.algorithm, true, ["deriveKey"])
             ];
         } else {
-            keyPromises = [  // for now this will always be pbkdf2 until we add additional algorithms.
+            keyPromises = [  // this is pbkdf2 or hkdf until we add additional algorithms.
                 subtle.importKey("raw", msrCrypto.fromBase64(vector.params.password), vectorSet.algorithm, false, ["deriveKey"])
             ];
         }
@@ -719,8 +727,16 @@ var testShared = {
             if (keys.length > 1) { //ecdh
                 vectorSet.algorithm.public = keys[0];
                 return subtle.deriveBits(vectorSet.algorithm, keys[1], vector.bits);
-            } else {  //pbkdf2
+            } else if (vector.params.algorithm.name === "PBKDF2") {  //pbkdf2 
                 vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
+                return subtle.deriveBits(vector.params.algorithm, keys[0], vector.bits);
+            } else if (vector.params.algorithm.name === "HKDF") {  //hkdf
+                if (vector.params.algorithm.hasOwnProperty('salt')) {
+                    vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
+                }
+                if (vector.params.algorithm.hasOwnProperty('info')) {
+                    vector.params.algorithm.info =  msrCrypto.fromBase64(vector.params.algorithm.info);
+                }
                 return subtle.deriveBits(vector.params.algorithm, keys[0], vector.bits);
             }
         }

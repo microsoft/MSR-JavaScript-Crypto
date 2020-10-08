@@ -54,6 +54,7 @@ const fullBuild = [
     "scripts/rsa.js",
     "scripts/kdf.js",
     "scripts/pbkdf2.js",
+    "scripts/hkdf.js",
     "scripts/ecdh.js",
     "scripts/ecdsa.js",
     "scripts/subtle.js",

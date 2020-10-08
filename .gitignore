@@ -13,3 +13,5 @@ scripts/testVectors/UProveRecommendedParamsL2048N256.txt
 scripts/testVectors/UProveTestVectors.txt
 samples/
 dev/
+/.history
+/.DS_Store
