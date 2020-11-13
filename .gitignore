@@ -4,12 +4,5 @@ node_modules/
 # This gets re-built by gulp with each build.
 scripts/subtle.js
 
-# Non-published tools, etc
-tsconfig.json
-tslint copy.json
-tslint.json
-CredScanSuppression.json
-scripts/testVectors/UProveRecommendedParamsL2048N256.txt
-scripts/testVectors/UProveTestVectors.txt
-samples/
-dev/
+/.history
+/.DS_Store

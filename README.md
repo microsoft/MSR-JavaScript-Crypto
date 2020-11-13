@@ -52,6 +52,7 @@ Derive Key/Bits
 - ECDH
 - PBKDF2
 - Concat-KDF
+- HKDF
 
 Wrap/Unwrap Key
 - AES-GCM, AES-CBC, RSA-OAEP

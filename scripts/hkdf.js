@@ -1,0 +1,122 @@
+//*******************************************************************************
+//
+//    Copyright 2020 Microsoft
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
+//*******************************************************************************
+
+/// key derivation function from RFC 5869A https://www.ietf.org/rfc/rfc5869.txt
+var msrcryptoHkdf = (function() {
+
+    function deriveBits(p) {
+
+        var algorithm = p.algorithm,
+            keyBytes = p.keyData,
+            bits = p.length,
+            saltBytes = algorithm.salt,
+            byteLen = Math.ceil(bits / 8),
+            hLen,
+            output = [],
+            infoBytes = algorithm.info,
+            t = [],
+            i,
+            hmacContext;
+
+        switch (algorithm.hash.name.toUpperCase()) {
+            case "SHA-1": hLen = 20; break;
+            case "SHA-256": hLen = 32; break;
+            case "SHA-384": hLen = 48; break;
+            case "SHA-512": hLen = 64; break;
+            default: throw new Error("Unsupported hash algorithm.");
+        }
+
+        if (algorithm.salt == null) {
+            throw new Error("HkdfParams: salt: Missing required property.");
+        }
+
+        if (algorithm.info == null) {
+            throw new Error("HkdfParams: info: Missing required property.");
+        }
+
+        if (bits % 8 !== 0) {
+            throw new Error("The length provided for HKDF is not a multiple of 8 bits.");
+        }
+
+        if (byteLen > 255 * hLen) {
+            throw new Error("The length provided for HKDF is too large.");
+        }
+
+        if (saltBytes.length === 0) {
+            saltBytes = msrcryptoUtilities.getVector(hLen);
+        }
+
+        hmacContext = {
+            workerid: 0,
+            keyHandle: { algorithm: algorithm },
+            keyData: saltBytes,
+            buffer: keyBytes
+        };
+
+        hmacContext.keyData = msrcryptoHmac.signHmac(hmacContext);
+
+        for (i = 0; i < Math.ceil(byteLen / hLen); i++) {
+            hmacContext.buffer = t.concat(infoBytes).concat([1 + i]);
+            t = msrcryptoHmac.signHmac(hmacContext);
+            output = output.concat(t);
+        }
+
+        return output.slice(0, byteLen);
+    }
+
+    return {
+
+        deriveBits: deriveBits
+
+    };
+
+}());
+
+var msrcryptoKdfInstance = null;
+
+if (typeof operations !== "undefined") {
+
+    msrcryptoHkdf.importKey = function(p) {
+        var keyData;
+
+        if (p.format === "raw") {
+            keyData = msrcryptoUtilities.toArray(p.keyData);
+        } else {
+            throw new Error("unsupported import format");
+        }
+
+        if (p.extractable !== false) {
+            throw new Error("only extractable=false is supported.");
+        }
+
+        return {
+            type: "keyImport",
+            keyData: keyData,
+            keyHandle: {
+                algorithm: { name: "HKDF" },
+                extractable: false,
+                usages: p.usages,
+                type: "secret"
+            }
+        };
+
+    };
+
+    operations.register("deriveBits", "HKDF", msrcryptoHkdf.deriveBits);
+    operations.register("importKey", "HKDF", msrcryptoHkdf.importKey);
+}

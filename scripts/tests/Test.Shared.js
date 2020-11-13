@@ -262,8 +262,8 @@ var testShared = {
         return subtle.importKey(format, keyData, algorithm, true, usage)
             .then(exportKey)
             .then(validateKey)
-            // tslint:disable-next-line: no-string-literal
-            ["catch"](fail); // any errors above will get handled here
+        // tslint:disable-next-line: no-string-literal
+        ["catch"](fail); // any errors above will get handled here
 
         function exportKey(cryptoKey) {
             return subtle.exportKey("jwk", cryptoKey);
@@ -663,8 +663,14 @@ var testShared = {
             if (keys.length > 1) { //ecdh
                 vectorSet.algorithm.public = keys[0];
                 return subtle.deriveKey(vectorSet.algorithm, keys[1], vectorSet.derivedKeyAlg, true, ["encrypt", "decrypt"]);
-            } else {  //pbkdf2
+
+            } else if (vector.params.algorithm.name === 'PBKDF2') {
                 vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
+                return subtle.deriveKey(vector.params.algorithm, keys[0], vectorSet.derivedKeyAlg, true, vector.derivedKey.key_ops);
+
+            } else if (vector.params.algorithm.name === 'HKDF') {
+                vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
+                vector.params.algorithm.info = msrCrypto.fromBase64(vector.params.algorithm.info);
                 return subtle.deriveKey(vector.params.algorithm, keys[0], vectorSet.derivedKeyAlg, true, vector.derivedKey.key_ops);
             }
         }
@@ -713,14 +719,18 @@ var testShared = {
         ["catch"](fail); // any errors above will get handled here
 
         function derivedBits(keys) {
-            // vectorSet.algorithm.public = keyPairArray[0];
-            //return subtle.deriveBits(vectorSet.algorithm, keyPairArray[1], vector.bits);
 
             if (keys.length > 1) { //ecdh
                 vectorSet.algorithm.public = keys[0];
                 return subtle.deriveBits(vectorSet.algorithm, keys[1], vector.bits);
-            } else {  //pbkdf2
+
+            } else if (vector.params.algorithm.name === 'PBKDF2') {
                 vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
+                return subtle.deriveBits(vector.params.algorithm, keys[0], vector.bits);
+
+            } else if (vector.params.algorithm.name === 'HKDF') {
+                vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
+                vector.params.algorithm.info = msrCrypto.fromBase64(vector.params.algorithm.info);
                 return subtle.deriveBits(vector.params.algorithm, keys[0], vector.bits);
             }
         }

@@ -1,6 +1,6 @@
 {
   "name": "@microsoft/msrcrypto",
-  "version": "1.6.0",
+  "version": "1.6.2",
   "description": "MSR JavaScript Cryptography Library",
   "license": "Apache-2.0",
   "repository": {
@@ -12,10 +12,10 @@
   },
   "resolutions": {
     "minimist": "1.2.3",
-    "mkdir": "0.5.3"
+    "yargs-parser": "5.0.0-security.0"
   },
   "devDependencies": {
-    "@types/gulp": "^4.0.6",
+    "@types/gulp": "^4.0.7",
     "@types/gulp-concat": "0.0.32",
     "@types/gulp-header": "^2.0.0",
     "@types/gulp-strip-comments": "^2.5.0",
