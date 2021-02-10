@@ -15,7 +15,7 @@
     "yargs-parser": "5.0.0-security.0"
   },
   "devDependencies": {
-    "@types/gulp": "^4.0.7",
+    "@types/gulp": "^4.0.8",
     "@types/gulp-concat": "0.0.32",
     "@types/gulp-header": "^2.0.0",
     "@types/gulp-strip-comments": "^2.5.0",
