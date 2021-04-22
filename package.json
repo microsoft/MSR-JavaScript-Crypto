@@ -1,6 +1,6 @@
 {
   "name": "@microsoft/msrcrypto",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "MSR JavaScript Cryptography Library",
   "license": "Apache-2.0",
   "repository": {
