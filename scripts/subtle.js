@@ -20,7 +20,6 @@ var msrcryptoSubtle;
 var utils = msrcryptoUtilities;
 
 msrcryptoSubtle = (function() {
-
     function syncWorker() {
         var result;
 
@@ -48,7 +47,7 @@ msrcryptoSubtle = (function() {
             postMessage: postMessage,
             onmessage: null,
             onerror: null,
-            terminate: function() { /* not implemented */}
+            terminate: function() {}
         };
     }
 
@@ -435,7 +434,6 @@ msrcryptoSubtle = (function() {
 
                 var op = worker.operation;
 
-                // tslint:disable-next-line: no-unused-expression
                 e.target || (e.target = {
                     data: worker.data
                 });
@@ -878,7 +876,6 @@ msrcryptoSubtle = (function() {
                     })
                     .then(function(key) {
                         resolve(key);
-                    // tslint:disable-next-line: no-string-literal
                     })["catch"](function(err) {
                         reject(err);
                     });
@@ -923,7 +920,6 @@ msrcryptoSubtle = (function() {
                         resolve(cipherArrayBuffer);
                     })
 
-                // tslint:disable-next-line: no-string-literal
                 ["catch"](function(err) {
                     reject(err);
                 });
@@ -953,7 +949,6 @@ msrcryptoSubtle = (function() {
                         resolve(key);
                     })
 
-                // tslint:disable-next-line: no-string-literal
                 ["catch"](function(err) {
                     reject(err);
                 });
