@@ -120,7 +120,7 @@ if (typeof operations !== "undefined") {
 
     };
 
-    operations.register("deriveKey", "concat", msrcryptoKdf.deriveKey);
-    operations.register("deriveBits", "concat", msrcryptoKdf.deriveBits);
+    operations.register("deriveKey", "CONCAT", msrcryptoKdf.deriveKey);
+    operations.register("deriveBits", "CONCAT", msrcryptoKdf.deriveBits);
 
 }
