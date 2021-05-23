@@ -100,7 +100,7 @@ var testShared = {
     // This will also convert base64 & base64url to an array
     // It will randomly convert Arrays and ArrayBuffers to Arrays and TypedArrays
     // when using MsrCrypto.
-    arr: function(array /* may be Array or ArrayBuffer */) {
+    arr: function (array /* may be Array or ArrayBuffer */) {
 
         if (validation.isBase64(array) || validation.isBase64Url(array) || array === "") {
             array = msrCrypto.fromBase64(array);
@@ -129,13 +129,13 @@ var testShared = {
         return testShared.toArray(array);
     },
 
-    clone: function(obj) {
+    clone: function (obj) {
         //return JSON.parse(JSON.stringify(obj));
         return utils.clone(obj);
     },
 
     // converts array/arrayBuffer to a regular array
-    toArray: function(arrayLike) {
+    toArray: function (arrayLike) {
 
         if (typeof Uint8Array === "undefined") {
             // TypedArrays not supported, so our array must be a regular Array
@@ -151,7 +151,7 @@ var testShared = {
         return arrayLike instanceof Uint8Array ? arrayLike.length === 1 ? [arrayLike[0]] : Array.apply(null, arrayLike) : arrayLike;
     },
 
-    getRandomBytes: function(min, max) {
+    getRandomBytes: function (min, max) {
         var bytes;
 
         max = max || min;
@@ -171,11 +171,11 @@ var testShared = {
         return bytes;
     },
 
-    chance: function(percent) {
+    chance: function (percent) {
         return Math.random() < percent;
     },
 
-    compareUsages: function(usage1, usage2) {
+    compareUsages: function (usage1, usage2) {
 
         if (usage1.length !== usage2.length) {
             return false;
@@ -197,7 +197,7 @@ var testShared = {
         return true;
     },
 
-    getPublicUsage: function(usages) {
+    getPublicUsage: function (usages) {
         var publicUsages = [];
         for (var i = 0; i < usages.length; i++) {
             if (usages[i].toUpperCase() === "VERIFY") { publicUsages.push("verify"); }
@@ -206,7 +206,7 @@ var testShared = {
         return publicUsages;
     },
 
-    getPrivateUsage: function(usages) {
+    getPrivateUsage: function (usages) {
         var privateUsages = [];
         for (var i = 0; i < usages.length; i++) {
             var use = usages[i].toUpperCase();
@@ -220,7 +220,7 @@ var testShared = {
 
     isBytes: utils.verifyByteArray,
 
-    testContext: function(numIterations, assert) {
+    testContext: function (numIterations, assert) {
         return {   // test context
             assert: assert,
             count: numIterations,
@@ -229,7 +229,7 @@ var testShared = {
         };
     },
 
-    maxMessageLen: function(keyAlgorithm) {
+    maxMessageLen: function (keyAlgorithm) {
 
         if (keyAlgorithm.modulusLength) {
             if (keyAlgorithm.name === "RSA-OAEP") {
@@ -244,7 +244,7 @@ var testShared = {
         return 1000;
     },
 
-    keyImportExportTestSpki: function(vectorSet, usages, keyValidationFunc, context) {
+    keyImportExportTestSpki: function (vectorSet, usages, keyValidationFunc, context) {
 
         // spki tests have a public key in spki format and a verify key in jwk format
         // The spki key is imported, then exported as jwk and compared against the jwk verify key.
@@ -281,7 +281,7 @@ var testShared = {
 
     },
 
-    keyImportExportTest: function(vectorSet, usages, keyValidationFunc, context) {
+    keyImportExportTest: function (vectorSet, usages, keyValidationFunc, context) {
 
         var format = vectorSet.format;
         var vector = vectorSet.vectors[(context.count - 1) % vectorSet.vectors.length];
@@ -329,13 +329,13 @@ var testShared = {
 
     },
 
-    keyPairImportExportTest: function(vectorSet, usages, keyValidationFunc, context) {
+    keyPairImportExportTest: function (vectorSet, usages, keyValidationFunc, context) {
 
         var format = vectorSet.format;
         var algorithm = vectorSet.algorithm;
         var vector = vectorSet.vectors[(context.count - 1) % vectorSet.vectors.length];
 
-        if (--context.count > 0) { // recursivley call to start the next iteration
+        if (--context.count > 0) { // recursively call to start the next iteration
             this.keyPairImportExportTest(vectorSet, usages, keyValidationFunc, context);
         }
 
@@ -377,11 +377,11 @@ var testShared = {
 
     },
 
-    keyGenerateTest: function(algorithm, usages, keyValidationFunc, context) {
+    keyGenerateTest: function (algorithm, usages, keyValidationFunc, context) {
 
         var usage = usages[(context.count - 1) % usages.length]; // cycle through possible usages
 
-        if (--context.count > 0) { // recursivley call to start the next iteration
+        if (--context.count > 0) { // recursively call to start the next iteration
             testShared.keyGenerateTest(algorithm, usages, keyValidationFunc, context);
         }
 
@@ -409,12 +409,12 @@ var testShared = {
         }
     },
 
-    keyGeneratePairTest: function(algorithm, usages, keyValidationFunc, context) {
+    keyGeneratePairTest: function (algorithm, usages, keyValidationFunc, context) {
 
         //var usage = usages[(context.count-1) % usages.length]; // cycle through possible usages
         var reason = { message: undefined };
 
-        if (--context.count > 0) { // recursivley call to start the next iteration
+        if (--context.count > 0) { // recursively call to start the next iteration
             testShared.keyGeneratePairTest(algorithm, usages, keyValidationFunc, context);
         }
 
@@ -451,7 +451,7 @@ var testShared = {
         }
     },
 
-    encryptDecryptTest: function(keyAlg, encryptAlg, context) {
+    encryptDecryptTest: function (keyAlg, encryptAlg, context) {
 
         // alg params may be alg-generating functions or a static algorithm objects
         var encAlgorithm = typeof encryptAlg === "function" ? encryptAlg(context.count) : encryptAlg;
@@ -499,7 +499,7 @@ var testShared = {
         }
     },
 
-    signVerifyTest: function(keyAlg, signAlg, context) {
+    signVerifyTest: function (keyAlg, signAlg, context) {
 
         // alg params may be alg-generating functions or a static algorithm objects
         var signAlgorithm = typeof signAlg === "function" ? signAlg(context.count) : signAlg;
@@ -546,7 +546,7 @@ var testShared = {
         }
     },
 
-    verifyNativeSignatureTest: function(signAlgorithm, vectorSet, context) {
+    verifyNativeSignatureTest: function (signAlgorithm, vectorSet, context) {
 
         var vector = vectorSet.vectors[(context.count - 1) % vectorSet.vectors.length];
         var signature = testShared.arr(vector.signature);
@@ -582,7 +582,7 @@ var testShared = {
 
     },
 
-    decryptNativeCiphersTest: function(vectorSet, context) {
+    decryptNativeCiphersTest: function (vectorSet, context) {
 
         var encryptAlgorithm = this.clone(vectorSet.algorithm);
         //if(encryptAlgorithm.publicExponent ? encryptAlgorithm.publicExponent = testShared.arr( encryptAlgorithm.publicExponent)
@@ -630,7 +630,7 @@ var testShared = {
 
     },
 
-    deriveKeyTest: function(vectorSet, keyValidationFunc, context) {
+    deriveKeyTest: function (vectorSet, keyValidationFunc, context) {
 
         var vector = vectorSet.vectors[(context.count) % vectorSet.vectors.length];
 
@@ -647,7 +647,7 @@ var testShared = {
             ];
         } else {
             keyPromises = [  // for now this will always be pbkdf2 until we add additional algorithms.
-                subtle.importKey("raw", msrCrypto.fromBase64(vector.params.password), vectorSet.algorithm, false, ["deriveKey"])
+                subtle.importKey("raw", msrCrypto.fromBase64(vector.params.key || vector.params.password), vectorSet.algorithm, false, ["deriveKey"])
             ];
         }
 
@@ -672,6 +672,14 @@ var testShared = {
                 vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
                 vector.params.algorithm.info = msrCrypto.fromBase64(vector.params.algorithm.info);
                 return subtle.deriveKey(vector.params.algorithm, keys[0], vectorSet.derivedKeyAlg, true, vector.derivedKey.key_ops);
+
+            } else if (vector.params.algorithm.name === 'CONCAT') {
+                return subtle.deriveKey(vector.params.algorithm, keys[0], vectorSet.derivedKeyAlg, true, vector.derivedKey.key_ops);
+
+            } else if (vector.params.algorithm.name === 'HKDF-CTR') {
+                vector.params.algorithm.context = msrCrypto.fromBase64(vector.params.algorithm.context);
+                vector.params.algorithm.label = msrCrypto.fromBase64(vector.params.algorithm.label);
+                return subtle.deriveKey(vector.params.algorithm, keys[0], vectorSet.derivedKeyAlg, true, vector.derivedKey.key_ops);
             }
         }
 
@@ -690,7 +698,7 @@ var testShared = {
         }
     },
 
-    deriveBitsTest: function(vectorSet, context) {
+    deriveBitsTest: function (vectorSet, context) {
 
         var vector = vectorSet.vectors[(context.count - 1) % vectorSet.vectors.length];
 
@@ -707,7 +715,7 @@ var testShared = {
             ];
         } else {
             keyPromises = [  // for now this will always be pbkdf2 until we add additional algorithms.
-                subtle.importKey("raw", msrCrypto.fromBase64(vector.params.password), vectorSet.algorithm, false, ["deriveKey"])
+                subtle.importKey("raw", msrCrypto.fromBase64(vector.params.key != null ? vector.params.key : vector.params.password), vectorSet.algorithm, false, ["deriveKey"])
             ];
         }
 
@@ -732,6 +740,14 @@ var testShared = {
                 vector.params.algorithm.salt = msrCrypto.fromBase64(vector.params.algorithm.salt);
                 vector.params.algorithm.info = msrCrypto.fromBase64(vector.params.algorithm.info);
                 return subtle.deriveBits(vector.params.algorithm, keys[0], vector.bits);
+
+            } else if (vector.params.algorithm.name === 'CONCAT') {
+                return subtle.deriveBits(vector.params.algorithm, keys[0], vector.bits);
+
+            } else if (vector.params.algorithm.name === 'HKDF-CTR') {
+                vector.params.algorithm.context = msrCrypto.fromBase64(vector.params.algorithm.context);
+                vector.params.algorithm.label = msrCrypto.fromBase64(vector.params.algorithm.label);
+                return subtle.deriveBits(vector.params.algorithm, keys[0], vector.bits);
             }
         }
 
@@ -746,7 +762,7 @@ var testShared = {
         }
     },
 
-    hashTest: function(vectorSet, context) {
+    hashTest: function (vectorSet, context) {
 
         var vector = vectorSet.vectors[context.count - 1 % vectorSet.vectors.length];
 
@@ -782,7 +798,7 @@ var testShared = {
 //     };
 // }
 
-QUnit.conditional = function(condition, message, callback) {
+QUnit.conditional = function (condition, message, callback) {
 
     if (condition) {
         QUnit.test(message, callback);
@@ -792,7 +808,7 @@ QUnit.conditional = function(condition, message, callback) {
 };
 
 var validation = {
-    isString: function(text, value /*optional*/, caseSensitive /*optional*/) {
+    isString: function (text, value /*optional*/, caseSensitive /*optional*/) {
 
         if (typeof text !== "string") {
             return false;
@@ -816,7 +832,7 @@ var validation = {
         return true;
     },
 
-    isBoolean: function(text, value /*optional*/) {
+    isBoolean: function (text, value /*optional*/) {
 
         if (typeof text !== "boolean") {
             return false;
@@ -835,7 +851,7 @@ var validation = {
         return true;
     },
 
-    isBase64Url: function(text, lengthMin /*optional*/, lengthMax /*optional*/) {
+    isBase64Url: function (text, lengthMin /*optional*/, lengthMax /*optional*/) {
         if (!validation.isString(text, /^([A-Za-z0-9-_]+)$/)) { return false; }
         if (lengthMin) {
             var bytes = utils.fromBase64(text);
@@ -844,7 +860,7 @@ var validation = {
         return true;
     },
 
-    isBase64: function(text, lengthMin /*optional*/, lengthMax /*optional*/) {
+    isBase64: function (text, lengthMin /*optional*/, lengthMax /*optional*/) {
         if (!validation.isString(text, /^([A-Za-z0-9+\/=]+)$/)) { return false; }
         if (lengthMin) {
             var bytes = utils.fromBase64(text);
@@ -856,15 +872,15 @@ var validation = {
     isBytes: utils.verifyByteArray,
 
     prop: {
-        isBase64Url: function(obj, prop, lengthMin /*optional*/, lengthMax /*optional*/) {
+        isBase64Url: function (obj, prop, lengthMin /*optional*/, lengthMax /*optional*/) {
             if (obj[prop] == null) { return false; }
             return validation.isBase64Url(obj[prop], lengthMin, lengthMax);
         },
-        string: function(obj, prop, value /*optional*/) {
+        string: function (obj, prop, value /*optional*/) {
             if (obj[prop] == null) { return false; }
             return validation.isString(obj[prop], value);
         },
-        boolean: function(obj, prop, value /*optional*/) {
+        boolean: function (obj, prop, value /*optional*/) {
             if (obj[prop] == null) { return false; }
             return validation.isBoolean(obj[prop], value);
         }
