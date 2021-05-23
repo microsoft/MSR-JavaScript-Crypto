@@ -28,7 +28,7 @@ var msrcryptoHkdf = (function() {
             byteLen = Math.ceil(bits / 8),
             hLen,
             output = [],
-            infoBytes = algorithm.info,
+            infoBytes = msrcryptoUtilities.toArray(algorithm.info),
             t = [],
             i,
             hmacContext;
