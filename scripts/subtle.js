@@ -20,6 +20,7 @@ var msrcryptoSubtle;
 var utils = msrcryptoUtilities;
 
 msrcryptoSubtle = (function() {
+
     function syncWorker() {
         var result;
 
@@ -139,21 +140,21 @@ msrcryptoSubtle = (function() {
                         return result.keyHandle;
                     }
 
-                    case "keyExport":
-                        return result.keyHandle;
+                case "keyExport":
+                    return result.keyHandle;
 
-                    case "keyPairGeneration":
-                        privateKey = result.keyPair.privateKey;
-                        publicKey = result.keyPair.publicKey;
-                        keys.add(publicKey.keyHandle, publicKey.keyData);
-                        keys.add(privateKey.keyHandle, privateKey.keyData);
-                        return {
-                            publicKey: publicKey.keyHandle,
-                                privateKey: privateKey.keyHandle
-                        };
+                case "keyPairGeneration":
+                    privateKey = result.keyPair.privateKey;
+                    publicKey = result.keyPair.publicKey;
+                    keys.add(publicKey.keyHandle, publicKey.keyData);
+                    keys.add(privateKey.keyHandle, privateKey.keyData);
+                    return {
+                        publicKey: publicKey.keyHandle,
+                            privateKey: privateKey.keyHandle
+                    };
 
-                    default:
-                        throw new Error("Unknown key operation");
+                default:
+                    throw new Error("Unknown key operation");
             }
         }
 
