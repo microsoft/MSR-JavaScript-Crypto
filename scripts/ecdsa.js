@@ -276,7 +276,7 @@ if (typeof operations !== "undefined") {
                 keyData: { x: x, y: y },
                 keyHandle: {
                     algorithm: p.algorithm,
-                    extractable: p.extractable || keyObject.extractable,
+                    extractable: p.extractable || false,
                     usages: p.usages,
                     type: "public"
                 }
