@@ -29,7 +29,7 @@ var scriptUrl = (function() {
                 return (match && match.length > 0) ? match[0] : null;
             }
         }
-    } else if (typeof self !== "undefined") {
+    } else if (typeof self !== "undefined" && typeof self.location !== "undefined") {
         // If this script is being run in a WebWorker, 'document' will not exist
         //  but we can use self.
         return self.location.href;
