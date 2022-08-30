@@ -68,6 +68,10 @@ var msrcryptoJwk = (function() {
             return "A" + algorithm.length.toString() + "GCM";
         },
 
+        "AES-KW": function(algorithm) {
+            return "A" + algorithm.length.toString() + "KW";
+        },
+
         "RSAES-PKCS1-V1_5": function(algorithm) {
             return "RSA1_5";
         },

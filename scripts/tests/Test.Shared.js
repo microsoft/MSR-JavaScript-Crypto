@@ -151,23 +151,29 @@ var testShared = {
         return arrayLike instanceof Uint8Array ? arrayLike.length === 1 ? [arrayLike[0]] : Array.apply(null, arrayLike) : arrayLike;
     },
 
-    getRandomBytes: function (min, max) {
+    getRandomBytes: function (min, max, mod) {
         var bytes;
 
         max = max || min;
 
-        var len = Math.floor(Math.random() * (++max - min));
+        var len = Math.floor(Math.random() * (++max - min)) + min;
+
+        if(mod) {
+            len = len - len % mod;
+            if(len < min) len += mod;
+        }
 
         if (nativeCrypto) {
-            bytes = new Uint8Array(len + min);
+            bytes = new Uint8Array(len);
             nativeCrypto.getRandomValues(bytes);
             return bytes.length === 1 ? [bytes[0]] : Array.apply(null, bytes);
         }
 
-        bytes = new Array(len + min);
+        bytes = new Array(len);
         for (var i = 0; i < bytes.length; i++) {
             bytes[i] = Math.floor(Math.random() * 256);
         }
+
         return bytes;
     },
 
@@ -253,7 +259,7 @@ var testShared = {
         var vector = vectorSet.vectors[(context.count - 1) % vectorSet.vectors.length];
         var usage = vector.verify.key_ops;
         var algorithm = vectorSet.algorithm;
-        var keyData = testShared.arr(msrCrypto.fromBase64(vector.publicKey));
+        var keyData = testShared.arr(msrCrypto.fromBase64(vector.publicKey || vector.privateKey));
 
         if (--context.count > 0) { // recursively call to start the next iteration
             testShared.keyImportExportTestSpki(vectorSet, usages, keyValidationFunc, context);
@@ -266,11 +272,15 @@ var testShared = {
         ["catch"](fail); // any errors above will get handled here
 
         function exportKey(cryptoKey) {
-            return subtle.exportKey("jwk", cryptoKey);
+            return Promise.all([
+                subtle.exportKey("jwk", cryptoKey),
+                subtle.exportKey(format, cryptoKey)
+            ]);
         }
 
-        function validateKey(actualKey) {
-            context.assert.propEqual(actualKey, vector.verify, JSON.stringify(actualKey));
+        function validateKey(actualKeys) {
+            context.assert.propEqual(actualKeys[0], vector.verify, JSON.stringify(actualKeys[0]));
+            context.assert.propEqual(utils.toBase64(actualKeys[1]), vector.publicKey || vector.privateKey, utils.toBase64(actualKeys[1]));
             if (--context.leftToRun === 0) { context.done(); } // call done() if the final test iteration
         }
 
@@ -457,7 +467,7 @@ var testShared = {
         var encAlgorithm = typeof encryptAlg === "function" ? encryptAlg(context.count) : encryptAlg;
         var keyAlgorithm = typeof keyAlg === "function" ? keyAlg(context.count) : keyAlg;
         var maxMessageLen = testShared.maxMessageLen(keyAlg);
-        var plainText = testShared.getRandomBytes(1, maxMessageLen);
+        var plainText = testShared.getRandomBytes(1, maxMessageLen, keyAlg.name === "AES-KW" ? 8 : undefined );
         var cryptoKeyEncrypt;
         var cryptoKeyDecrypt;
 
@@ -606,7 +616,7 @@ var testShared = {
             testShared.decryptNativeCiphersTest(vectorSet, context);
         }
 
-        subtle.importKey(vectorSet.format, vector.privateKey || vector.key, vectorSet.algorithm, true, [DECRYPT])
+        subtle.importKey(vectorSet.format, vector.privateKey || (vectorSet.format === 'jwk' ? vector.key : testShared.arr(vector.key)), vectorSet.algorithm, true, [DECRYPT])
             .then(decrypt)
             .then(validate)
         // IE8 will not allow .catch()

@@ -115,6 +115,35 @@ function ecdsaTests() {
         ts.keyPairImportExportTest( ecdsa.p521.jwk, undefined, undefined, context( iterations, assert ) );
     } );
 
+
+
+    QUnit.test(label + " key import/export spki P-256 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdsa.p256.spki, ecdsaUsages.public, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki P-384 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdsa.p384.spki, ecdsaUsages.public, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki P-521 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdsa.p521.spki, ecdsaUsages.public, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export pkcs8 P-256 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdsa.p256.pkcs8, ecdsaUsages.private, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export pkcs8 P-384 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdsa.p384.pkcs8, ecdsaUsages.private, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export pkcs8 P-521 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdsa.p521.pkcs8, ecdsaUsages.private, undefined, context(iterations, assert));
+    });
+
+
+
+
     QUnit.test( label + " key import/export raw P-256", function( assert ) {
         ts.keyImportExportTest( ecdsa.p256.raw, ecdsaUsages.public, undefined, context( iterations, assert ) );
     } );

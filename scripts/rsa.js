@@ -227,7 +227,7 @@ if (typeof operations !== "undefined") {
 
         if (p.format === "jwk") {
 
-            keyObject = msrcryptoJwk.jwkToKey(p.keyData, p.algorithm, ["n", "e", "d", "q", "p", "dq", "dp", "qi"]);
+            keyObject = msrcryptoJwk.jwkToKey(p.keyData, p.algorithm, ["n", "e", "d", "p", "q", "dp", "dq", "qi"]);
 
             // if a private key, attach a MontgomeryMultiplier(n);
             if (keyObject.d) {
@@ -243,9 +243,9 @@ if (typeof operations !== "undefined") {
                 throw new Error("invalid key data.");
             }
 
-            var bitString = publicKeyInfo[1];
+            var octetString = publicKeyInfo[1];
             // +1 to skip the leading zero that will always be there if the bitstring contains a sequence.
-            var keySequence = asn1.parse(bitString.data.slice(bitString.header + 1), true);
+            var keySequence = asn1.parse(octetString.data.slice(octetString.header + 1), true);
 
             if (keySequence == null) {
                 throw new Error("invalid key data.");
@@ -270,6 +270,32 @@ if (typeof operations !== "undefined") {
 
             keyObject = { n: n, e: e };
 
+        } else if (p.format === "pkcs8") {
+            var publicKeyInfo = asn1.parse(p.keyData);
+
+            if (publicKeyInfo == null) {
+                throw new Error("invalid key data.");
+            }
+
+            var octetString = publicKeyInfo[2];
+            var keySequence = asn1.parse(octetString.data.slice(octetString.header), true);
+
+            if (keySequence == null) {
+                throw new Error("invalid key data.");
+            }
+
+            var keyProps = ["n", "e", "d", "p", "q", "dp", "dq", "qi"];
+            keyObject = {}
+
+            for (let i = 1; i < keySequence.length; i++) {
+                var int = keySequence[i];
+                int = int.data.slice(int.header);
+                if (int[0] === 0 && int[1] & 128) {
+                    int = int.slice(1);
+                }
+                keyObject[keyProps[i - 1]] = int;
+            }
+
         } else {
             throw new Error("unsupported key import format.");
         }
@@ -287,9 +313,59 @@ if (typeof operations !== "undefined") {
     };
 
     msrcryptoRsa.exportKey = function(/*@dynamic*/ p) {
-        var jsonKeyStringArray = msrcryptoJwk.keyToJwk(p.keyHandle, p.keyData);
+        var RSA_ENCRYPTION = "1.2.840.113549.1.1.1";
 
-        return { type: "keyExport", keyHandle: jsonKeyStringArray };
+        if (p.format === "jwk") {
+        var jsonKeyStringArray = msrcryptoJwk.keyToJwk(p.keyHandle, p.keyData);
+            return { type: "keyExport", keyHandle: jsonKeyStringArray };
+        }
+
+        if (p.format === "spki") {
+            var bytes = asn1.encode({
+                SEQUENCE: [
+                    {
+                        SEQUENCE: [{ "OBJECT IDENTIFIER": RSA_ENCRYPTION }, { NULL: 1 }],
+                    },
+                    {
+                        "BIT STRING": {
+                            SEQUENCE: [{ INTEGER: p.keyData.n }, { INTEGER: p.keyData.e }],
+                        },
+                    },
+                ],
+            });
+
+            return { type: "keyExport", keyHandle: bytes };
+        }
+
+        if (p.format === "pkcs8") {
+            var bytes = asn1.encode({
+                SEQUENCE: [
+                    { INTEGER: 0 },
+                    {
+                        SEQUENCE: [{ "OBJECT IDENTIFIER": RSA_ENCRYPTION }, { NULL: 1 }],
+                    },
+                    {
+                        "OCTET STRING": {
+                            SEQUENCE: [
+                                { INTEGER: 0 },
+                                { INTEGER: p.keyData.n },
+                                { INTEGER: p.keyData.e },
+                                { INTEGER: p.keyData.d },
+                                { INTEGER: p.keyData.p },
+                                { INTEGER: p.keyData.q },
+                                { INTEGER: p.keyData.dp },
+                                { INTEGER: p.keyData.dq },
+                                { INTEGER: p.keyData.qi },
+                            ],
+                        },
+                    },
+                ],
+            });
+
+            return { type: "keyExport", keyHandle: bytes };
+        }
+
+        throw new Error(p.format + " not implemented");
     };
 
     msrcryptoRsa.genRsaKeyFromRandom = function(bits, e) {

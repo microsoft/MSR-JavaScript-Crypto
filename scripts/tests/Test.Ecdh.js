@@ -47,6 +47,30 @@ function ecdhTests() {
         ts.keyImportExportTest(ecdh.p521.raw, ecdhUsages.public, undefined, context(iterations, assert));
     });
 
+    QUnit.test(label + " key import/export spki P-256 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdh.p256.spki, ecdhUsages.public, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki P-384 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdh.p384.spki, ecdhUsages.public, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export spki P-521 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdh.p521.spki, ecdhUsages.public, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export pkcs8 P-256 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdh.p256.pkcs8, ecdhUsages.private, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export pkcs8 P-384 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdh.p384.pkcs8, ecdhUsages.private, undefined, context(iterations, assert));
+    });
+
+    QUnit.test(label + " key import/export pkcs8 P-521 ", function(assert) {
+        ts.keyImportExportTestSpki(ecdh.p521.pkcs8, ecdhUsages.private, undefined, context(iterations, assert));
+    });
+
     QUnit.test(label + " key import/export jwk P-256 ", function(assert) {
         ts.keyPairImportExportTest(ecdh.p256.jwk, undefined, undefined, context(iterations, assert));
     });

@@ -344,23 +344,6 @@ var msrcryptoUtilities = (function() {
         return res;
     }
 
-    // function xorVectors(a, b) {
-    //     /// <signature>
-    //     ///     <summary>Exclusive OR (XOR) two arrays.</summary>
-    //     ///     <param name="a" type="Array">Input array.</param>
-    //     ///     <param name="b" type="Array">Input array.</param>
-    //     ///     <returns type="Array">XOR of the two arrays. The length is minimum of the two input array lengths.
-    //     ///     </returns>
-    //     /// </signature>
-
-    //     var length = Math.min(a.length, b.length),
-    //         res = new Array(length);
-    //     for (var i = 0; i < length; i += 1) {
-    //         res[i] = a[i] ^ b[i];
-    //     }
-    //     return res;
-    // }
-
     function getVector(length, fillValue) {
         /// <signature>
         ///     <summary>Get an array filled with zeros (or optional fillValue.)</summary>
@@ -598,6 +581,21 @@ var msrcryptoUtilities = (function() {
         return result;
     }
 
+    function error(name, message) {
+        var err = Error(message);
+        err.name = name;
+        throw err;
+    }
+
+    function isBytes(array) {
+        if(!(array instanceof Array)) return false;
+        for (var i = 0; i < array.length; i++) {
+            var d = array[i];
+            if (!Number.isInteger(d) || d > 255 || d < 0) return false;
+        }
+        return true;
+    }
+
     return {
         consoleLog: consoleLog,
         toBase64: toBase64,
@@ -619,7 +617,9 @@ var msrcryptoUtilities = (function() {
         padEnd: padEnd,
         padFront: padFront,
         getVector: getVector,
-        verifyByteArray: verifyByteArray
+        verifyByteArray: verifyByteArray,
+        error: error,
+        isBytes: isBytes
     };
 
 })();
