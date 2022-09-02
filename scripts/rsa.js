@@ -287,7 +287,7 @@ if (typeof operations !== "undefined") {
             var keyProps = ["n", "e", "d", "p", "q", "dp", "dq", "qi"];
             keyObject = {}
 
-            for (let i = 1; i < keySequence.length; i++) {
+            for (var i = 1; i < keySequence.length; i++) {
                 var int = keySequence[i];
                 int = int.data.slice(int.header);
                 if (int[0] === 0 && int[1] & 128) {

@@ -75,8 +75,8 @@ var msrcryptoAESKW = function (blockCipher) {
     }
 
     function decrypt(buffer) {
-        const cipher = [];
-        for (let i = 0; i < buffer.length; i += 8) {
+        var cipher = [];
+        for (var i = 0; i < buffer.length; i += 8) {
             cipher.push(buffer.slice(i, i + 8));
         }
 
