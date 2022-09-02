@@ -359,7 +359,7 @@ if ( typeof operations !== "undefined" ) {
 
             }
 
-        } catch {
+        } catch(err) {
             throw new msrcryptoUtilities.error("DataError", "");
         }
 
