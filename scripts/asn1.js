@@ -30,14 +30,14 @@ var asn1 = (function () {
         0x10: "SEQUENCE",
         0x11: "SET",
         0x13: "PRINTABLE STRING",
-        0x17: "UTCTime",
+        0x17: "UTCTime"
     };
 
     var asn1Classes = {
         0x00: "UNIVERSAL",
         0x01: "APPLICATION",
         0x02: "Context-Defined",
-        0x03: "PRIVATE",
+        0x03: "PRIVATE"
     };
 
     function parse(bytes, force) {
@@ -105,7 +105,7 @@ var asn1 = (function () {
 
         if (node.hasOwnProperty("INTEGER")) {
             var val = node.INTEGER;
-            if (Number.isInteger(val)) val = intToBytes(val);
+            if (msrcryptoUtilities.isInteger(val)) val = intToBytes(val);
             if (val[0] & 128) val.unshift(0);
             var result = [INTEGER].concat(encodeLength(val), val);
             return result;
@@ -187,11 +187,11 @@ var asn1 = (function () {
     function encodeOid(text) {
         // part-0 and part-1 are encoded in the first byte
         var parts = text.split(".");
-        var result = [Number.parseInt(parts[0] * 40 + Number.parseInt(parts[1]))];
+        var result = [parseInt(parts[0] * 40 + parseInt(parts[1]))];
 
         // the remaining parts are encoded as base-128 with bit 7=1 except for the last byte
         for (var i = 2; i < parts.length; i++) {
-            var val = Number.parseInt(parts[i]);
+            var val = parseInt(parts[i]);
 
             var bytes = [];
             while (val > 0) {
@@ -233,6 +233,6 @@ var asn1 = (function () {
         encode: encode,
         toString: function (objTree) {
             return toString(objTree, 0);
-        },
+        }
     };
 })();

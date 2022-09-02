@@ -285,7 +285,7 @@ if (typeof operations !== "undefined") {
             }
 
             var keyProps = ["n", "e", "d", "p", "q", "dp", "dq", "qi"];
-            keyObject = {}
+            keyObject = {};
 
             for (var i = 1; i < keySequence.length; i++) {
                 var int = keySequence[i];
@@ -295,7 +295,6 @@ if (typeof operations !== "undefined") {
                 }
                 keyObject[keyProps[i - 1]] = int;
             }
-
         } else {
             throw new Error("unsupported key import format.");
         }
@@ -324,14 +323,14 @@ if (typeof operations !== "undefined") {
             var bytes = asn1.encode({
                 SEQUENCE: [
                     {
-                        SEQUENCE: [{ "OBJECT IDENTIFIER": RSA_ENCRYPTION }, { NULL: 1 }],
+                        SEQUENCE: [{ "OBJECT IDENTIFIER": RSA_ENCRYPTION }, { NULL: 1 }]
                     },
                     {
                         "BIT STRING": {
-                            SEQUENCE: [{ INTEGER: p.keyData.n }, { INTEGER: p.keyData.e }],
-                        },
-                    },
-                ],
+                            SEQUENCE: [{ INTEGER: p.keyData.n }, { INTEGER: p.keyData.e }]
+                        }
+                    }
+                ]
             });
 
             return { type: "keyExport", keyHandle: bytes };
@@ -342,7 +341,7 @@ if (typeof operations !== "undefined") {
                 SEQUENCE: [
                     { INTEGER: 0 },
                     {
-                        SEQUENCE: [{ "OBJECT IDENTIFIER": RSA_ENCRYPTION }, { NULL: 1 }],
+                        SEQUENCE: [{ "OBJECT IDENTIFIER": RSA_ENCRYPTION }, { NULL: 1 }]
                     },
                     {
                         "OCTET STRING": {
@@ -355,11 +354,11 @@ if (typeof operations !== "undefined") {
                                 { INTEGER: p.keyData.q },
                                 { INTEGER: p.keyData.dp },
                                 { INTEGER: p.keyData.dq },
-                                { INTEGER: p.keyData.qi },
-                            ],
-                        },
-                    },
-                ],
+                                { INTEGER: p.keyData.qi }
+                            ]
+                        }
+                    }
+                ]
             });
 
             return { type: "keyExport", keyHandle: bytes };

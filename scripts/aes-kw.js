@@ -124,7 +124,7 @@ var msrcryptoAESKW = function (blockCipher) {
 
     return {
         encrypt: encrypt,
-        decrypt: decrypt,
+        decrypt: decrypt
     };
 };
 
@@ -183,8 +183,8 @@ if (typeof operations !== "undefined") {
                 algorithm: p.algorithm,
                 extractable: p.extractable,
                 usages: null || p.usages,
-                type: "secret",
-            },
+                type: "secret"
+            }
         };
     };
 
@@ -211,9 +211,9 @@ if (typeof operations !== "undefined") {
                 algorithm: p.algorithm,
                 extractable: p.extractable || keyObject.extractable,
                 usages: null || p.usages,
-                type: "secret",
+                type: "secret"
             },
-            type: "keyImport",
+            type: "keyImport"
         };
     };
 

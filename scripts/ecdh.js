@@ -392,12 +392,12 @@ if ( typeof operations !== "undefined" ) {
                         SEQUENCE: [
                             { "OBJECT IDENTIFIER": EC_PUBLICKEY }, 
                             { "OBJECT IDENTIFIER": curveOid[p.algorithm.namedCurve] }
-                        ],
+                        ]
                     },
                     {
                         "BIT STRING": [4].concat(p.keyData.x, p.keyData.y)
-                    },
-                ],
+                    }
+                ]
             });
 
             return { type: "keyExport", keyHandle: bytes };
@@ -410,8 +410,8 @@ if ( typeof operations !== "undefined" ) {
                     {
                         SEQUENCE: [
                             { "OBJECT IDENTIFIER": EC_PUBLICKEY },
-                            { "OBJECT IDENTIFIER": curveOid[p.algorithm.namedCurve] },
-                        ],
+                            { "OBJECT IDENTIFIER": curveOid[p.algorithm.namedCurve] }
+                        ]
                     },
                     {
                         "OCTET STRING": {
@@ -420,14 +420,14 @@ if ( typeof operations !== "undefined" ) {
                                 { "OCTET STRING": p.keyData.d },
                                 {
                                     APPLICATION: [
-                                        {"BIT STRING": [4].concat(p.keyData.x, p.keyData.y)},
+                                        {"BIT STRING": [4].concat(p.keyData.x, p.keyData.y)}
                                     ],
                                     tag : 1
-                                },
-                            ],
-                        },
-                    },
-                ],
+                                }
+                            ]
+                        }
+                    }
+                ]
             });
 
             return { type: "keyExport", keyHandle: bytes };

@@ -591,10 +591,14 @@ var msrcryptoUtilities = (function() {
         if(!(array instanceof Array)) return false;
         for (var i = 0; i < array.length; i++) {
             var d = array[i];
-            if (!Number.isInteger(d) || d > 255 || d < 0) return false;
+            if (!isInteger(d) || d > 255 || d < 0) return false;
         }
         return true;
     }
+
+    function isInteger(value) {
+        return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
+    }; 
 
     return {
         consoleLog: consoleLog,
@@ -619,7 +623,8 @@ var msrcryptoUtilities = (function() {
         getVector: getVector,
         verifyByteArray: verifyByteArray,
         error: error,
-        isBytes: isBytes
+        isBytes: isBytes,
+        isInteger: isInteger
     };
 
 })();
