@@ -20,6 +20,7 @@ var msrcryptoSubtle;
 var utils = msrcryptoUtilities;
 
 msrcryptoSubtle = (function() {
+
     function syncWorker() {
         var result;
 
@@ -85,7 +86,8 @@ msrcryptoSubtle = (function() {
         function opDispatchEvent(e) {
             if (e.type === "error") {
                 if (rejectFunc) {
-                    rejectFunc.apply(promise, [e]);
+                    e.data && (e.data.stack = "Error") && (e.data.code = 0);
+                    rejectFunc.apply(promise, [e.data || e]);
                 }
                 return;
             }
@@ -715,7 +717,7 @@ msrcryptoSubtle = (function() {
             actualParam,
             i;
 
-        if (operationName === "importKey" && (parameterSet[0] === "raw" || parameterSet[0] === "spki")) {
+        if (operationName === "importKey" && (parameterSet[0] === "raw" || parameterSet[0] === "spki" || parameterSet[0] === "pkcs8")) {
             operationName = "importKeyRaw";
         }
 
@@ -903,7 +905,7 @@ msrcryptoSubtle = (function() {
             return new Promise(function(resolve, reject) {
 
                 if (key.extractable === false ||
-                    key.usages.indexOf("wrapKey") < 0 ||
+                    wrappingKey.usages.indexOf("wrapKey") < 0 ||
                     wrappingKey.algorithm.name.toUpperCase() !== wrappingKeyAlgorithm.name) {
                     reject(new Error("InvalidAccessError"));
                     return;
@@ -912,6 +914,9 @@ msrcryptoSubtle = (function() {
                 exportKey(format, key)
 
                     .then(function(keyData) {
+
+                        console.log(utils.toBase64(keyData));
+
                         return encrypt(wrappingKeyAlgorithm, wrappingKey, format === "jwk" ?
                             utils.stringToBytes(JSON.stringify(keyData, null, 0)) : keyData);
                     })

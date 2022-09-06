@@ -181,74 +181,197 @@ if ( typeof operations !== "undefined" ) {
 
     msrcryptoEcdh.importKey = function( p ) {
 
-        if ( p.format === "raw" ) {
+        try {
 
-            // raw key will be public only it the form:
-            // 4 | <x data bytes> | <y data bytes>
+            if ( p.format === "raw" ) {
 
-            var keyData = p.keyData;
+                // raw key will be public only it the form:
+                // 4 | <x data bytes> | <y data bytes>
 
-            if ( keyData[0] !== 4 ) { throw new Error( "DataError" ); }
+                var keyData = p.keyData;
 
-            // tslint:disable-next-line: no-bitwise
-            var elementSize = ~~( (keyData.length - 1 ) / 2 );
+                if ( keyData[0] !== 4 ) { throw new Error( "DataError" ); }
 
-            var curveName = p.algorithm.namedCurve.toUpperCase( );
+                // tslint:disable-next-line: no-bitwise
+                var elementSize = ~~( (keyData.length - 1 ) / 2 );
 
-            var x = keyData.slice( 1, elementSize + 1 ),
-                y = keyData.slice( elementSize + 1 );
+                var curveName = p.algorithm.namedCurve.toUpperCase( );
 
-            if ( cryptoECC.validatePoint( curveName, x, y ) === false )  {
-                throw new Error( "DataError" );
+                var x = keyData.slice( 1, elementSize + 1 ),
+                    y = keyData.slice( elementSize + 1 );
+
+                if ( cryptoECC.validatePoint( curveName, x, y ) === false )  {
+                    throw new Error( "DataError" );
+                }
+
+                return {
+                    type: "keyImport",
+                    keyData: { x: x, y: y },
+                    keyHandle: {
+                        algorithm: p.algorithm,
+                        extractable: p.extractable || false,
+                        usages: p.usages,
+                        type: "public"
+                    }
+                };
             }
 
-            return {
-                type: "keyImport",
-                keyData: { x: x, y: y },
-                keyHandle: {
-                    algorithm: p.algorithm,
-                    extractable: p.extractable || false,
-                    usages: p.usages,
-                    type: "public"
+            if ( p.format === "jwk" ) {
+
+                var keyObject = msrcryptoJwk.jwkToKey( p.keyData, p.algorithm, ["x", "y", "d", "crv"] );
+
+                // If only private key data 'd' is imported, create x and y
+                if ( keyObject.d && ( !keyObject.x || !keyObject.y ) ) {
+
+                    var curve = cryptoECC.createCurve( p.algorithm.namedCurve.toUpperCase() );
+
+                    ecdhInstance = msrcryptoEcdh( curve );
+
+                    var publicKey = ecdhInstance.computePublicKey( keyObject.d );
+
+                    keyObject.x = publicKey.x;
+                    keyObject.y = publicKey.y;
                 }
-            };
+
+                if ( cryptoECC.validatePoint( p.algorithm.namedCurve.toUpperCase( ), keyObject.x, keyObject.y ) === false ) {
+                    throw new Error( "DataError" );
+                }
+
+                return {
+                    type: "keyImport",
+                    keyData: keyObject,
+                    keyHandle: {
+                        algorithm: p.algorithm,
+                        extractable: p.extractable || keyObject.extractable,
+                        usages: p.usages,
+                        type: keyObject.d ? "private" : "public"
+                    }
+                };
+            }
+
+            if ( p.format === "spki" ) {
+
+                var lengths = {
+                    "P-256" : 32,
+                    "P-384" : 48,
+                    "P-521" : 66 
+                }
+
+                var partLen = lengths[p.algorithm.namedCurve];
+
+                var privateKeyInfo = asn1.parse(p.keyData);
+
+                if (privateKeyInfo == null) {
+                    throw new Error("invalid key data.");
+                }
+
+                var bitString = privateKeyInfo[1];
+
+                // +1 to skip the leading zero that will always be there if the bitstring contains a sequence.
+                var keySequence = bitString.data.slice(bitString.header + 1);
+
+                if (keySequence == null || keySequence.shift() !== 4 || keySequence.length !== partLen * 2) {
+                    throw new Error("invalid key data.");
+                }
+
+                var x = keySequence.slice(0, partLen),
+                    y = keySequence.slice(partLen)
+
+                if (!msrcryptoUtilities.isBytes(x) || !msrcryptoUtilities.isBytes(y)) {
+                    throw new Error("invalid key data.");
+                }
+
+                var keyObject = {x:x, y:y};
+
+                if ( cryptoECC.validatePoint( p.algorithm.namedCurve.toUpperCase( ), keyObject.x, keyObject.y ) === false ) {
+                    throw new Error( "DataError" );
+                }
+
+                return {
+                    type: "keyImport",
+                    keyData: keyObject,
+                    keyHandle: {
+                        algorithm: p.algorithm,
+                        extractable: p.extractable,
+                        usages: p.usages,
+                        type: "public"
+                    }
+                };
+
+            }
+
+            if ( p.format === "pkcs8" ) {
+
+                var lengths = {
+                    "P-256" : 32,
+                    "P-384" : 48,
+                    "P-521" : 66 
+                }
+
+                var partLen = lengths[p.algorithm.namedCurve];
+
+                var privateKeyInfo = asn1.parse(p.keyData);
+
+                if (privateKeyInfo == null) {
+                    throw new Error("invalid key data.");
+                }
+
+                var octetString = privateKeyInfo[2];
+                var keySequence = asn1.parse(octetString.data.slice(octetString.header));
+
+                if (keySequence == null) {
+                    throw new Error("invalid key data.");
+                }
+
+                var d = keySequence[1].data.slice(keySequence[1].header);
+
+                var bitString = asn1.parse(keySequence[2][0].data);
+
+                var keySequence = bitString.data.slice(bitString.header + 1);
+
+                if (keySequence == null || keySequence.shift() !== 4 || keySequence.length !== partLen * 2) {
+                    throw new Error("invalid key data.");
+                }
+
+                var x = keySequence.slice(0, partLen),
+                    y = keySequence.slice(partLen)
+
+                if (!msrcryptoUtilities.isBytes(x) || !msrcryptoUtilities.isBytes(y)) {
+                    throw new Error("invalid key data.");
+                }
+
+                var keyObject = {x:x, y:y, d:d};
+
+                if ( cryptoECC.validatePoint( p.algorithm.namedCurve.toUpperCase( ), keyObject.x, keyObject.y ) === false ) {
+                    throw new Error( "DataError" );
+                }
+
+                return {
+                    type: "keyImport",
+                    keyData: keyObject,
+                    keyHandle: {
+                        algorithm: p.algorithm,
+                        extractable: p.extractable,
+                        usages: p.usages,
+                        type: "private"
+                    }
+                };
+
+            }
+
+        } catch(err) {
+            throw new msrcryptoUtilities.error("DataError", "");
         }
 
-        if ( p.format === "jwk" ) {
-
-            var keyObject = msrcryptoJwk.jwkToKey( p.keyData, p.algorithm, ["x", "y", "d", "crv"] );
-
-            // If only private key data 'd' is imported, create x and y
-            if ( keyObject.d && ( !keyObject.x || !keyObject.y ) ) {
-
-                var curve = cryptoECC.createCurve( p.algorithm.namedCurve.toUpperCase() );
-
-                ecdhInstance = msrcryptoEcdh( curve );
-
-                var publicKey = ecdhInstance.computePublicKey( keyObject.d );
-
-                keyObject.x = publicKey.x;
-                keyObject.y = publicKey.y;
-            }
-
-            if ( cryptoECC.validatePoint( p.algorithm.namedCurve.toUpperCase( ), keyObject.x, keyObject.y ) === false ) {
-                throw new Error( "DataError" );
-            }
-
-            return {
-                type: "keyImport",
-                keyData: keyObject,
-                keyHandle: {
-                    algorithm: p.algorithm,
-                    extractable: p.extractable || keyObject.extractable,
-                    usages: p.usages,
-                    type: keyObject.d ? "private" : "public"
-                }
-            };
-        }
     };
 
     msrcryptoEcdh.exportKey = function( p ) {
+        var EC_PUBLICKEY  = "1.2.840.10045.2.1";
+        var curveOid = {
+            "P-256" : "1.2.840.10045.3.1.7 ", //PRIME256V1
+            "P-384" : "1.3.132.0.34", //SECP384R1
+            "P-521" : "1.3.132.0.35" //SECP521R1
+        }
 
         if ( p.format === "raw" && p.keyHandle.type === "public" ) {
 
@@ -260,6 +383,54 @@ if ( typeof operations !== "undefined" ) {
         if ( p.format === "jwk" ) {
             var jsonKeyStringArray = msrcryptoJwk.keyToJwk( p.keyHandle, p.keyData );
             return { type: "keyExport", keyHandle: jsonKeyStringArray };
+        }
+
+        if (p.format === "spki") {
+            var bytes = asn1.encode({
+                SEQUENCE: [
+                    {
+                        SEQUENCE: [
+                            { "OBJECT IDENTIFIER": EC_PUBLICKEY }, 
+                            { "OBJECT IDENTIFIER": curveOid[p.algorithm.namedCurve] }
+                        ]
+                    },
+                    {
+                        "BIT STRING": [4].concat(p.keyData.x, p.keyData.y)
+                    }
+                ]
+            });
+
+            return { type: "keyExport", keyHandle: bytes };
+        }
+
+        if (p.format === "pkcs8") {
+            var bytes = asn1.encode({
+                SEQUENCE: [
+                    { INTEGER: 0 },
+                    {
+                        SEQUENCE: [
+                            { "OBJECT IDENTIFIER": EC_PUBLICKEY },
+                            { "OBJECT IDENTIFIER": curveOid[p.algorithm.namedCurve] }
+                        ]
+                    },
+                    {
+                        "OCTET STRING": {
+                            SEQUENCE: [
+                                { INTEGER: 1 },
+                                { "OCTET STRING": p.keyData.d },
+                                {
+                                    APPLICATION: [
+                                        {"BIT STRING": [4].concat(p.keyData.x, p.keyData.y)}
+                                    ],
+                                    tag : 1
+                                }
+                            ]
+                        }
+                    }
+                ]
+            });
+
+            return { type: "keyExport", keyHandle: bytes };
         }
 
         throw new Error( "unsupported export format." );

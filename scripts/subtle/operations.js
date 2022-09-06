@@ -55,7 +55,8 @@ function baseOperation(processResults) {
         if (e.type === "error") {
             // If the onerror callback has been set, call it.
             if (rejectFunc) {
-                rejectFunc.apply(promise, [e]);
+                e.data && (e.data.stack = "Error") && (e.data.code = 0);
+                rejectFunc.apply(promise, [e.data || e]);
             }
             return;
         }

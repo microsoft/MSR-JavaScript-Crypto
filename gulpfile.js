@@ -44,6 +44,7 @@ const fullBuild = [
     "scripts/aes.js",
     "scripts/aes-cbc.js",
     "scripts/aes-gcm.js",
+    "scripts/aes-kw.js",
     "scripts/random.js",
     "scripts/entropy.js",
     "scripts/prime.js",

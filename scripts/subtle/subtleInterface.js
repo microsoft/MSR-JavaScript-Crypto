@@ -78,7 +78,7 @@ function buildParameterCollection(operationName, parameterSet) {
         actualParam,
         i;
 
-    if (operationName === "importKey" && (parameterSet[0] === "raw" || parameterSet[0] === "spki")) {
+    if (operationName === "importKey" && (parameterSet[0] === "raw" || parameterSet[0] === "spki" || parameterSet[0] === "pkcs8")) {
         operationName = "importKeyRaw";
     }
 
@@ -447,7 +447,7 @@ var publicMethods = {
         return new Promise(function(resolve, reject) {
 
             if (key.extractable === false ||
-                key.usages.indexOf("wrapKey") < 0 ||
+                wrappingKey.usages.indexOf("wrapKey") < 0 ||
                 wrappingKey.algorithm.name.toUpperCase() !== wrappingKeyAlgorithm.name) {
                 reject(new Error("InvalidAccessError"));
                 return;
@@ -456,6 +456,9 @@ var publicMethods = {
             exportKey(format, key)
 
                 .then(function(keyData) {
+
+                    console.log(utils.toBase64(keyData));
+
                     return encrypt(wrappingKeyAlgorithm, wrappingKey, format === "jwk" ?
                         utils.stringToBytes(JSON.stringify(keyData, null, 0)) : keyData);
                 })
