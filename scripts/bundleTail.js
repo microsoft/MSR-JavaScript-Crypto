@@ -21,7 +21,7 @@ var publicMethods = {
     /// <field type = 'Object' static="false">Microsoft Research Javascript Crypto Library Subtle interface.</field>
     subtle: msrcryptoSubtle ? msrcryptoSubtle.publicMethods : null,
 
-    CryptoKey: CryptoKey,
+    CryptoKey: MsrCryptoKey,
 
     getRandomValues: function(array) {
         /// <signature>

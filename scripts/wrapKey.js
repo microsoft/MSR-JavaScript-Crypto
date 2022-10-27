@@ -121,7 +121,7 @@ var msrcryptoWrapKey = (function() {
         return {
             type: "keyImport",
             keyData: keyObject.k,
-            keyHandle: new CryptoKey({
+            keyHandle: new MsrCryptoKey({
                 algorithm: { name: params.algorithm.name },
                 extractable: params.extractable || keyObject.extractable,
                 usages: params.usages,

@@ -84,7 +84,7 @@ if (typeof operations !== "undefined") {
         return {
             type: "keyDerive",
             keyData: result,
-            keyHandle: new CryptoKey({
+            keyHandle: new MsrCryptoKey({
                 algorithm: p.derivedKeyType,
                 extractable: p.extractable,
                 usages: null || p.usages,

@@ -73,7 +73,7 @@ if (typeof operations !== "undefined") {
         return {
             type: "keyImport",
             keyData: keyData,
-            keyHandle: new CryptoKey({
+            keyHandle: new MsrCryptoKey({
                 algorithm: { name: "CONCAT" },
                 extractable: false,
                 usages: p.usages,

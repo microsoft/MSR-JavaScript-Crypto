@@ -179,7 +179,7 @@ if (typeof operations !== "undefined") {
         return {
             type: "keyGeneration",
             keyData: msrcryptoPseudoRandom.getBytes(Math.floor(p.algorithm.length / 8)),
-            keyHandle: new CryptoKey({
+            keyHandle: new MsrCryptoKey({
                 algorithm: p.algorithm,
                 extractable: p.extractable,
                 usages: null || p.usages,
@@ -207,7 +207,7 @@ if (typeof operations !== "undefined") {
 
         return {
             keyData: keyObject.k,
-            keyHandle: new CryptoKey({
+            keyHandle: new MsrCryptoKey({
                 algorithm: p.algorithm,
                 extractable: p.extractable || keyObject.extractable,
                 usages: null || p.usages,

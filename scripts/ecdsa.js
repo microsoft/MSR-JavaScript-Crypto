@@ -223,7 +223,7 @@ if (typeof operations !== "undefined") {
                         x: x,
                         y: y
                     },
-                    keyHandle: new CryptoKey({
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: ["verify"],
@@ -236,7 +236,7 @@ if (typeof operations !== "undefined") {
                         y: y,
                         d: d
                     },
-                    keyHandle: new CryptoKey({
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: ["sign"],
@@ -274,7 +274,7 @@ if (typeof operations !== "undefined") {
             return {
                 type: "keyImport",
                 keyData: { x: x, y: y },
-                keyHandle: new CryptoKey({
+                keyHandle: new MsrCryptoKey({
                     algorithm: p.algorithm,
                     extractable: p.extractable,
                     usages: p.usages,
@@ -306,7 +306,7 @@ if (typeof operations !== "undefined") {
             return {
                 type: "keyImport",
                 keyData: keyObject,
-                keyHandle: new CryptoKey({
+                keyHandle: new MsrCryptoKey({
                     algorithm: p.algorithm,
                     extractable: p.extractable || keyObject.extractable,
                     usages: null || p.usages, // IE11 returns null here
@@ -356,7 +356,7 @@ if (typeof operations !== "undefined") {
             return {
                 type: "keyImport",
                 keyData: keyObject,
-                keyHandle: new CryptoKey({
+                keyHandle: new MsrCryptoKey({
                     algorithm: p.algorithm,
                     extractable: p.extractable,
                     usages: p.usages,
@@ -415,7 +415,7 @@ if (typeof operations !== "undefined") {
             return {
                 type: "keyImport",
                 keyData: keyObject,
-                keyHandle: new CryptoKey({
+                keyHandle: new MsrCryptoKey({
                     algorithm: p.algorithm,
                     extractable: p.extractable,
                     usages: p.usages,

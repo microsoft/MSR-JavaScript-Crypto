@@ -16,9 +16,33 @@
 //
 //*******************************************************************************
 
-function CryptoKey(params) {
-    this.type = params.type;
-    this.extractable = params.extractable;
-    this.algorithm = params.algorithm;
-    this.usages = params.usages;
-}
+var MsrCryptoKey = (function (NativeCryptoKey) {
+    var defineProperty = function (obj, name, value) {
+        try {
+            Object.defineProperty(obj, name, {
+                enumerable: true,
+                configurable: false,
+                get: function () {
+                    return value;
+                },
+            });
+        } catch (e) {
+            // Fallback for very old browsers (IE <= 8).
+            obj[name] = value;
+        }
+    };
+
+    function CryptoKey(params) {
+        defineProperty(this, 'type', params.type);
+        defineProperty(this, 'algorithm', params.algorithm);
+        defineProperty(this, 'extractable', params.extractable);
+        defineProperty(this, 'usages', params.usages ? params.usages.slice() : params.usages);
+    }
+
+    // Ensure it extends the native CryptoKey interface, so `instanceof` works.
+    if (NativeCryptoKey) {
+        CryptoKey.prototype = NativeCryptoKey.prototype;
+    }
+
+    return CryptoKey;
+})(CryptoKey);

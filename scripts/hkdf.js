@@ -107,7 +107,7 @@ if (typeof operations !== "undefined") {
         return {
             type: "keyImport",
             keyData: keyData,
-            keyHandle: new CryptoKey({
+            keyHandle: new MsrCryptoKey({
                 algorithm: { name: "HKDF" },
                 extractable: false,
                 usages: p.usages,

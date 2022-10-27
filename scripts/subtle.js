@@ -613,6 +613,8 @@ msrcryptoSubtle = (function() {
         }
     }
 
+    var isNativeCryptoKeyAvailable = typeof CryptoKey !== "undefined";
+
     var subtleParameters = [{
             name: "algorithm",
             type: "Object",
@@ -620,7 +622,7 @@ msrcryptoSubtle = (function() {
         },
         {
             name: "keyHandle",
-            type: "Object",
+            type: isNativeCryptoKeyAvailable ? "CryptoKey" : "Object",
             required: true
         },
         {

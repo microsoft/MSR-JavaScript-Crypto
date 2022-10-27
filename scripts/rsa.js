@@ -302,7 +302,7 @@ if (typeof operations !== "undefined") {
         return {
             type: "keyImport",
             keyData: keyObject,
-            keyHandle: new CryptoKey({
+            keyHandle: new MsrCryptoKey({
                 algorithm: p.algorithm,
                 extractable: p.extractable,
                 usages: p.usages, // IE11 returns null here
@@ -478,7 +478,7 @@ if (typeof operations !== "undefined") {
             keyPair: {
                 publicKey: {
                     keyData: keyPair.publicKey,
-                    keyHandle: new CryptoKey({
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: null || publicUsage,
@@ -487,7 +487,7 @@ if (typeof operations !== "undefined") {
                 },
                 privateKey: {
                     keyData: keyPair.privateKey,
-                    keyHandle: new CryptoKey({
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: null || privateUsage,

@@ -159,7 +159,7 @@ if ( typeof operations !== "undefined" ) {
             keyPair: {
                 publicKey: {
                     keyData: keyPairData.publicKey,
-                    keyHandle: new CryptoKey({
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: [],
@@ -168,7 +168,7 @@ if ( typeof operations !== "undefined" ) {
                 },
                 privateKey: {
                     keyData: keyPairData.privateKey,
-                    keyHandle: new CryptoKey({
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: p.usages,
@@ -207,7 +207,7 @@ if ( typeof operations !== "undefined" ) {
                 return {
                     type: "keyImport",
                     keyData: { x: x, y: y },
-                    keyHandle: new CryptoKey({
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable || false,
                         usages: p.usages,
@@ -240,7 +240,7 @@ if ( typeof operations !== "undefined" ) {
                 return {
                     type: "keyImport",
                     keyData: keyObject,
-                    keyHandle: new CryptoKey({
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable || keyObject.extractable,
                         usages: p.usages,
@@ -290,7 +290,7 @@ if ( typeof operations !== "undefined" ) {
                 return {
                     type: "keyImport",
                     keyData: keyObject,
-                    keyHandle: new CryptoKey({
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: p.usages,
@@ -349,7 +349,7 @@ if ( typeof operations !== "undefined" ) {
                 return {
                     type: "keyImport",
                     keyData: keyObject,
-                    keyHandle: new CryptoKey({
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: p.usages,
