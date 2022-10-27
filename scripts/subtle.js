@@ -20,7 +20,6 @@ var msrcryptoSubtle;
 var utils = msrcryptoUtilities;
 
 msrcryptoSubtle = (function() {
-
     function syncWorker() {
         var result;
 
