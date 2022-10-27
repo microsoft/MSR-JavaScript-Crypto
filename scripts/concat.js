@@ -73,12 +73,12 @@ if (typeof operations !== "undefined") {
         return {
             type: "keyImport",
             keyData: keyData,
-            keyHandle: {
+            keyHandle: new CryptoKey({
                 algorithm: { name: "CONCAT" },
                 extractable: false,
                 usages: p.usages,
                 type: "secret"
-            }
+            })
         };
 
     };

@@ -121,12 +121,12 @@ var msrcryptoWrapKey = (function() {
         return {
             type: "keyImport",
             keyData: keyObject.k,
-            keyHandle: {
+            keyHandle: new CryptoKey({
                 algorithm: { name: params.algorithm.name },
                 extractable: params.extractable || keyObject.extractable,
                 usages: params.usages,
                 type: "secret"
-            }
+            })
         };
     }
     return {

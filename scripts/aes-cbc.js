@@ -314,12 +314,12 @@ if (typeof operations !== "undefined") {
         return {
             type: "keyGeneration",
             keyData: msrcryptoPseudoRandom.getBytes(Math.floor(p.algorithm.length / 8)),
-            keyHandle: {
+            keyHandle: new CryptoKey({
                 algorithm: p.algorithm,
                 extractable: p.extractable,
                 usages: null || p.usages,
                 type: "secret"
-            }
+            })
         };
     };
 
@@ -343,12 +343,12 @@ if (typeof operations !== "undefined") {
 
         return {
             keyData: keyObject.k,
-            keyHandle: {
+            keyHandle: new CryptoKey({
                 algorithm: p.algorithm,
                 extractable: p.extractable || keyObject.extractable,
                 usages: null || p.usages,
                 type: "secret"
-            },
+            }),
             type: "keyImport"
         };
     };

@@ -84,12 +84,12 @@ if (typeof operations !== "undefined") {
         return {
             type: "keyDerive",
             keyData: result,
-            keyHandle: {
+            keyHandle: new CryptoKey({
                 algorithm: p.derivedKeyType,
                 extractable: p.extractable,
                 usages: null || p.usages,
                 type: "secret"
-            }
+            })
         };
 
     };
