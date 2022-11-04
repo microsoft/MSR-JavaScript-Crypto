@@ -1822,6 +1822,8 @@ function msrcryptoMath() {
         modMul: modMul,
         MontgomeryMultiplier: MontgomeryMultiplier,
         gcd: gcd,
+
+        createArray: createArray,
         //fetchBits: fetchBits
 
         // Used by tests only
@@ -1832,3 +1834,9 @@ function msrcryptoMath() {
 }
 
 var cryptoMath = cryptoMath || msrcryptoMath();
+
+/* commonjs-block */
+if(typeof exports === "object") {
+    module.exports = cryptoMath;
+}
+/* end-commonjs-block */

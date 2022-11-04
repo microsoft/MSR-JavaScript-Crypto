@@ -22,6 +22,15 @@ var msrcryptoUtilities = (function() {
 
     var encodingChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
+    var setterSupport = (function() {
+        try {
+            Object.defineProperty({}, "oncomplete", {});
+            return true;
+        } catch (ex) {
+            return false;
+        }
+    }());
+
     function consoleLog(text) {
         /// <signature>
         ///     <summary>Logs a message to the debug console if the console is available.</summary>
@@ -458,31 +467,6 @@ var msrcryptoUtilities = (function() {
         return result;
     }
 
-    function verifyByteArray(array) {
-        /// <signature>
-        ///     <summary>Verify that an Array contains only byte values (0-255)</summary>
-        ///     <param name="array" type="Array"></param>
-        ///     <returns type="Boolean">Returns true if all values are 0-255</returns>
-        /// </signature>
-
-        if (getObjectType(array) !== "Array") {
-            return false;
-        }
-
-        var element;
-
-        for (var i = 0; i < array.length; i++) {
-
-            element = array[i];
-
-            if (isNaN(element) || element < 0 || element > 255) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     function checkParam(param, type, errorMessage) {
 
         if (!param) {
@@ -599,6 +583,30 @@ var msrcryptoUtilities = (function() {
     function isInteger(value) {
         return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
     }; 
+    
+    function createProperty (parentObject, propertyName, initialValue, getterFunction, setterFunction) {
+        /// <param name="parentObject" type="Object"/>
+        /// <param name="propertyName" type="String"/>
+        /// <param name="initialValue" type="Object"/>
+        /// <param name="getterFunction" type="Function"/>
+        /// <param name="setterFunction" type="Function" optional="true"/>
+    
+        if (!setterSupport) {
+            parentObject[propertyName] = initialValue;
+            return;
+        }
+    
+        var setGet = {};
+    
+        // tslint:disable-next-line: no-unused-expression
+        getterFunction && (setGet.get = getterFunction);
+        // tslint:disable-next-line: no-unused-expression
+        setterFunction && (setGet.set = setterFunction);
+    
+        Object.defineProperty(
+            parentObject,
+            propertyName, setGet);
+    };
 
     return {
         consoleLog: consoleLog,
@@ -621,10 +629,16 @@ var msrcryptoUtilities = (function() {
         padEnd: padEnd,
         padFront: padFront,
         getVector: getVector,
-        verifyByteArray: verifyByteArray,
         error: error,
         isBytes: isBytes,
-        isInteger: isInteger
+        isInteger: isInteger,
+        createProperty: createProperty
     };
 
 })();
+
+/* commonjs-block */
+if(typeof exports === "object") {
+    module.exports = msrcryptoUtilities;
+}
+/* end-commonjs-block */

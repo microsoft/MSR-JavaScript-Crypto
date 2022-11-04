@@ -194,6 +194,10 @@ var curve_numsp512t1 = {
     cf: 4
 };
 
+/* commonjs-block */
+var cryptoECC = typeof require === "function" ? require("./cryptoECC.js") : cryptoECC
+/* end-commonjs-block */
+
 if (typeof cryptoECC !== "undefined") {
     // Add curves to ECC object - use uppercase names
     cryptoECC.curves.NUMSP256D1 = curve_numsp256d1;

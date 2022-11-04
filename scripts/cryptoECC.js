@@ -16,6 +16,15 @@
 //
 //*******************************************************************************
 
+/* commonjs-block */
+var cryptoMath;
+var msrcryptoUtilities;
+if(typeof require === "function" ) {
+    msrcryptoUtilities = require("./utilities.js");
+    cryptoMath = require("./cryptoMath.js");
+} 
+/* end-commonjs-block */
+
 // tslint:disable: no-bitwise
 
 /// cryptoECC.js ==================================================================================
@@ -25,6 +34,8 @@ function MsrcryptoECC() {
     /// <summary>Elliptic Curve Cryptography (ECC) functions.</summary>
 
     var btd = cryptoMath.bytesToDigits;
+
+    var utils = msrcryptoUtilities;
 
     // Create an array, mimics the constructors for typed arrays.
     function createArray(/*@dynamic*/parameter) {
@@ -227,29 +238,29 @@ function MsrcryptoECC() {
         }
 
         returnObj = /*@static_cast(EllipticCurvePointFp)*/ {
-            equals: function(ellipticCurvePointFp) {
+            equals: function (ellipticCurvePointFp) {
                 return equals(ellipticCurvePointFp);
             },
-            copy: function(destination) {
+            copy: function (destination) {
                 copyTo(this, destination);
                 return;
             },
-            clone: function() {
+            clone: function () {
                 return clone();
             }
         };
 
-        createProperty(returnObj, "curve", curve, function() { return curve; }, function(val) { curve = val; });
+        utils.createProperty(returnObj, "curve", curve, function () { return curve; }, function (val) { curve = val; });
 
-        createProperty(returnObj, "x", x, function() { return x; }, function(val) { x = val; });
-        createProperty(returnObj, "y", y, function() { return y; }, function(val) { y = val; });
-        createProperty(returnObj, "z", z, function() { return z; }, function(val) { z = val; });
+        utils.createProperty(returnObj, "x", x, function () { return x; }, function (val) { x = val; });
+        utils.createProperty(returnObj, "y", y, function () { return y; }, function (val) { y = val; });
+        utils.createProperty(returnObj, "z", z, function () { return z; }, function (val) { z = val; });
 
-        createProperty(returnObj, "isInMontgomeryForm", isInMontgomeryForm,
-            function() { return isInMontgomeryForm; }, function(val) { isInMontgomeryForm = val; });
-        createProperty(returnObj, "isInfinity", isInfinity,
-            function() { return isInfinity; }, function(val) { isInfinity = val; });
-        createProperty(returnObj, "isAffine", z === null, function() { return z === null; });
+        utils.createProperty(returnObj, "isInMontgomeryForm", isInMontgomeryForm,
+            function () { return isInMontgomeryForm; }, function (val) { isInMontgomeryForm = val; });
+        utils.createProperty(returnObj, "isInfinity", isInfinity,
+            function () { return isInfinity; }, function (val) { isInfinity = val; });
+        utils.createProperty(returnObj, "isAffine", z === null, function () { return z === null; });
 
         return returnObj;
     };
@@ -2040,3 +2051,9 @@ function MsrcryptoECC() {
 }
 
 var cryptoECC = cryptoECC || MsrcryptoECC();
+
+/* commonjs-block */
+if(typeof exports === "object") {
+    module.exports = cryptoECC;
+}
+/* end-commonjs-block */

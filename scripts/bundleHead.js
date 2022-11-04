@@ -19,7 +19,7 @@
 
 "use strict";
 
-var msrCryptoVersion = "1.6.6";
+var msrCryptoVersion = "1.6.7";
 
 // UMD wrapper
 (function(root, factory) {

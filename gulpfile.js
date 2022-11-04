@@ -6,7 +6,7 @@ const header = require("gulp-header");
 const beautify = require("gulp-beautify");
 const minify = require("gulp-minify");
 const clean = require("gulp-clean");
-const removeTest = require("gulp-strip-code");
+const remove = require("gulp-strip-code");
 
 const outputFiles = [
     "lib/msrcrypto.js",
@@ -121,7 +121,8 @@ function format() {
         [
             "lib/msrcrypto.js"
         ])
-        .pipe(removeTest({ start_comment: "debug-block", end_comment: "end-debug-block" })) // strip out test/debug code
+        .pipe(remove({ start_comment: "debug-block", end_comment: "end-debug-block" })) // strip out test/debug code
+        .pipe(remove({ start_comment: "commonjs-block", end_comment: "end-commonjs-block" })) // strip out test/debug code
         .pipe(clean())
         .pipe(strip({ trim: true }))    // strip the comments out
         .pipe(beautify.js({ indent_size: 4, no_preserve_newlines: true }))  // format the code

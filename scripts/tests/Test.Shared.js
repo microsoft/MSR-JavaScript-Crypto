@@ -224,7 +224,7 @@ var testShared = {
         return privateUsages;
     },
 
-    isBytes: utils.verifyByteArray,
+    isBytes: utils.isBytes,
 
     testContext: function (numIterations, assert) {
         return {   // test context
@@ -879,7 +879,7 @@ var validation = {
         return true;
     },
 
-    isBytes: utils.verifyByteArray,
+    isBytes: utils.isBytes,
 
     prop: {
         isBase64Url: function (obj, prop, lengthMin /*optional*/, lengthMax /*optional*/) {

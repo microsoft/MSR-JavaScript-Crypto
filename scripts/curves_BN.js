@@ -31,6 +31,10 @@ var curve_BN254 = {
     cf: 1  // co-factor
 };
 
+/* commonjs-block */
+var cryptoECC = typeof require === "function" ? require("./cryptoECC.js") : cryptoECC
+/* end-commonjs-block */
+
 if (typeof cryptoECC !== "undefined") {
     // Add curves to ECC object
     cryptoECC.curves["BN-254"] = curve_BN254;

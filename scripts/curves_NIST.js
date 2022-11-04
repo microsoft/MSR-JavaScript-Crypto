@@ -55,6 +55,10 @@ var curve_P521 = {
     cf: 1  // co-factor
 };
 
+/* commonjs-block */
+var cryptoECC = typeof require === "function" ? require("./cryptoECC.js") : cryptoECC
+/* end-commonjs-block */
+
 if (typeof cryptoECC !== "undefined") {
     // Add curves to ECC object
     cryptoECC.curves["P-256"] = curve_P256;
