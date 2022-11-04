@@ -27,27 +27,26 @@ type Bytes = Array<Byte>;
 type EncodedCurve = Array<number>;
 
 declare class EllipticCurvePointFp {
+    constructor(curve: EllipticCurveFp, isInfinity: boolean, x: Digits, y: Digits, z?: Digits, isInMontgomeryForm?: boolean)
     public curve: EllipticCurveFp;
-    public isInfinity: boolean;
     public x: Digits;
     public y: Digits;
     public z: Digits;
     public isInMontgomeryForm: boolean;
     public isInfinity: boolean;
     public isAffine: boolean;
-    constructor(curve: EllipticCurveFp, isInfinity: boolean, x: Digits, y: Digits, z?: Digits, isInMontgomeryForm: boolean = false)
     public equals(point: EllipticCurvePointFp): boolean
     public copyTo(source: EllipticCurvePointFp, destination: EllipticCurvePointFp): void
     public clone(): EllipticCurvePointFp
 }
 
-class WeierstrassCurve extends EllipticCurveFpB {
+declare class WeierstrassCurve extends EllipticCurveFpB {
     public type: number
     public name: string
     public generator: EllipticCurvePointFp
 }
 
-class TedCurve extends EllipticCurveFpD {
+declare class TedCurve extends EllipticCurveFpD {
     type: number
     name: string
     rbits: number
@@ -57,8 +56,8 @@ class TedCurve extends EllipticCurveFpD {
 export function createCurve(curveName: string): WeierstrassCurve | TedCurve
 
 export function sec1EncodingFp(): {
-    encodePoint(point: EllipticCurvePointFp): EncodedCurve,
-    decodePoint(encoded: EncodedCurve, curve: EllipticCurveFp)
+    encodePoint(point: EllipticCurvePointFp): Bytes[],
+    decodePoint(encoded: EncodedCurve, curve: EllipticCurveFp) : EllipticCurvePointFp
 }
 
 export function validatePoint(curveName: string, x: Bytes, y: Bytes, z: Bytes): boolean;

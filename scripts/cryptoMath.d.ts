@@ -1,3 +1,8 @@
+type Digits = number[];
+type Digit = number;
+type Bytes = number[];
+type Byte = number;
+
 interface ComputeContext {
     m: Digits,
     mPrime: number,
@@ -48,8 +53,8 @@ export class IntegerGroup {
 }
 
 interface IIntegerGroupElement {
-    m_digits: digits,
-    m_group: group,
+    m_digits: Digits,
+    m_group: IntegerGroup,
     equals: (element: IIntegerGroupElement) => boolean
 }
 
@@ -69,8 +74,8 @@ export const intToDigits: (integer: number) => Digits
 export const digitsToBytes: (digits: Digits) => Bytes
 export const isZero: (array: Array<Byte | Digit>) => boolean
 export const isEven: (array: Array<Byte | Digit>) => boolean
-export const shiftRight: (source: Digits, destination: Digits, bits: number = 1, length?: number) => Digits
-export const shiftLeft: (source: Digits, destination: Digits, bits: number = 1, length?: number) => Digits
+export const shiftRight: (source: Digits, destination: Digits, bits?: number, length?: number) => Digits
+export const shiftLeft: (source: Digits, destination: Digits, bits?: number, length?: number) => Digits
 export const compareDigits: (left: Digits, right: Digits) => number
 export const highestSetBit: (bytes: Bytes) => number
 export const fixedWindowRecode: (digits: Digits, windowSize: number, t: number) => Digits
@@ -79,7 +84,7 @@ export const subtract: (minuend: Digits, subtrahend: Digits, difference: Digits)
 export const multiply: (a: Digits, b: Digits | Digit, p: Digits) => Digits
 export const divRem: (dividend: Digits, divisor: Digits, quotient: Digits, remainder: Digits, temp1?: Digits, temp2?: Digits) => void
 export const reduce: (number: Digits, modulus: Digits, remainder: Digits, temp1?: Digits, temp2?: Digits) => Digits
-export const modInv: (a: Digits, n: Digits, aInv?: Digits, pad: boolean = true) => Digits
+export const modInv: (a: Digits, n: Digits, aInv?: Digits, pad?: boolean) => Digits
 export const modInvCT: (a: Digits, n: Digits, aInv?: Digits) => Digits
 export const modExp: (base: Digits, exponent: Digits, modulus: Digits, result?: Digits) => Digits
 export const modMul: (multiplicand: Digits, multiplier: Digits | Digit, modulus: Digits, product?: Digits, temp1?: Digits, temp2?: Digits) => Digits
