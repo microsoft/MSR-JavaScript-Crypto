@@ -54,17 +54,21 @@ class TedCurve extends EllipticCurveFpD {
     generator: EllipticCurvePointFp
 }
 
-function createCurve(curveName: string): WeierstrassCurve | TedCurve
-function sec1EncodingFp(): {
+export function createCurve(curveName: string): WeierstrassCurve | TedCurve
+
+export function sec1EncodingFp(): {
     encodePoint(point: EllipticCurvePointFp): EncodedCurve,
     decodePoint(encoded: EncodedCurve, curve: EllipticCurveFp)
 }
-function validatePoint(curveName: string, x: Bytes, y: Bytes, z: Bytes): boolean;
-function ModularSquareRootSolver(modulus: Digits): {
+
+export function validatePoint(curveName: string, x: Bytes, y: Bytes, z: Bytes): boolean;
+
+export function ModularSquareRootSolver(modulus: Digits): {
     squareRoot(digits: Digits): Digits,
     jacobiSymbol(digits: Digits): number
 }
-function EllipticCurveOperatorFp(curve: EllipticCurveFp) : {
+
+export function EllipticCurveOperatorFp(curve: EllipticCurveFp) : {
     convertToMontgomeryForm(point : EllipticCurvePointFp) : void,
     convertToStandardForm(point : EllipticCurvePointFp) : void,
     convertToAffineForm(point : EllipticCurvePointFp) : void,
@@ -74,13 +78,4 @@ function EllipticCurveOperatorFp(curve: EllipticCurveFp) : {
     mixedDoubleAdd(jacobianPoint: EllipticCurvePointFp, affinePoint: EllipticCurvePointFp, outputPoint: EllipticCurvePointFp) : void,
     double(point: EllipticCurvePointFp, outputPoint: EllipticCurvePointFp) : void,
     negate(point: EllipticCurvePointFp, outputPoint: EllipticCurvePointFp) : void,
-}
-
-export const cryptoECC = {
-    createCurve,
-    sec1EncodingFp,
-    validatePoint,
-    EllipticCurvePointFp,
-    EllipticCurveOperatorFp,
-    ModularSquareRootSolver
 }
