@@ -56,7 +56,7 @@ declare class TedCurve extends EllipticCurveFpD {
 export function createCurve(curveName: string): WeierstrassCurve | TedCurve
 
 export function sec1EncodingFp(): {
-    encodePoint(point: EllipticCurvePointFp): Bytes[],
+    encodePoint(point: EllipticCurvePointFp): Bytes,
     decodePoint(encoded: EncodedCurve, curve: EllipticCurveFp) : EllipticCurvePointFp
 }
 

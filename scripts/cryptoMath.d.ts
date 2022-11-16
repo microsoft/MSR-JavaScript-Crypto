@@ -41,21 +41,21 @@ export class IntegerGroup {
     public m_modulus: Digits
     public m_digitWidth: number
     public montmul: MontgomeryMultiplier
-    public createElementFromInteger(interger: number): IIntegerGroupElement
-    public createElementFromBytes(bytes: Bytes): IIntegerGroupElement
-    public createElementFromDigits(digits: Digits): IIntegerGroupElement
+    public createElementFromInteger(interger: number): IntegerGroupElement
+    public createElementFromBytes(bytes: Bytes): IntegerGroupElement
+    public createElementFromDigits(digits: Digits): IntegerGroupElement
     public equals(group: IntegerGroup): boolean
-    public add(addend1: IIntegerGroupElement, addend2: IIntegerGroupElement, sum: IIntegerGroupElement): void
-    public subtract(leftElement: IIntegerGroupElement, rightElement: IIntegerGroupElement, outputElement: IIntegerGroupElement): void
-    public multiply(multiplicand: IIntegerGroupElement, multiplier: IIntegerGroupElement, product: IIntegerGroupElement): IIntegerGroupElement
-    public inverse(element: IIntegerGroupElement, outputElement: IIntegerGroupElement): void
-    public modexp(valueElement: IIntegerGroupElement, exponent: IIntegerGroupElement, outputElement: IIntegerGroupElement): IIntegerGroupElement
+    public add(addend1: IntegerGroupElement, addend2: IntegerGroupElement, sum: IntegerGroupElement): void
+    public subtract(leftElement: IntegerGroupElement, rightElement: IntegerGroupElement, outputElement: IntegerGroupElement): void
+    public multiply(multiplicand: IntegerGroupElement, multiplier: IntegerGroupElement, product: IntegerGroupElement): IntegerGroupElement
+    public inverse(element: IntegerGroupElement, outputElement: IntegerGroupElement): void
+    public modexp(valueElement: IntegerGroupElement, exponent: IntegerGroupElement, outputElement: IntegerGroupElement): IntegerGroupElement
 }
 
-interface IIntegerGroupElement {
+interface IntegerGroupElement {
     m_digits: Digits,
     m_group: IntegerGroup,
-    equals: (element: IIntegerGroupElement) => boolean
+    equals: (element: IntegerGroupElement) => boolean
 }
 
 
