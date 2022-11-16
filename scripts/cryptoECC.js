@@ -37,6 +37,8 @@ function MsrcryptoECC() {
 
     var utils = msrcryptoUtilities;
 
+    var setterSupport = utils.setterSupport;
+
     // Create an array, mimics the constructors for typed arrays.
     function createArray(/*@dynamic*/parameter) {
         var i, array = null;
