@@ -77,4 +77,5 @@ export function EllipticCurveOperatorFp(curve: EllipticCurveFp) : {
     mixedDoubleAdd(jacobianPoint: EllipticCurvePointFp, affinePoint: EllipticCurvePointFp, outputPoint: EllipticCurvePointFp) : void,
     double(point: EllipticCurvePointFp, outputPoint: EllipticCurvePointFp) : void,
     negate(point: EllipticCurvePointFp, outputPoint: EllipticCurvePointFp) : void,
+    validatePoint(point: EllipticCurvePointFp) : boolean,
 }

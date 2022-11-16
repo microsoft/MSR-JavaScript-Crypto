@@ -6,3 +6,4 @@ scripts/subtle.js
 
 /.history
 /.DS_Store
+.vscode/iis-e-settings.json
