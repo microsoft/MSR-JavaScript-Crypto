@@ -205,12 +205,12 @@ if ( typeof operations !== "undefined" ) {
         return {
             type: "keyGeneration",
             keyData: msrcryptoPseudoRandom.getBytes( keyLength ),
-            keyHandle: {
+            keyHandle: new MsrCryptoKey({
                 algorithm: p.algorithm,
                 extractable: p.extractable,
                 usages: null || p.usages,
                 type: "secret"
-            }
+            })
         };
     };
 
@@ -230,12 +230,12 @@ if ( typeof operations !== "undefined" ) {
         return {
             type: "keyImport",
             keyData: keyObject.k,
-            keyHandle: {
+            keyHandle: new MsrCryptoKey({
                 algorithm: { name: "HMAC", hash: { name: p.algorithm.hash.name } },
                 extractable: p.extractable || keyObject.extractable,
                 usages: p.usages,
                 type: "secret"
-            }
+            })
         };
 
     };

@@ -103,12 +103,12 @@ if (typeof operations !== "undefined") {
         return {
             type: "keyImport",
             keyData: keyData,
-            keyHandle: {
+            keyHandle: new MsrCryptoKey({
                 algorithm: { name: "HKDF-CTR" },
                 extractable: false,
                 usages: p.usages,
                 type: "secret"
-            }
+            })
         };
 
     };

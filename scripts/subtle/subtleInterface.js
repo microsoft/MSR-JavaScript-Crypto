@@ -22,10 +22,12 @@ function checkOperation(operationType, algorithmName) {
     }
 }
 
+var isNativeCryptoKeyAvailable = typeof CryptoKey !== "undefined";
+
 // The list of possible parameters passed to the subtle interface.
 var subtleParameters = [
    /* 0 */ { name: "algorithm", type: "Object", required: true },
-   /* 1 */ { name: "keyHandle", type: "Object", required: true },
+   /* 1 */ { name: "keyHandle", type: isNativeCryptoKeyAvailable ? "CryptoKey" : "Object", required: true },
    /* 2 */ { name: "buffer", type: "Array", required: false },
    /* 3 */ { name: "signature", type: "Array", required: true },
    /* 4 */ { name: "format", type: "String", required: true },

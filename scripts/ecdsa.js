@@ -223,12 +223,12 @@ if (typeof operations !== "undefined") {
                         x: x,
                         y: y
                     },
-                    keyHandle: {
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: ["verify"],
                         type: "public"
-                    }
+                    })
                 },
                 privateKey: {
                     keyData: {
@@ -236,12 +236,12 @@ if (typeof operations !== "undefined") {
                         y: y,
                         d: d
                     },
-                    keyHandle: {
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: ["sign"],
                         type: "private"
-                    }
+                    })
                 }
             }
         };
@@ -274,12 +274,12 @@ if (typeof operations !== "undefined") {
             return {
                 type: "keyImport",
                 keyData: { x: x, y: y },
-                keyHandle: {
+                keyHandle: new MsrCryptoKey({
                     algorithm: p.algorithm,
                     extractable: p.extractable,
                     usages: p.usages,
                     type: "public"
-                }
+                })
             };
         }
 
@@ -306,12 +306,12 @@ if (typeof operations !== "undefined") {
             return {
                 type: "keyImport",
                 keyData: keyObject,
-                keyHandle: {
+                keyHandle: new MsrCryptoKey({
                     algorithm: p.algorithm,
                     extractable: p.extractable || keyObject.extractable,
                     usages: null || p.usages, // IE11 returns null here
                     type: keyObject.d ? "private" : "public"
-                }
+                })
             };
         }
 
@@ -320,7 +320,7 @@ if (typeof operations !== "undefined") {
             var lengths = {
                 "P-256" : 32,
                 "P-384" : 48,
-                "P-521" : 66 
+                "P-521" : 66
             }
 
             var partLen = lengths[p.algorithm.namedCurve];
@@ -356,12 +356,12 @@ if (typeof operations !== "undefined") {
             return {
                 type: "keyImport",
                 keyData: keyObject,
-                keyHandle: {
+                keyHandle: new MsrCryptoKey({
                     algorithm: p.algorithm,
                     extractable: p.extractable,
                     usages: p.usages,
                     type: "public"
-                }
+                })
             };
 
         }
@@ -371,7 +371,7 @@ if (typeof operations !== "undefined") {
             var lengths = {
                 "P-256" : 32,
                 "P-384" : 48,
-                "P-521" : 66 
+                "P-521" : 66
             }
 
             var partLen = lengths[p.algorithm.namedCurve];
@@ -415,12 +415,12 @@ if (typeof operations !== "undefined") {
             return {
                 type: "keyImport",
                 keyData: keyObject,
-                keyHandle: {
+                keyHandle: new MsrCryptoKey({
                     algorithm: p.algorithm,
                     extractable: p.extractable,
                     usages: p.usages,
                     type: "private"
-                }
+                })
             };
 
         }
@@ -452,7 +452,7 @@ if (typeof operations !== "undefined") {
                 SEQUENCE: [
                     {
                         SEQUENCE: [
-                            { "OBJECT IDENTIFIER": EC_PUBLICKEY }, 
+                            { "OBJECT IDENTIFIER": EC_PUBLICKEY },
                             { "OBJECT IDENTIFIER": curveOid[p.algorithm.namedCurve] }
                         ]
                     },

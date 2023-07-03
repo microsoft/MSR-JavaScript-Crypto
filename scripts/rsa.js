@@ -302,12 +302,12 @@ if (typeof operations !== "undefined") {
         return {
             type: "keyImport",
             keyData: keyObject,
-            keyHandle: {
+            keyHandle: new MsrCryptoKey({
                 algorithm: p.algorithm,
                 extractable: p.extractable,
                 usages: p.usages, // IE11 returns null here
                 type: keyObject.d || keyObject.dq ? "private" : "public"
-            }
+            })
         };
     };
 
@@ -478,21 +478,21 @@ if (typeof operations !== "undefined") {
             keyPair: {
                 publicKey: {
                     keyData: keyPair.publicKey,
-                    keyHandle: {
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: null || publicUsage,
                         type: "public"
-                    }
+                    })
                 },
                 privateKey: {
                     keyData: keyPair.privateKey,
-                    keyHandle: {
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: null || privateUsage,
                         type: "private"
-                    }
+                    })
                 }
             }
         };

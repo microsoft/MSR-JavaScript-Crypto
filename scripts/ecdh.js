@@ -159,21 +159,21 @@ if ( typeof operations !== "undefined" ) {
             keyPair: {
                 publicKey: {
                     keyData: keyPairData.publicKey,
-                    keyHandle: {
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: [],
                         type: "public"
-                    }
+                    })
                 },
                 privateKey: {
                     keyData: keyPairData.privateKey,
-                    keyHandle: {
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: p.usages,
                         type: "private"
-                    }
+                    })
                 }
             }
         };
@@ -207,12 +207,12 @@ if ( typeof operations !== "undefined" ) {
                 return {
                     type: "keyImport",
                     keyData: { x: x, y: y },
-                    keyHandle: {
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable || false,
                         usages: p.usages,
                         type: "public"
-                    }
+                    })
                 };
             }
 
@@ -240,12 +240,12 @@ if ( typeof operations !== "undefined" ) {
                 return {
                     type: "keyImport",
                     keyData: keyObject,
-                    keyHandle: {
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable || keyObject.extractable,
                         usages: p.usages,
                         type: keyObject.d ? "private" : "public"
-                    }
+                    })
                 };
             }
 
@@ -254,7 +254,7 @@ if ( typeof operations !== "undefined" ) {
                 var lengths = {
                     "P-256" : 32,
                     "P-384" : 48,
-                    "P-521" : 66 
+                    "P-521" : 66
                 }
 
                 var partLen = lengths[p.algorithm.namedCurve];
@@ -290,12 +290,12 @@ if ( typeof operations !== "undefined" ) {
                 return {
                     type: "keyImport",
                     keyData: keyObject,
-                    keyHandle: {
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: p.usages,
                         type: "public"
-                    }
+                    })
                 };
 
             }
@@ -305,7 +305,7 @@ if ( typeof operations !== "undefined" ) {
                 var lengths = {
                     "P-256" : 32,
                     "P-384" : 48,
-                    "P-521" : 66 
+                    "P-521" : 66
                 }
 
                 var partLen = lengths[p.algorithm.namedCurve];
@@ -349,12 +349,12 @@ if ( typeof operations !== "undefined" ) {
                 return {
                     type: "keyImport",
                     keyData: keyObject,
-                    keyHandle: {
+                    keyHandle: new MsrCryptoKey({
                         algorithm: p.algorithm,
                         extractable: p.extractable,
                         usages: p.usages,
                         type: "private"
-                    }
+                    })
                 };
 
             }
@@ -390,7 +390,7 @@ if ( typeof operations !== "undefined" ) {
                 SEQUENCE: [
                     {
                         SEQUENCE: [
-                            { "OBJECT IDENTIFIER": EC_PUBLICKEY }, 
+                            { "OBJECT IDENTIFIER": EC_PUBLICKEY },
                             { "OBJECT IDENTIFIER": curveOid[p.algorithm.namedCurve] }
                         ]
                     },
