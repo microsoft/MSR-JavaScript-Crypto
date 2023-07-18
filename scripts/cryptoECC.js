@@ -262,7 +262,8 @@ function MsrcryptoECC() {
             function () { return isInMontgomeryForm; }, function (val) { isInMontgomeryForm = val; });
         utils.createProperty(returnObj, "isInfinity", isInfinity,
             function () { return isInfinity; }, function (val) { isInfinity = val; });
-        utils.createProperty(returnObj, "isAffine", z === null, function () { return z === null; });
+        utils.createProperty(returnObj, "isAffine", z === null, 
+            function () { return z === null; }, function (val) { return; });
 
         return returnObj;
     };
