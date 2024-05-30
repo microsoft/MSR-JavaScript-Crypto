@@ -29,6 +29,7 @@ const fullBuild = [
     "scripts/global.js",
     "scripts/utilities.js",
     "scripts/asn1.js",
+    "scripts/cryptoKey.js",
     "scripts/worker.js",
     "scripts/jwk.js",
     "scripts/cryptoMath.js",

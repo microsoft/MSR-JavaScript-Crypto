@@ -117,12 +117,12 @@ if (typeof operations !== "undefined") {
         return {
             type: "keyImport",
             keyData: keyData,
-            keyHandle: {
+            keyHandle: new MsrCryptoKey({
                 algorithm: { name: "PBKDF2" },
                 extractable: false,
                 usages: p.usages,
                 type: "secret"
-            }
+            })
         };
 
     };
