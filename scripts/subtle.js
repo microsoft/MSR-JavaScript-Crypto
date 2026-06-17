@@ -853,6 +853,11 @@ msrcryptoSubtle = (function() {
 
                 var keyLength;
 
+                // Accept both the string and object HashAlgorithmIdentifier forms.
+                if (derivedKeyType.hash && !derivedKeyType.hash.name && utils.getObjectType(derivedKeyType.hash) === "String") {
+                    derivedKeyType.hash = { name: derivedKeyType.hash };
+                }
+
                 switch (derivedKeyType.name.toUpperCase()) {
                     case "AES-CBC":
                     case "AES-GCM":
