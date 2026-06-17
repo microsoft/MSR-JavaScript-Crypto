@@ -7,21 +7,24 @@
     "type": "git",
     "url": "https://github.com/microsoft/MSR-JavaScript-Crypto.git"
   },
+  "main": "lib/msrcrypto.js",
+  "types": "definitions/msrCrypto.d.ts",
+  "files": [
+    "lib/",
+    "definitions/",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md"
+  ],
   "scripts": {
-    "build": "gulp"
-  },  
+    "build": "node build.mjs",
+    "build:watch": "node build.mjs --watch",
+    "clean": "node build.mjs --clean"
+  },
   "devDependencies": {
-    "@types/gulp": "^4.0.9",
-    "@types/gulp-concat": "0.0.32",
-    "@types/gulp-header": "^2.0.1",
-    "@types/gulp-strip-comments": "^2.5.1",
-    "gulp": "^4.0.2",
-    "gulp-beautify": "^3.0.0",
-    "gulp-clean": "^0.4.0",
-    "gulp-concat": "^2.6.1",
-    "gulp-header": "^2.0.9",
-    "gulp-minify": "^3.1.0",
-    "gulp-strip-code": "^0.1.4",
-    "gulp-strip-comments": "^2.5.2"
+    "esbuild": "^0.28.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

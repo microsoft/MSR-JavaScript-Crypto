@@ -1,18 +1,42 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558 
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "gulp",
-            "task": "default",
+            "label": "build",
+            "type": "npm",
+            "script": "build",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
                 "isDefault": true
+            },
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared",
+                "clear": true
             }
         },
         {
+            "label": "build:watch",
+            "type": "npm",
+            "script": "build:watch",
+            "problemMatcher": [],
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "label": "clean",
+            "type": "npm",
+            "script": "clean",
+            "problemMatcher": []
+        },
+        {
+            "label": "install",
             "type": "npm",
             "script": "install",
             "problemMatcher": []
