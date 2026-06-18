@@ -226,6 +226,23 @@ ecdsa.p256.jwk = {
     ]
 };
 
+// Interop regression vector for leading-zero handling on import.
+// 'trimmedPrivateKey.d' is a valid P-256 private key whose top byte is 0x00,
+// encoded with that leading zero removed (31 bytes instead of 32) as some
+// non-conforming producers (e.g. older IE) emit. Importing must accept the
+// short value and re-pad so the exported x/y/d are the full element length
+// (32 bytes for P-256), matching 'expectedPrivateKey'.
+ecdsa.p256.jwkTrimmed = {
+    format: "jwk",
+    algorithm: {
+        name: "ECDSA",
+        namedCurve: "P-256"
+    },
+    elementLength: 32,
+    trimmedPrivateKey: { "crv": "P-256", "ext": true, "key_ops": ["sign"], "kty": "EC", "x": "83shLd6Ty7-buZMzqFGPq14rnyucOTafrxKfs8aDo1A", "y": "i0kIcFfMpF3okPRNm8Y3UaLjqHhpO6qkBo8e0HN-gKA", "d": "28b6bM8I4XcRdS8cfaHRcothIFaAVqtPy9U6oEKNOg" },
+    expectedPrivateKey: { "crv": "P-256", "ext": true, "key_ops": ["sign"], "kty": "EC", "x": "83shLd6Ty7-buZMzqFGPq14rnyucOTafrxKfs8aDo1A", "y": "i0kIcFfMpF3okPRNm8Y3UaLjqHhpO6qkBo8e0HN-gKA", "d": "ANvG-mzPCOF3EXUvHH2h0XKLYSBWgFarT8vVOqBCjTo" }
+};
+
 ecdsa.p384.jwk = {
     format: "jwk",
     algorithm: {

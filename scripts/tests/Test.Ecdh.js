@@ -83,6 +83,36 @@ function ecdhTests() {
         ts.keyPairImportExportTest(ecdh.p521.jwk, undefined, undefined, context(iterations, assert));
     });
 
+    QUnit.test(label + " key import jwk re-pads leading-zero-trimmed P-256 ", function(assert) {
+        // Regression: a private 'd' (and x/y) supplied with leading zeros trimmed
+        // must be accepted on import and re-padded to the full curve element
+        // length on export (32 bytes for P-256), matching Chrome/Chromium.
+        var vector = ecdh.p256.jwkTrimmed;
+        var expected = vector.expectedPrivateKey;
+        var elementLength = vector.elementLength;
+        var done = assert.async();
+
+        subtle.importKey("jwk", vector.trimmedPrivateKey, vector.algorithm, true, vector.trimmedPrivateKey.key_ops)
+            .then(function(key) {
+                return subtle.exportKey("jwk", key);
+            })
+            .then(function(jwk) {
+                assert.equal(msrCrypto.fromBase64(jwk.d).length, elementLength, "exported 'd' is full curve length");
+                assert.equal(msrCrypto.fromBase64(jwk.x).length, elementLength, "exported 'x' is full curve length");
+                assert.equal(msrCrypto.fromBase64(jwk.y).length, elementLength, "exported 'y' is full curve length");
+                assert.equal(jwk.d, expected.d, "exported 'd' matches the zero-padded value");
+                assert.equal(jwk.x, expected.x, "exported 'x' matches the zero-padded value");
+                assert.equal(jwk.y, expected.y, "exported 'y' matches the zero-padded value");
+                done();
+            })
+            // IE8 will not allow .catch()
+            // tslint:disable-next-line: no-string-literal
+            ["catch"](function(error) {
+                assert.ok(false, error ? error.toString() : "unexpected error");
+                done();
+            });
+    });
+
     QUnit.test(label + " generateKeyTest  P-256", function(assert) {
         ts.keyGeneratePairTest(ecdhKeyAlg("P-256"), ["deriveKey", "deriveBits"], inspectEcdhKey, context(iterations, assert));
     });
@@ -216,7 +246,7 @@ var inspectEcdhKey = {
 
         var fail = [];
         var expLenMax = ecdhKeyLengths[algorithm.namedCurve];
-        var expLenMin = expLenMax - 2;
+        var expLenMin = expLenMax;
 
         // has crv property equal to "P-521"
         if (!validation.prop.string(keyObj, "crv", algorithm.namedCurve)) {
@@ -275,7 +305,7 @@ var inspectEcdhKey = {
         // }
 
         var expLenMax = ecdhKeyLengths[algorithm.namedCurve];
-        var expLenMin = expLenMax - 2;
+        var expLenMin = expLenMax;
 
         this.public(keyObj, algorithm, usages, reason);
 

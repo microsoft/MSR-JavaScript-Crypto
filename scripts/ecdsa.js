@@ -205,15 +205,21 @@ if (typeof operations !== "undefined") {
 
         var dtb = cryptoMath.digitsToBytes;
 
-        // Sometimes the result is a byte short because the byte-conversion
-        // trims leading zeros. We pad the zeros back on if needed.
-        function padTo8BytesIncrement( array ) {
-            return array;
-            //return msrcryptoUtilities.padFront(array, 0, Math.ceil(array.length / 8) * 8);
+        // Pad each value to the curve's fixed element length so leading zeros
+        // are preserved (matches Chrome / Chromium-based Edge behavior).
+        var partLen = {
+            "P-256": 32, "P-384": 48, "P-521": 66,
+            "NUMSP256D1": 32, "NUMSP256T1": 32,
+            "NUMSP384D1": 48, "NUMSP384T1": 48,
+            "NUMSP512D1": 64, "NUMSP512T1": 64
+        }[p.algorithm.namedCurve];
+
+        function padToCurveLength( array ) {
+            return msrcryptoUtilities.padFront(array, 0, partLen);
         }
-        var x = padTo8BytesIncrement(dtb(keyPairData.publicKey.x));
-        var y = padTo8BytesIncrement(dtb(keyPairData.publicKey.y));
-        var d = padTo8BytesIncrement(dtb(keyPairData.privateKey));
+        var x = padToCurveLength(dtb(keyPairData.publicKey.x));
+        var y = padToCurveLength(dtb(keyPairData.publicKey.y));
+        var d = padToCurveLength(dtb(keyPairData.privateKey));
 
         return {
             type: "keyPairGeneration",
@@ -298,6 +304,18 @@ if (typeof operations !== "undefined") {
                 keyObject.x = publicKey.x;
                 keyObject.y = publicKey.y;
             }
+
+            // Accept keys with or without trimmed leading zeros and pad each
+            // value to the curve's fixed element length (Chrome/Chromium behavior).
+            var partLen = {
+                "P-256": 32, "P-384": 48, "P-521": 66,
+                "NUMSP256D1": 32, "NUMSP256T1": 32,
+                "NUMSP384D1": 48, "NUMSP384T1": 48,
+                "NUMSP512D1": 64, "NUMSP512T1": 64
+            }[p.algorithm.namedCurve];
+            if ( keyObject.x ) { keyObject.x = msrcryptoUtilities.padFront(keyObject.x, 0, partLen); }
+            if ( keyObject.y ) { keyObject.y = msrcryptoUtilities.padFront(keyObject.y, 0, partLen); }
+            if ( keyObject.d ) { keyObject.d = msrcryptoUtilities.padFront(keyObject.d, 0, partLen); }
 
             if (cryptoECC.validatePoint(p.algorithm.namedCurve.toUpperCase(), keyObject.x, keyObject.y) === false) {
                 throw new Error("DataError");

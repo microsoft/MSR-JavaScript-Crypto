@@ -224,6 +224,17 @@ ecdh.p256.jwk = {
     ]
 };
 
+ecdh.p256.jwkTrimmed = {
+    format: "jwk",
+    algorithm: {
+        name: "ECDH",
+        namedCurve: "P-256"
+    },
+    elementLength: 32,
+    trimmedPrivateKey: { "crv": "P-256", "ext": true, "key_ops": ["deriveBits"], "kty": "EC", "x": "6lJdR85MW4WKPHeXbfrlgfd9DU993elUHdWwFqPz7Q0", "y": "jRndSKJUvL3OX56qp2jKDmAW-cmpF2GefeAxyWUvBIE", "d": "VG4DRmQquvHIABar_TOs3NbNlBuS0TG7TTPm0Jb6rg" },
+    expectedPrivateKey: { "crv": "P-256", "ext": true, "key_ops": ["deriveBits"], "kty": "EC", "x": "6lJdR85MW4WKPHeXbfrlgfd9DU993elUHdWwFqPz7Q0", "y": "jRndSKJUvL3OX56qp2jKDmAW-cmpF2GefeAxyWUvBIE", "d": "AFRuA0ZkKrrxyAAWq_0zrNzWzZQbktExu00z5tCW-q4" }
+};
+
 ecdh.p384.jwk = {
     format: "jwk",
     algorithm: {
