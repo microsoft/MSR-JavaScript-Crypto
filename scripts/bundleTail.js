@@ -21,6 +21,9 @@ var publicMethods = {
     /// <field type = 'Object' static="false">Microsoft Research Javascript Crypto Library Subtle interface.</field>
     subtle: msrcryptoSubtle ? msrcryptoSubtle.publicMethods : null,
 
+    /// <field type = 'Function'>Web Crypto API CryptoKey interface object. Not directly constructible; instances are returned by the subtle key operations.</field>
+    CryptoKey: CryptoKey,
+
     getRandomValues: function(array) {
         /// <signature>
         ///     <summary>Places cryptographically random values into the given array.</summary>

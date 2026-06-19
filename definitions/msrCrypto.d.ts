@@ -11,6 +11,8 @@ interface Crypto {
     fromBase64(data: string): ArrayLike<number>;
     textToBytes(text: string): ArrayLike<number>;
     bytesToText(bytes: ArrayLike<number>): String;
+    CryptoKey: typeof CryptoKey;
+    Promise: typeof Promise;
 }
 
 // Extend default Algorithm from lib.d.ts

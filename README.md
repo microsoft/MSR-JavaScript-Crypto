@@ -22,6 +22,20 @@ var crypto =  window.crypto /*native*/ || window.msCrypto /*IE11 native*/ || win
 crypto.subtle.encrypt(...);
 ```
 
+The library is exposed only under the name `msrCrypto`; it does **not** assign `crypto` or `CryptoKey` to the global scope automatically.
+Some libraries (for example, [`jose`](https://github.com/panva/jose)) expect a top-level `CryptoKey` to be available and will fail to recognize keys if it is missing.
+If you are using msrCrypto as a polyfill in an environment without native Web Crypto, assign both globals yourself:  
+```javascript
+// Only install the polyfill where native Web Crypto is not available.
+if (!window.crypto || !window.crypto.subtle) {
+    window.crypto = window.msrCrypto;             // exposes crypto.subtle, crypto.getRandomValues, etc.
+    window.CryptoKey = window.msrCrypto.CryptoKey; // top-level CryptoKey constructor
+}
+```
+> Use `globalThis` instead of `window` in non-browser environments.
+
+Keys returned by `msrCrypto.subtle` are instances of `msrCrypto.CryptoKey`. Once `CryptoKey` is assigned to the global scope, `key instanceof CryptoKey` evaluates to `true`, which satisfies the polyfill detection used by consumers such as `jose`.
+
 ## Library Files  
 
 Full library [`/lib/msrCrypto.js`](https://github.com/microsoft/MSR-JavaScript-Crypto/blob/master/lib/msrcrypto.js)  

@@ -15,15 +15,41 @@
 //    limitations under the License.
 //
 //*******************************************************************************
-// AMD/global wrapper
-(function(root, factory) {
+// Promise polyfill wrapper.
+// Exposes the constructor on msrCrypto.Promise (the native Promise when one is
+// available, otherwise the bundled implementation) so the polyfill installer
+// can wire it to the global scope. Also installs a global Promise directly
+// when the host lacks one (for example, legacy IE).
+(function(factory) {
 
-    if (typeof Promise !== "undefined") {
-        return;
+    // Resolve the real global object across browsers, web workers, and Node.
+    var globalObject = (function() {
+        if (typeof globalThis !== "undefined") { return globalThis; }
+        if (typeof self !== "undefined") { return self; }
+        if (typeof window !== "undefined") { return window; }
+        if (typeof global !== "undefined") { return global; }
+        return this;
+    })();
+
+    // Prefer a native Promise; only build the bundled one when needed.
+    var providedPromise = (typeof globalObject.Promise !== "undefined")
+        ? globalObject.Promise
+        : factory();
+
+    // Expose the constructor on the msrCrypto export so msrcryptoPolyfill.js
+    // (or any consumer) can install it on the global scope on demand.
+    if (typeof module === "object" && module.exports) {
+        module.exports.Promise = module.exports.Promise || providedPromise;
+    } else if (globalObject.msrCrypto) {
+        globalObject.msrCrypto.Promise = globalObject.msrCrypto.Promise || providedPromise;
     }
-    root.Promise = factory();
 
-}(this, function() {
+    // Install a global Promise when the host lacks one.
+    if (typeof globalObject.Promise === "undefined") {
+        globalObject.Promise = providedPromise;
+    }
+
+}(function() {
 
     var Promise = function(executor, id) {
         /// <summary>

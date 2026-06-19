@@ -98,3 +98,34 @@ var createProperty = function(parentObject, propertyName, /*@dynamic*/initialVal
 // Collection of hash functions for global availability.
 // Each hash function will add itself to the collection as it is evaluated.
 var msrcryptoHashFunctions = {};
+
+// Web Crypto API CryptoKey interface object.
+//
+// Per the W3C Web Cryptography API, CryptoKey is a top-level interface that is
+// exposed on the global scope but is NOT directly constructible by user code
+// (calling 'new CryptoKey()' throws an "Illegal constructor" error). Instances
+// are produced only by the SubtleCrypto key operations (generateKey, importKey,
+// deriveKey, unwrapKey).
+//
+// A CryptoKey is created internally from the 'keyHandle' object produced by an
+// algorithm operation, copying its public attributes (type, extractable,
+// algorithm, usages). A private token gates construction so external callers
+// cannot create one directly, matching native behavior.
+var cryptoKeyInternalToken = {};
+
+function CryptoKey(token, keyHandle) {
+    /// <summary>
+    /// Web Crypto API CryptoKey. Not directly constructible by user code;
+    /// instances are returned by the SubtleCrypto key operations.
+    /// </summary>
+
+    if (token !== cryptoKeyInternalToken) {
+        throw new Error("Illegal constructor");
+    }
+
+    for (var property in keyHandle) {
+        if (keyHandle.hasOwnProperty(property)) {
+            this[property] = keyHandle[property];
+        }
+    }
+}

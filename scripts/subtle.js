@@ -114,10 +114,15 @@ function baseOperation(processResults) {
 
 function keyOperation() {
 
+    function toCryptoKey(keyHandle) {
+        return new CryptoKey(cryptoKeyInternalToken, keyHandle);
+    }
+
     function processResult(result) {
 
         var publicKey,
-            privateKey;
+            privateKey,
+            cryptoKey;
 
         switch (result.type) {
 
@@ -125,28 +130,31 @@ function keyOperation() {
             case "keyImport":
             case "keyDerive":
                 if (result.keyPair) {
-                    keys.add(result.keyPair.publicKey.keyHandle, result.keyPair.publicKey.keyData);
-                    keys.add(result.keyPair.privateKey.keyHandle, result.keyPair.privateKey.keyData);
+                    publicKey = toCryptoKey(result.keyPair.publicKey.keyHandle);
+                    privateKey = toCryptoKey(result.keyPair.privateKey.keyHandle);
+                    keys.add(publicKey, result.keyPair.publicKey.keyData);
+                    keys.add(privateKey, result.keyPair.privateKey.keyData);
                     return {
-                        publicKey: result.keyPair.publicKey.keyHandle,
-                        privateKey: result.keyPair.privateKey.keyHandle
+                        publicKey: publicKey,
+                        privateKey: privateKey
                     };
                 } else {
-                    keys.add(result.keyHandle, result.keyData);
-                    return result.keyHandle;
+                    cryptoKey = toCryptoKey(result.keyHandle);
+                    keys.add(cryptoKey, result.keyData);
+                    return cryptoKey;
                 }
 
             case "keyExport":
                 return result.keyHandle;
 
             case "keyPairGeneration":
-                privateKey = result.keyPair.privateKey;
-                publicKey = result.keyPair.publicKey;
-                keys.add(publicKey.keyHandle, publicKey.keyData);
-                keys.add(privateKey.keyHandle, privateKey.keyData);
+                publicKey = toCryptoKey(result.keyPair.publicKey.keyHandle);
+                privateKey = toCryptoKey(result.keyPair.privateKey.keyHandle);
+                keys.add(publicKey, result.keyPair.publicKey.keyData);
+                keys.add(privateKey, result.keyPair.privateKey.keyData);
                 return {
-                    publicKey: publicKey.keyHandle,
-                    privateKey: privateKey.keyHandle
+                    publicKey: publicKey,
+                    privateKey: privateKey
                 };
 
             default:

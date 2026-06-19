@@ -95,10 +95,19 @@ function baseOperation(processResults) {
 
 function keyOperation() {
 
+    // Wrap an algorithm-produced keyHandle in a Web Crypto CryptoKey instance.
+    // The same instance is used both as the lookup token (keys.add) and as the
+    // value handed back to the caller, so key identity is preserved for
+    // subsequent operations.
+    function toCryptoKey(keyHandle) {
+        return new CryptoKey(cryptoKeyInternalToken, keyHandle);
+    }
+
     function processResult(result) {
 
         var publicKey,
-            privateKey;
+            privateKey,
+            cryptoKey;
 
         // Could be the result of an import, export, generate.
         // Get the keyData and keyHandle out.
@@ -109,15 +118,18 @@ function keyOperation() {
             case "keyImport":
             case "keyDerive":
                 if (result.keyPair) {
-                    keys.add(result.keyPair.publicKey.keyHandle, result.keyPair.publicKey.keyData);
-                    keys.add(result.keyPair.privateKey.keyHandle, result.keyPair.privateKey.keyData);
+                    publicKey = toCryptoKey(result.keyPair.publicKey.keyHandle);
+                    privateKey = toCryptoKey(result.keyPair.privateKey.keyHandle);
+                    keys.add(publicKey, result.keyPair.publicKey.keyData);
+                    keys.add(privateKey, result.keyPair.privateKey.keyData);
                     return {
-                        publicKey: result.keyPair.publicKey.keyHandle,
-                        privateKey: result.keyPair.privateKey.keyHandle
+                        publicKey: publicKey,
+                        privateKey: privateKey
                     };
                 } else {
-                    keys.add(result.keyHandle, result.keyData);
-                    return result.keyHandle;
+                    cryptoKey = toCryptoKey(result.keyHandle);
+                    keys.add(cryptoKey, result.keyData);
+                    return cryptoKey;
                 }
 
                 // KeyExport: return the export data
@@ -125,13 +137,13 @@ function keyOperation() {
                 return result.keyHandle;
 
             case "keyPairGeneration":
-                privateKey = result.keyPair.privateKey;
-                publicKey = result.keyPair.publicKey;
-                keys.add(publicKey.keyHandle, publicKey.keyData);
-                keys.add(privateKey.keyHandle, privateKey.keyData);
+                publicKey = toCryptoKey(result.keyPair.publicKey.keyHandle);
+                privateKey = toCryptoKey(result.keyPair.privateKey.keyHandle);
+                keys.add(publicKey, result.keyPair.publicKey.keyData);
+                keys.add(privateKey, result.keyPair.privateKey.keyData);
                 return {
-                    publicKey: publicKey.keyHandle,
-                    privateKey: privateKey.keyHandle
+                    publicKey: publicKey,
+                    privateKey: privateKey
                 };
 
             default:
