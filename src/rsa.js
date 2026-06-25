@@ -463,14 +463,23 @@ if (typeof operations !== "undefined") {
         var algName = p.algorithm.name;
         var rsaKeyType = algName.slice(algName.indexOf("-") + 1).toUpperCase();
 
+        // The usages valid for each half of the key pair for this algorithm.
         var publicUsage, privateUsage;
 
         if (algName === "RSASSA-PKCS1-V1_5" || algName === "RSA-PSS") {
             publicUsage = ["verify"];
             privateUsage = ["sign"];
         } else { // OAEP, RSAES
-            publicUsage = ["encrypt"];
-            privateUsage = ["decrypt"];
+            publicUsage = ["encrypt", "wrapKey"];
+            privateUsage = ["decrypt", "unwrapKey"];
+        }
+
+        // Honor the caller's requested usages (like the other algorithms do),
+        // routing each requested usage to the key half it applies to. When no
+        // usages are requested, default to all usages valid for the algorithm.
+        if (p.usages) {
+            publicUsage = publicUsage.filter(function(usage) { return p.usages.indexOf(usage) >= 0; });
+            privateUsage = privateUsage.filter(function(usage) { return p.usages.indexOf(usage) >= 0; });
         }
 
         return {
@@ -481,7 +490,7 @@ if (typeof operations !== "undefined") {
                     keyHandle: {
                         algorithm: p.algorithm,
                         extractable: p.extractable,
-                        usages: null || publicUsage,
+                        usages: publicUsage,
                         type: "public"
                     }
                 },
@@ -490,7 +499,7 @@ if (typeof operations !== "undefined") {
                     keyHandle: {
                         algorithm: p.algorithm,
                         extractable: p.extractable,
-                        usages: null || privateUsage,
+                        usages: privateUsage,
                         type: "private"
                     }
                 }

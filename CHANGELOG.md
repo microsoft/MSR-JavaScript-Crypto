@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `SubtleCrypto.generateKey` for RSA algorithms now honors the requested key
+  usages (routing each usage to the public or private key it applies to)
+  instead of forcing a fixed pair. Generating an `RSA-OAEP` key with
+  `["wrapKey", "unwrapKey"]` now yields keys usable with `wrapKey`/`unwrapKey`.
+
+### Removed
+
+- Dead, unreachable `wrapKey.js` module (legacy JWE-style key wrapping that was
+  never dispatched) and its orphaned JWK byte-serializer helper. The public
+  `wrapKey`/`unwrapKey` continue to work via the standard
+  export-then-encrypt / decrypt-then-import path.
+
 ## [1.7.0] - 2026-06-25
 
 ### Added
