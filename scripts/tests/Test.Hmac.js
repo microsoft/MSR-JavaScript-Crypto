@@ -44,6 +44,62 @@ function hmacTests() {
         ts.keyGenerateTest( hmacKeyAlg( "SHA-512" ), hmacUsages, inspectHmacKey, context( iterations, assert ) );
     } );
 
+    // Verify that an explicit `length` (in bits, per the Web Crypto spec) produces a key
+    // of the requested byte length, and that omitting `length` defaults to the hash block size.
+    QUnit.test( label + " generateKey optional length (bits)", function( assert ) {
+
+        var blockSizeBytes = { "SHA-1": 64, "SHA-256": 64, "SHA-384": 128, "SHA-512": 128 };
+
+        var cases = [
+            { hash: "SHA-256", length: 256, expectedBytes: 32 },
+            { hash: "SHA-256", length: 128, expectedBytes: 16 },
+            { hash: "SHA-1", length: 160, expectedBytes: 20 },
+            { hash: "SHA-512", length: 1024, expectedBytes: 128 },
+            { hash: "SHA-384", length: 512, expectedBytes: 64 },
+            { hash: "SHA-256", length: undefined, expectedBytes: blockSizeBytes["SHA-256"] },
+            { hash: "SHA-384", length: undefined, expectedBytes: blockSizeBytes["SHA-384"] }
+        ];
+
+        var done = assert.async( cases.length );
+
+        // Use a plain for-loop with a per-iteration helper instead of
+        // Array.prototype.forEach (not available on IE8) and capture each
+        // testCase in its own scope so the async callbacks see the right one.
+        function runCase( testCase ) {
+
+            var algorithm = { name: "HMAC", hash: { name: testCase.hash } };
+            if ( testCase.length !== undefined ) {
+                algorithm.length = testCase.length;
+            }
+
+            subtle.generateKey( algorithm, true, [SIGN, VERIFY] )
+                .then( function( key ) {
+                    return subtle.exportKey( "raw", key );
+                } )
+                .then( function( raw ) {
+                    // testShared.toArray is IE8/9-safe (no Uint8Array there).
+                    var byteLength = testShared.toArray( raw ).length;
+                    assert.equal(
+                        byteLength,
+                        testCase.expectedBytes,
+                        testCase.hash + " length=" +
+                            ( testCase.length === undefined ? "(default)" : testCase.length ) +
+                            " => " + testCase.expectedBytes + " bytes" );
+                    done();
+                } )
+            // IE8 will not allow .catch()
+            // tslint:disable-next-line: no-string-literal
+            ["catch"]( function( error ) {
+                assert.ok( false, error ? error.toString() : "unexpected error" );
+                done();
+            } );
+        }
+
+        for ( var i = 0; i < cases.length; i++ ) {
+            runCase( cases[i] );
+        }
+    } );
+
     QUnit.test( label + " verify native signature SHA-1 ", function( assert ) {
         ts.verifyNativeSignatureTest(
             hmacKeyAlg( "SHA-1" ), hmac.sign_verify.sha1, context( iterations, assert ) );

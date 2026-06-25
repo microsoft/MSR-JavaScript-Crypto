@@ -193,18 +193,24 @@ if ( typeof operations !== "undefined" ) {
 
     msrcryptoHmac.generateKey = function( p ) {
 
-        // keyLength = hash alg block size with length is not specified
-        var defaultKeyLengths = { "SHA-1": 64, "SHA-224": 64, "SHA-256": 64, "SHA-384": 128, "SHA-512": 128 };
+        // HMAC key length is specified in bits (per the Web Crypto spec).
+        // When no length is supplied it defaults to the hash's block size.
+        var defaultKeyLengthBits = { "SHA-1": 512, "SHA-224": 512, "SHA-256": 512, "SHA-384": 1024, "SHA-512": 1024 };
 
-        var keyLength = p.algorithm.length;
+        var keyLengthBits = p.algorithm.length || defaultKeyLengthBits[p.algorithm.hash.name.toUpperCase()];
 
-        if ( !keyLength ) {
-            keyLength = defaultKeyLengths[p.algorithm.hash.name.toUpperCase()];
+        var keyData = msrcryptoPseudoRandom.getBytes( Math.ceil( keyLengthBits / 8 ) );
+
+        // For a length that is not a multiple of 8, zero the unused low bits of the
+        // final byte so the exported key matches native WebCrypto behavior.
+        var unusedBits = ( keyData.length * 8 ) - keyLengthBits;
+        if ( unusedBits > 0 ) {
+            keyData[keyData.length - 1] &= ( 0xFF << unusedBits ) & 0xFF;
         }
 
         return {
             type: "keyGeneration",
-            keyData: msrcryptoPseudoRandom.getBytes( keyLength ),
+            keyData: keyData,
             keyHandle: {
                 algorithm: p.algorithm,
                 extractable: p.extractable,

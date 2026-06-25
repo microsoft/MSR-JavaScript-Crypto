@@ -307,8 +307,8 @@ if (typeof operations !== "undefined") {
 
     msrcryptoCbc.generateKey = function(p) {
 
-        if (p.algorithm.length % 8 !== 0) {
-            throw new Error();
+        if (p.algorithm.length !== 128 && p.algorithm.length !== 192 && p.algorithm.length !== 256) {
+            throw new Error("invalid key length (should be 128, 192, or 256 bits)");
         }
 
         return {

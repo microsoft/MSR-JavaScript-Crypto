@@ -172,7 +172,7 @@ if (typeof operations !== "undefined") {
     };
 
     msrcryptoAESKW.generateKey = function (p) {
-        if (p.algorithm.length % 8 !== 0) {
+        if (p.algorithm.length !== 128 && p.algorithm.length !== 192 && p.algorithm.length !== 256) {
             throw msrcryptoUtilities.error("OperationError", "AES key length must be 128, 192, or 256 bits");
         }
 
