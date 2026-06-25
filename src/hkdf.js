@@ -87,8 +87,6 @@ var msrcryptoHkdf = (function() {
 
 }());
 
-var msrcryptoKdfInstance = null;
-
 if (typeof operations !== "undefined") {
 
     msrcryptoHkdf.importKey = function(p) {

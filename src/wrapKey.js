@@ -28,7 +28,7 @@ var msrcryptoWrapKey = (function() {
 
         var tagLength = 128;
 
-        var keyToWrapJwk = msrcryptoJwk.keyToJwkOld(params.keyHandle, params.keyData);
+        var keyToWrapJwk = msrcryptoJwk.keyToJwkBytes(params.keyHandle, params.keyData);
 
         var jweHeader = {
             "alg": params.keyHandle1.algorithm.name.toUpperCase(),

@@ -97,8 +97,6 @@ var msrcryptoPbkdf2 = (function() {
 
 }());
 
-var msrcryptoKdfInstance = null;
-
 if (typeof operations !== "undefined") {
 
     msrcryptoPbkdf2.importKey = function(p) {

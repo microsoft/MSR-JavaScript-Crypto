@@ -57,10 +57,6 @@ var msrcryptoHkdfCtr = (function () {
             throw new Error("The length provided for HKDF-CTR is too large.");
         }
 
-        // if (labelBytes.length === 0) {
-        //     labelBytes = msrcryptoUtilities.getVector(hLen);
-        // }
-
         hmacContext = {
             workerid: 0,
             keyHandle: { algorithm: algorithm },

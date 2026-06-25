@@ -41,12 +41,6 @@ var msrcryptoRsaBase = function(keyStruct) {
         var base = group.createElementFromBytes(dataBytes);
         var result = group.modexp(base, exponent);
 
-        // var modulus = cryptoMath.bytesToDigits(modulusBytes);
-        // var exponent = cryptoMath.bytesToDigits(expBytes);
-        // var base = cryptoMath.bytesToDigits(dataBytes);
-
-        // var result = cryptoMath.modExp(base, exponent, modulus);
-
         return result.m_digits;
     }
 

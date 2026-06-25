@@ -104,7 +104,6 @@ var msrcryptoJwk = (function() {
             key.alg = algorithmMap[keyHandle.algorithm.name.toUpperCase()]( keyHandle.algorithm );
         }
         key.key_ops = keyHandle.usages;
-        //key.key_ops = (keyHandle.type !== "secret") ? getPublicPrivateUsage(key, keyData) : keyHandle.usages;
 
         // Using .pop to determine if a property value is an array.
         if (keyData.pop) {
@@ -125,14 +124,7 @@ var msrcryptoJwk = (function() {
         return key;
     }
 
-    // function findUsage(usage, usages) {
-    //     for (var i = 0; i < usages.length; i++) {
-    //         if (usage.toUpperCase() === usages[i].toUpperCase()) { return true; }
-    //     }
-    //     return false;
-    // }
-
-    function keyToJwkOld(keyHandle, keyData) {
+    function keyToJwkBytes(keyHandle, keyData) {
 
         var key = {};
 
@@ -178,7 +170,7 @@ var msrcryptoJwk = (function() {
     }
 
     return {
-        keyToJwkOld: keyToJwkOld,
+        keyToJwkBytes: keyToJwkBytes,
         keyToJwk: keyToJwk,
         jwkToKey: jwkToKey
     };

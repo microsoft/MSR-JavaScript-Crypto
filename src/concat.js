@@ -53,8 +53,6 @@ var msrcryptoConcatKdf = (function () {
 
 }());
 
-var msrcryptoConcatKdfInstance = null;
-
 if (typeof operations !== "undefined") {
 
     msrcryptoConcatKdf.importKey = function (p) {
