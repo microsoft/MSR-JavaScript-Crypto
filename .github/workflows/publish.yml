@@ -4,7 +4,7 @@
 # published or a v* tag is pushed. It builds, verifies the package contents,
 # then publishes with npm provenance (supply-chain attestation).
 #
-# Note: the QUnit suite (tests/SubtleTests.html) is a manual, real-browser
+# Note: the QUnit suite (test/SubtleTests.html) is a manual, real-browser
 # harness (it targets IE8+ behavior) and is intentionally not run here.
 #
 # Prerequisites (one-time, when you are ready to publish):
