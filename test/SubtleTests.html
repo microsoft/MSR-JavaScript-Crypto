@@ -28,6 +28,29 @@
     <title>Subtle Tests</title>
     <link rel="stylesheet" href="vendor/qunit-1.23.1.css">
 
+    <style>
+        #qunit-stop-button {
+            margin-left: 0.5em;
+            font: bold small Arial, Helvetica, sans-serif;
+            color: #fff;
+            background: #c0392b;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 10px;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+
+        #qunit-stop-button:hover {
+            background: #a93226;
+        }
+
+        #qunit-stop-button[disabled] {
+            background: #b9b9b9;
+            cursor: default;
+        }
+    </style>
+
 </head>
 
 <body style="background-color: gray">
@@ -35,10 +58,6 @@
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>
     <script src="vendor/qunit-1.23.1.js"></script>
-
-    <script>
-        QUnit.config.autostart = false;
-    </script>
 
     <!-- load msrCrypto & ie11 wrapper by default -->
     <script id="msrCrypto" type="text/javascript" src="../dist/msrcrypto.js"></script>
@@ -83,7 +102,52 @@
     <script src="Test.ConcatKdf.js"></script>
     <script src="Test.Errors.js"></script>
 
-    <input type="button" onclick="QUnit.start();"></input>
+    <!-- test runner controls: stop the in-progress run -->
+    <script>
+        (function () {
+
+            var button;
+
+            function stopRun() {
+                if (QUnit.config.queue) {
+                    QUnit.config.queue.length = 0;
+                }
+                button.disabled = true;
+            }
+
+            // QUnit only builds its toolbar (and module picker) when a run
+            // begins, so add the Stop button to the toolbar at that point,
+            // next to QUnit's native module picker. This begin callback runs
+            // after QUnit's own (which builds the toolbar) because it is
+            // registered later.
+            QUnit.begin(function () {
+                var container = document.getElementById("qunit-modulefilter-container") ||
+                    document.getElementById("qunit-testrunner-toolbar");
+                if (container && !button) {
+                    button = document.createElement("button");
+                    button.id = "qunit-stop-button";
+                    button.type = "button";
+                    button.innerHTML = "Stop";
+                    // Abort the in-progress run by clearing QUnit's task queue.
+                    // QUnit's process loop halts once the queue is empty,
+                    // leaving the native UI (including its module picker) on
+                    // screen so a specific module can be selected and run next.
+                    button.onclick = stopRun;
+                    container.appendChild(button);
+                }
+                if (button) {
+                    button.disabled = false;
+                }
+            });
+
+            QUnit.done(function () {
+                if (button) {
+                    button.disabled = true;
+                }
+            });
+
+        })();
+    </script>
 
 </body>
 
