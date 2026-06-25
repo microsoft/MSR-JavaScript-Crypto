@@ -170,41 +170,50 @@ function buildParameterCollection(operationName, parameterSet) {
 
 function executeOperation(operationName, parameterSet, keyFunc) {
 
-    var pc = buildParameterCollection(operationName, parameterSet);
+    // WebCrypto SubtleCrypto methods never throw synchronously; any error
+    // (bad parameters, unsupported algorithm, etc.) must be surfaced as a
+    // rejected promise. Wrap the synchronous setup so we honor that contract.
+    try {
 
-    // Verify this type of operation is supported by this library (encrypt, digest, etc...)
-    checkOperation(operationName, pc.algorithm.name);
+        var pc = buildParameterCollection(operationName, parameterSet);
 
-    // Add the key data to the parameter object
-    if (pc.keyHandle) {
-        pc.keyData = lookupKeyData(pc.keyHandle);
+        // Verify this type of operation is supported by this library (encrypt, digest, etc...)
+        checkOperation(operationName, pc.algorithm.name);
+
+        // Add the key data to the parameter object
+        if (pc.keyHandle) {
+            pc.keyData = lookupKeyData(pc.keyHandle);
+        }
+
+        // Add the key data to the parameter object
+        // KeyWrap has two keyHandle parameters - this handles the second key.
+        if (pc.keyHandle1) {
+            pc.keyData1 = lookupKeyData(pc.keyHandle1);
+        }
+
+        // ECDH.DeriveBits passes a public key in the algorithm
+        if (pc.algorithm && pc.algorithm.public) {
+            pc.additionalKeyData = lookupKeyData(pc.algorithm.public);
+        }
+
+        var op = keyFunc ? keyOperation(pc) : cryptoOperation(pc);
+
+        // Run the crypto now if a buffer is supplied
+        //   else wait until process() and finish() are called.
+        if (keyFunc || pc.buffer || operationName === "deriveBits" || operationName === "wrapKey") {
+            workerManager.runJob(op, pc);
+        }
+
+        if (op.stream) {
+            // This is streaming operation. A streamObject will be returned to the promise now.
+            return Promise.resolve(streamObject(op));
+        }
+
+        return op.promise;
+
+    } catch (error) {
+        return Promise.reject(error);
     }
-
-    // Add the key data to the parameter object
-    // KeyWrap has two keyHandle parameters - this handles the second key.
-    if (pc.keyHandle1) {
-        pc.keyData1 = lookupKeyData(pc.keyHandle1);
-    }
-
-    // ECDH.DeriveBits passes a public key in the algorithm
-    if (pc.algorithm && pc.algorithm.public) {
-        pc.additionalKeyData = lookupKeyData(pc.algorithm.public);
-    }
-
-    var op = keyFunc ? keyOperation(pc) : cryptoOperation(pc);
-
-    // Run the crypto now if a buffer is supplied
-    //   else wait until process() and finish() are called.
-    if (keyFunc || pc.buffer || operationName === "deriveBits" || operationName === "wrapKey") {
-        workerManager.runJob(op, pc);
-    }
-
-    if (op.stream) {
-        // This is streaming operation. A streamObject will be returned to the promise now.
-        return Promise.resolve(streamObject(op));
-    }
-
-    return op.promise;
 }
 var publicMethods = {
 
@@ -468,8 +477,6 @@ var publicMethods = {
             exportKey(format, key)
 
                 .then(function(keyData) {
-
-                    console.log(utils.toBase64(keyData));
 
                     return encrypt(wrappingKeyAlgorithm, wrappingKey, format === "jwk" ?
                         utils.stringToBytes(JSON.stringify(keyData, null, 0)) : keyData);
