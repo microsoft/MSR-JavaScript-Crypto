@@ -3,12 +3,13 @@
 // Replaces the previous Gulp pipeline. Single dev dependency: esbuild.
 //
 // Pipeline:
-//   1. Concatenate scripts/subtle/*.js          -> scripts/subtle.js
-//   2. Concatenate the full source list         -> lib/msrcrypto.js
+//   1. Concatenate the full source list         -> lib/msrcrypto.js
 //      - strip per-file leading license headers (avoid ~30 duplicate copies)
 //      - strip /* debug-block */ ... /* end-debug-block */ regions
 //      - prepend a single LICENSE header
-//   3. esbuild minify lib/msrcrypto.js          -> lib/msrcrypto.min.js
+//      (the scripts/subtle/* files are concatenated inline, in order, so the
+//       msrcryptoSubtle IIFE scope is formed by head.js ... tail.js)
+//   2. esbuild minify lib/msrcrypto.js          -> lib/msrcrypto.min.js
 //      - target: es5  (source is ES5; refuse to introduce ES6+ syntax)
 //      - minifySyntax: false  (preserves obj["catch"] form needed for IE8)
 //
@@ -22,7 +23,6 @@ import { dirname } from "node:path";
 import { performance } from "node:perf_hooks";
 
 const LICENSE_FILE = "LICENSE";
-const SUBTLE_BUNDLE_OUT = "scripts/subtle.js";
 const FULL_BUNDLE_OUT = "lib/msrcrypto.js";
 const MIN_BUNDLE_OUT = "lib/msrcrypto.min.js";
 
@@ -31,16 +31,6 @@ const MIN_BUNDLE_OUT = "lib/msrcrypto.min.js";
 // never drift from the published package version.
 const PKG_VERSION = JSON.parse(await readFile("package.json", "utf8")).version;
 const VERSION_RE = /var msrCryptoVersion = "[^"]*";/;
-
-const subtleBuild = [
-    "scripts/subtle/head.js",
-    "scripts/subtle/syncWorker.js",
-    "scripts/subtle/operations.js",
-    "scripts/subtle/keyManager.js",
-    "scripts/subtle/workerManager.js",
-    "scripts/subtle/subtleInterface.js",
-    "scripts/subtle/tail.js",
-];
 
 const fullBuild = [
     "scripts/bundleHead.js",
@@ -78,7 +68,13 @@ const fullBuild = [
     "scripts/hkdf-ctr.js",
     "scripts/ecdh.js",
     "scripts/ecdsa.js",
-    "scripts/subtle.js",
+    "scripts/subtle/head.js",
+    "scripts/subtle/syncWorker.js",
+    "scripts/subtle/operations.js",
+    "scripts/subtle/keyManager.js",
+    "scripts/subtle/workerManager.js",
+    "scripts/subtle/subtleInterface.js",
+    "scripts/subtle/tail.js",
     "scripts/wrapKey.js",
     "scripts/bundleTail.js",
     "scripts/subtle/promises.js",
@@ -270,7 +266,7 @@ async function ensureDir(path) {
 }
 
 async function cleanOutputs() {
-    for (const f of [FULL_BUNDLE_OUT, MIN_BUNDLE_OUT, SUBTLE_BUNDLE_OUT]) {
+    for (const f of [FULL_BUNDLE_OUT, MIN_BUNDLE_OUT]) {
         if (existsSync(f)) {
             await rm(f, { force: true });
         }
@@ -288,12 +284,7 @@ async function build() {
 
     const license = await readFile(LICENSE_FILE, "utf8");
 
-    // 1. scripts/subtle.js — concatenated subtle facade.
-    const subtleBundle = license + "\n" + collapseEmptyLines(stripAllComments(await concatFiles(subtleBuild)));
-    await ensureDir(SUBTLE_BUNDLE_OUT);
-    await writeFile(SUBTLE_BUNDLE_OUT, subtleBundle);
-
-    // 2. lib/msrcrypto.js — full UMD bundle.
+    // 1. lib/msrcrypto.js — full UMD bundle.
     let fullBundle = await concatFiles(fullBuild);
     fullBundle = fullBundle.replace(DEBUG_BLOCK_RE, "");
     fullBundle = stripAllComments(fullBundle);
@@ -308,7 +299,7 @@ async function build() {
     await ensureDir(FULL_BUNDLE_OUT);
     await writeFile(FULL_BUNDLE_OUT, fullBundle);
 
-    // 3. lib/msrcrypto.min.js — minified.
+    // 2. lib/msrcrypto.min.js — minified.
     // minifySyntax is intentionally OFF so esbuild does not rewrite
     // obj["catch"] to obj.catch (catch is a reserved word on IE8).
     const minified = await esbuild.transform(fullBundle, {
@@ -340,7 +331,7 @@ async function build() {
 async function watch() {
     const chokidar = await import("node:fs/promises");
     const { watch: fsWatch } = await import("node:fs");
-    const all = new Set([...subtleBuild, ...fullBuild, LICENSE_FILE]);
+    const all = new Set([...fullBuild, LICENSE_FILE]);
     let timer = null;
     const rebuild = () => {
         clearTimeout(timer);
@@ -354,7 +345,7 @@ async function watch() {
         try {
             fsWatch(f, rebuild);
         } catch {
-            // file may not exist yet (e.g. scripts/subtle.js) — that's fine
+            // file may not exist yet — that's fine
         }
     }
     // Also watch the directories that contain source files so newly-added
