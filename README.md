@@ -92,7 +92,7 @@ Run `npm install` from a command terminal to install the required _npm_ packages
 	>Select menu `View->Command Palette...` (or `F1`) then enter `Developer: Reload Window`  
 5. Build the project: menu `View->Command Palette...` (or `F1`) then enter `Tasks: Run Build Task`.
 	>Alternately you can use the _ctrl+shift+b_ keyboard shortcut. 
-6. The newly built library files will appear in the `lib` directory as `msrCrypto.js` and `msrCrypto.min.js`.
+6. The newly built library files will appear in the `lib` directory as `msrcrypto.js` and `msrcrypto.min.js`.
 
 #### Building from the command line:
 >_These steps require that [git](https://git-scm.com/downloads) and [Node.js](https://nodejs.org/en/) are installed on your system._  
@@ -100,7 +100,7 @@ Run `npm install` from a command terminal to install the required _npm_ packages
 2. `cd MSR-JavaScript-Crypto` to enter the project directory.
 3. `npm install` to install the required [Node.js](https://nodejs.org/en/) modules to the project's `node_modules` folder.  
 4. `npm run build` to build the library files.  
-5. The newly built library files will appear in the `lib` directory as `msrCrypto.js` and `msrCrypto.min.js`.
+5. The newly built library files will appear in the `lib` directory as `msrcrypto.js` and `msrcrypto.min.js`.
 
 
 ## Additional Utilities
