@@ -146,10 +146,6 @@ var publicMethods = {
 if (typeof cryptoMath !== "undefined") {
     publicMethods.cryptoMath = cryptoMath;
 }
-
-if (typeof testInterface !== "undefined") {
-    publicMethods.testInterface = testInterface;
-}
 /* end-debug-block */
 
 // Initialize the main entropy pool instance on the main thread, only.
