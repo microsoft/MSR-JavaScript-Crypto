@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-06-25
+
+### Added
+
+- TypeScript declarations ([`types/msrCrypto.d.ts`](types/msrCrypto.d.ts)) were
+  rewritten to describe the library's own `MsrCrypto` surface and to resolve for
+  the `@microsoft/msrcrypto` import specifier (via `export =`).
+- An `Errors` test module that asserts the public APIs reject/throw with the
+  correct error names, plus the previously-unwired `CryptoKey` test module.
+- npm package metadata (`keywords`, `author`, `homepage`, `bugs`, `exports`,
+  `sideEffects`, `publishConfig`) and a `prepublishOnly` build guard.
+- Dormant GitHub Actions release workflow that builds, verifies the package,
+  and publishes to npm with provenance on tagged releases.
+
+### Changed
+
+- `SubtleCrypto` algorithm parameters now accept a string `AlgorithmIdentifier`
+  (e.g. `"SHA-256"`) in addition to an object, matching the W3C Web Crypto spec.
+- `SubtleCrypto` methods now surface invalid input and unsupported algorithms as
+  a rejected promise instead of throwing synchronously, per the Web Crypto
+  contract. Missing or wrong-type arguments reject with a `TypeError`.
+- Errors raised by the library are now `DOMException`s with specification names
+  (`NotSupportedError`, `OperationError`, `InvalidAccessError`, `DataError`),
+  falling back to an `Error` carrying the name and legacy code on engines
+  without a `DOMException` constructor (e.g. IE8).
+- `getRandomValues` now throws `QuotaExceededError` for requests larger than
+  65,536 bytes and `TypeMismatchError` for floating-point typed arrays.
+- The library version is now injected into the bundle from `package.json` at
+  build time, eliminating version drift between the package and the bundle.
+- Repository layout: built output moved from `lib/` to `dist/`, type
+  declarations from `definitions/` to `types/`, and sources under `src/`. The
+  published `main`/`types` paths are resolved through `package.json`, so
+  installs via the package name are unaffected; only deep paths such as
+  `@microsoft/msrcrypto/lib/...` changed.
+
 ### Fixed
 
 - HMAC `generateKey` now honors the optional `length` parameter correctly (bits,
@@ -14,18 +49,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   non-byte-aligned lengths, matching native Web Crypto behavior.
 - AES `generateKey` (CBC, GCM, KW) now rejects key lengths other than 128, 192,
   or 256 bits instead of accepting any multiple of 8.
-
-### Changed
-
-- The library version is now injected into the bundle from `package.json` at
-  build time, eliminating version drift between the package and the bundle.
-
-### Added
-
-- npm package metadata (`keywords`, `author`, `homepage`, `bugs`, `exports`,
-  `sideEffects`, `publishConfig`) and a `prepublishOnly` build guard.
-- Dormant GitHub Actions release workflow that builds, verifies the package,
-  and publishes to npm with provenance on tagged releases.
+- Removed a stray `console.log` that leaked exported key material during
+  `wrapKey`.
+- Fixed an error in the worker result path that threw when assigning to the
+  read-only `DOMException.code` property.
 
 ## [1.6.0]
 
