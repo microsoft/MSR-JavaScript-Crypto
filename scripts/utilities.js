@@ -458,6 +458,33 @@ var msrcryptoUtilities = (function() {
         return result;
     }
 
+    function indexOf(array, searchElement, fromIndex) {
+        /// <signature>
+        ///     <summary>IE8-safe replacement for Array.prototype.indexOf (added in IE9).
+        ///              Returns the first index at which searchElement is found using strict
+        ///              equality, or -1 if it is not present.</summary>
+        ///     <param name="array" type="Array"></param>
+        ///     <param name="searchElement" type="Object">The value to locate.</param>
+        ///     <param name="fromIndex" type="Number" optional="true">Index to start the search at.</param>
+        ///     <returns type="Number" />
+        /// </signature>
+
+        var length = array.length >>> 0;
+        var start = fromIndex | 0;
+
+        if (start < 0) {
+            start = Math.max(length + start, 0);
+        }
+
+        for (; start < length; start += 1) {
+            if (array[start] === searchElement) {
+                return start;
+            }
+        }
+
+        return -1;
+    }
+
     function verifyByteArray(array) {
         /// <signature>
         ///     <summary>Verify that an Array contains only byte values (0-255)</summary>
@@ -616,6 +643,7 @@ var msrcryptoUtilities = (function() {
         int32ArrayToBytes: int32ArrayToBytes,
         toArray: toArray,
         arraysEqual: arraysEqual,
+        indexOf: indexOf,
         clone: clone,
         xorVectors: xorVectors,
         padEnd: padEnd,

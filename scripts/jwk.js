@@ -125,40 +125,11 @@ var msrcryptoJwk = (function() {
         return key;
     }
 
-    function findUsage(usage, usages) {
-        for (var i = 0; i < usages.length; i++) {
-            if (usage.toUpperCase() === usages[i].toUpperCase()) { return true; }
-        }
-        return false;
-    }
-
-    // function getPublicPrivateUsage(keyObj, keyData) {
-
-    //     var newUsages = [];
-    //     var usages = keyObj.key_ops;
-
-    //     if (keyObj.kty.toUpperCase() === "RSA") {
-
-    //         if (keyData.d) {
-    //             findUsage("decrypt", usages) && newUsages.push("decrypt");
-    //             findUsage("sign", usages) && newUsages.push("sign");
-    //         } else {
-    //             findUsage("encrypt", usages) && newUsages.push("encrypt");
-    //             findUsage("verify", usages) && newUsages.push("verify");
-    //         }
-    //         return newUsages;
+    // function findUsage(usage, usages) {
+    //     for (var i = 0; i < usages.length; i++) {
+    //         if (usage.toUpperCase() === usages[i].toUpperCase()) { return true; }
     //     }
-
-    //     if ( keyObj.kty.toUpperCase() === "EC" ) {
-
-    //         if ( keyData.d ) {
-    //             findUsage( "deriveBits", usages ) && newUsages.push( "deriveBits" );
-    //             findUsage( "deriveKey", usages ) && newUsages.push( "deriveKey" );
-    //         }
-    //         return newUsages;
-    //     }
-
-    //     return keyData.usages;
+    //     return false;
     // }
 
     function keyToJwkOld(keyHandle, keyData) {
