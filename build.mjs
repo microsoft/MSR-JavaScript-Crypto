@@ -75,7 +75,6 @@ const fullBuild = [
     "src/subtle/workerManager.js",
     "src/subtle/subtleInterface.js",
     "src/subtle/tail.js",
-    "src/wrapKey.js",
     "src/bundleTail.js",
     "src/subtle/promises.js",
 ];

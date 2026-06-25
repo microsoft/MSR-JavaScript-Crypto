@@ -20,21 +20,6 @@ var msrcryptoJwk = (function() {
 
     var utils = msrcryptoUtilities;
 
-    function stringToArray(stringData) {
-
-        var result = [];
-
-        for (var i = 0; i < stringData.length; i++) {
-            result[i] = stringData.charCodeAt(i);
-        }
-
-        if (result[result.length - 1] === 0) {
-            result.pop();
-        }
-
-        return result;
-    }
-
     function getKeyType(keyHandle) {
 
         var algType = keyHandle.algorithm.name.slice(0, 3).toUpperCase();
@@ -124,34 +109,6 @@ var msrcryptoJwk = (function() {
         return key;
     }
 
-    function keyToJwkBytes(keyHandle, keyData) {
-
-        var key = {};
-
-        key.kty = getKeyType(keyHandle);
-        key.extractable = keyHandle.extractable;
-
-        // Using .pop to determine if a property value is an array.
-        if (keyData.pop) {
-            key.k = utils.toBase64(keyData, true);
-        } else {
-            // Convert the base64Url properties to byte arrays
-            for (var property in keyData) {
-                if (keyData[property].pop) {
-                    key[property] = utils.toBase64(keyData[property], true);
-                }
-            }
-        }
-
-        if (keyHandle.algorithm.namedCurve) {
-            key.crv = keyHandle.algorithm.namedCurve;
-        }
-
-        var stringData = JSON.stringify(key, null, "\t");
-
-        return stringToArray(stringData);
-    }
-
     // 'jwkKeyData' is an array of bytes. Each byte is a charCode for a json key string
     function jwkToKey(keyData, algorithm, propsToArray) {
         // Convert the json string to an object
@@ -170,7 +127,6 @@ var msrcryptoJwk = (function() {
     }
 
     return {
-        keyToJwkBytes: keyToJwkBytes,
         keyToJwk: keyToJwk,
         jwkToKey: jwkToKey
     };

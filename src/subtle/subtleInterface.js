@@ -51,9 +51,7 @@ var subtleParametersSets = {
     importKeyJwk: [4, 5, 0, 10, 11],
     exportKey: [0, 4, 1, 6, 7],
     deriveKey: [0, 1, 8, 6, 7],
-    deriveBits: [0, 1, 9],
-    wrapKey: [1, 1, 0],
-    unwrapKey: [2, 0, 1, 6, 7]
+    deriveBits: [0, 1, 9]
 };
 
 // Looks up the stored key data for a given keyHandle
@@ -200,7 +198,7 @@ function executeOperation(operationName, parameterSet, keyFunc) {
 
         // Run the crypto now if a buffer is supplied
         //   else wait until process() and finish() are called.
-        if (keyFunc || pc.buffer || operationName === "deriveBits" || operationName === "wrapKey") {
+        if (keyFunc || pc.buffer || operationName === "deriveBits") {
             workerManager.runJob(op, pc);
         }
 
