@@ -172,7 +172,7 @@ var msrcryptoGcm = function(blockCipher) {
 
         mTagLength = isNaN(tagLength) ? 128 : tagLength;
         if (mTagLength % 8 !== 0) {
-            throw new Error("DataError");
+            throw msrcryptoUtilities.error("DataError", "tagLength must be a multiple of 8");
         }
 
         mIvBytes = ivBytes;
@@ -398,7 +398,7 @@ if (typeof operations !== "undefined") {
         if (p.operationSubType === "finish") {
             result = gcmInstances[id].finishDecrypt();
             gcmInstances[id] = null;
-            if (result === null) { throw new Error("OperationError"); }
+            if (result === null) { throw msrcryptoUtilities.error("OperationError", ""); }
             return result;
         }
 
@@ -409,7 +409,7 @@ if (typeof operations !== "undefined") {
         result = gcmInstances[id].decrypt(cipherBytes, tagBytes);
         gcmInstances[id] = null;
 
-        if (result === null) { throw new Error("OperationError"); }
+        if (result === null) { throw msrcryptoUtilities.error("OperationError", ""); }
 
         return result;
     };

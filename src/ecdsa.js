@@ -263,7 +263,7 @@ if (typeof operations !== "undefined") {
 
             var keyData = p.keyData;
 
-            if (keyData[0] !== 4) { throw new Error("DataError"); }
+            if (keyData[0] !== 4) { throw msrcryptoUtilities.error("DataError", "invalid point encoding"); }
 
             // tslint:disable-next-line: no-bitwise
             var elementSize = ~~((keyData.length - 1) / 2);
@@ -274,7 +274,7 @@ if (typeof operations !== "undefined") {
                 y = keyData.slice(elementSize + 1);
 
             if (cryptoECC.validatePoint(curveName, x, y) === false) {
-                throw new Error("DataError");
+                throw msrcryptoUtilities.error("DataError", "the imported point is not on the curve");
             }
 
             return {
@@ -318,7 +318,7 @@ if (typeof operations !== "undefined") {
             if ( keyObject.d ) { keyObject.d = msrcryptoUtilities.padFront(keyObject.d, 0, partLen); }
 
             if (cryptoECC.validatePoint(p.algorithm.namedCurve.toUpperCase(), keyObject.x, keyObject.y) === false) {
-                throw new Error("DataError");
+                throw msrcryptoUtilities.error("DataError", "the imported point is not on the curve");
             }
 
             return {

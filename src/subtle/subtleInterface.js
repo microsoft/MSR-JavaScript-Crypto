@@ -18,7 +18,7 @@
 
 function checkOperation(operationType, algorithmName) {
     if (!operations.exists(operationType, algorithmName)) {
-        throw new Error("unsupported algorithm");
+        throw utils.error("NotSupportedError", "Unrecognized or unsupported algorithm.");
     }
 }
 
@@ -61,7 +61,7 @@ function lookupKeyData(handle) {
     var data = keys.lookup(handle);
 
     if (!data) {
-        throw new Error("key not found");
+        throw utils.error("InvalidAccessError", "key not found");
     }
 
     return data;
@@ -96,7 +96,7 @@ function buildParameterCollection(operationName, parameterSet) {
         // Verify the required parameters are present.
         if (actualParam == null) {
             if (expectedParam.required) {
-                throw new Error(expectedParam.name);
+                throw new TypeError("Missing required parameter: " + expectedParam.name);
             } else {
                 continue;
             }
@@ -121,7 +121,7 @@ function buildParameterCollection(operationName, parameterSet) {
 
         // Verify the actual parameter is of the expected type.
         if (msrcryptoUtilities.getObjectType(actualParam) !== expectedParam.type) {
-            throw new Error(expectedParam.name);
+            throw new TypeError("Invalid type for parameter: " + expectedParam.name);
         }
 
         // If this parameter is an algorithm object convert it's name to upperCase.
@@ -470,7 +470,7 @@ var publicMethods = {
             if (key.extractable === false ||
                 wrappingKey.usages.indexOf("wrapKey") < 0 ||
                 wrappingKey.algorithm.name.toUpperCase() !== wrappingKeyAlgorithm.name) {
-                reject(new Error("InvalidAccessError"));
+                reject(utils.error("InvalidAccessError", "key cannot be wrapped with the supplied wrapping key"));
                 return;
             }
 
@@ -523,7 +523,7 @@ var publicMethods = {
 
             if (unwrappingKey.usages.indexOf("unwrapKey") < 0 ||
                 unwrappingKey.algorithm.name.toUpperCase() !== unwrapAlgorithm.name) {
-                reject(new Error("InvalidAccessError"));
+                reject(utils.error("InvalidAccessError", "key cannot be unwrapped with the supplied unwrapping key"));
                 return;
             }
 

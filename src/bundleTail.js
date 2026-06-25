@@ -37,6 +37,23 @@ var publicMethods = {
         /// </signature>
 
         var i;
+
+        // WebCrypto only fills integer-typed arrays; floating-point typed
+        // arrays are a type mismatch.
+        var arrayType = msrcryptoUtilities.getObjectType(array);
+        if (arrayType === "Float32Array" || arrayType === "Float64Array") {
+            throw msrcryptoUtilities.error("TypeMismatchError",
+                "The provided ArrayBufferView is not an integer-typed array.");
+        }
+
+        // Enforce the specification's 65,536-byte entropy quota.
+        var byteLength = (array.byteLength != null) ? array.byteLength : (array.length || 0);
+        if (byteLength > 65536) {
+            throw msrcryptoUtilities.error("QuotaExceededError",
+                "The ArrayBufferView's byte length (" + byteLength +
+                ") exceeds the number of bytes of entropy available via this API (65536).");
+        }
+
         var randomValues = msrcryptoPseudoRandom.getBytes(array.length);
         for (i = 0; i < array.length; i += 1) {
             array[i] = randomValues[i];

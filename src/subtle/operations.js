@@ -55,7 +55,14 @@ function baseOperation(processResults) {
         if (e.type === "error") {
             // If the onerror callback has been set, call it.
             if (rejectFunc) {
-                e.data && (e.data.stack = "Error") && (e.data.code = 0);
+                // A real Web Worker may deliver an error stripped of its
+                // prototype, so ensure stack/code exist. Guard the assignments
+                // because a DOMException exposes read-only stack/code accessors
+                // that must not be clobbered.
+                if (e.data) {
+                    try { if (!e.data.stack) { e.data.stack = "Error"; } } catch (ex) { /* read-only */ }
+                    try { if (e.data.code == null) { e.data.code = 0; } } catch (ex) { /* read-only */ }
+                }
                 rejectFunc.apply(promise, [e.data || e]);
             }
             return;

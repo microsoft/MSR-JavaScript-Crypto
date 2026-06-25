@@ -608,10 +608,45 @@ var msrcryptoUtilities = (function() {
         return result;
     }
 
+    // Legacy DOMException codes, used to populate err.code on environments
+    // (e.g. IE8) that lack a usable DOMException constructor.
+    var domExceptionCodes = {
+        IndexSizeError: 1, HierarchyRequestError: 3, WrongDocumentError: 4,
+        InvalidCharacterError: 5, NoModificationAllowedError: 7, NotFoundError: 8,
+        NotSupportedError: 9, InUseAttributeError: 10, InvalidStateError: 11,
+        SyntaxError: 12, InvalidModificationError: 13, NamespaceError: 14,
+        InvalidAccessError: 15, TypeMismatchError: 17, SecurityError: 18,
+        NetworkError: 19, AbortError: 20, URLMismatchError: 21,
+        QuotaExceededError: 22, TimeoutError: 23, InvalidNodeTypeError: 24,
+        DataCloneError: 25
+    };
+
     function error(name, message) {
-        var err = Error(message);
-        err.name = name;
-        throw err;
+        /// <signature>
+        ///     <summary>Creates an error matching the WebCrypto specification.
+        ///       Returns a DOMException with the given name where the constructor
+        ///       is available, otherwise an Error with the name (and legacy code)
+        ///       set so consumers can still branch on err.name.</summary>
+        ///     <param name="name" type="String">The DOMException name, e.g. "OperationError".</param>
+        ///     <param name="message" type="String" optional="true"></param>
+        ///     <returns type="DOMException" />
+        /// </signature>
+
+        message = message || "";
+
+        try {
+            // DOMException is a global in browsers and web workers (and modern
+            // Node). The two-argument form sets the .name to the spec value.
+            return new DOMException(message, name);
+        } catch (e) {
+            // No usable DOMException constructor (e.g. IE8); fall back to Error.
+            var err = new Error(message);
+            err.name = name;
+            if (domExceptionCodes.hasOwnProperty(name)) {
+                err.code = domExceptionCodes[name];
+            }
+            return err;
+        }
     }
 
     function isBytes(array) {

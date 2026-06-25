@@ -107,7 +107,7 @@ var msrcryptoRsa = function(keyStruct, mode, /*@optional*/ hashFunction) {
                 ///<enable>JS3053.IncorrectNumberOfArguments</enable>
 
                 if (decryptedData.valid === false) {
-                    throw new Error("OperationError");
+                    throw msrcryptoUtilities.error("OperationError", "");
                 }
 
                 decryptedData = decryptedData.data;
