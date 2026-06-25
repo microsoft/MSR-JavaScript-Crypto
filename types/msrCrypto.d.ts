@@ -19,6 +19,13 @@ declare namespace msrCrypto {
     /** A hash may be given as a string ("SHA-256") or as an object ({ name: "SHA-256" }). */
     type HashAlgorithmIdentifier = string | { name: string };
 
+    /**
+     * An algorithm may be given as a string ("AES-GCM") or as an algorithm
+     * object ({ name: "AES-GCM", ... }), per the W3C AlgorithmIdentifier
+     * (object or DOMString).
+     */
+    type MsrAlgorithmIdentifier = string | MsrAlgorithm;
+
     type KeyFormat = "raw" | "spki" | "pkcs8" | "jwk";
 
     /**
@@ -83,36 +90,36 @@ declare namespace msrCrypto {
 
     /** The msrCrypto SubtleCrypto-like interface. */
     interface MsrSubtleCrypto {
-        encrypt(algorithm: MsrAlgorithm, key: CryptoKey, data: ByteSource): Promise<ArrayBuffer>;
-        encrypt(algorithm: MsrAlgorithm, key: CryptoKey): Promise<StreamObject>;
+        encrypt(algorithm: MsrAlgorithmIdentifier, key: CryptoKey, data: ByteSource): Promise<ArrayBuffer>;
+        encrypt(algorithm: MsrAlgorithmIdentifier, key: CryptoKey): Promise<StreamObject>;
 
-        decrypt(algorithm: MsrAlgorithm, key: CryptoKey, data: ByteSource): Promise<ArrayBuffer>;
-        decrypt(algorithm: MsrAlgorithm, key: CryptoKey): Promise<StreamObject>;
+        decrypt(algorithm: MsrAlgorithmIdentifier, key: CryptoKey, data: ByteSource): Promise<ArrayBuffer>;
+        decrypt(algorithm: MsrAlgorithmIdentifier, key: CryptoKey): Promise<StreamObject>;
 
-        sign(algorithm: MsrAlgorithm, key: CryptoKey, data: ByteSource): Promise<ArrayBuffer>;
-        sign(algorithm: MsrAlgorithm, key: CryptoKey): Promise<StreamObject>;
+        sign(algorithm: MsrAlgorithmIdentifier, key: CryptoKey, data: ByteSource): Promise<ArrayBuffer>;
+        sign(algorithm: MsrAlgorithmIdentifier, key: CryptoKey): Promise<StreamObject>;
 
-        verify(algorithm: MsrAlgorithm, key: CryptoKey, signature: ByteSource, data: ByteSource): Promise<boolean>;
-        verify(algorithm: MsrAlgorithm, key: CryptoKey, signature: ByteSource): Promise<StreamObject>;
+        verify(algorithm: MsrAlgorithmIdentifier, key: CryptoKey, signature: ByteSource, data: ByteSource): Promise<boolean>;
+        verify(algorithm: MsrAlgorithmIdentifier, key: CryptoKey, signature: ByteSource): Promise<StreamObject>;
 
-        digest(algorithm: MsrAlgorithm, data: ByteSource): Promise<ArrayBuffer>;
-        digest(algorithm: MsrAlgorithm): Promise<StreamObject>;
+        digest(algorithm: MsrAlgorithmIdentifier, data: ByteSource): Promise<ArrayBuffer>;
+        digest(algorithm: MsrAlgorithmIdentifier): Promise<StreamObject>;
 
-        generateKey(algorithm: MsrAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey | CryptoKeyPair>;
+        generateKey(algorithm: MsrAlgorithmIdentifier, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey | CryptoKeyPair>;
 
-        deriveKey(algorithm: MsrAlgorithm, baseKey: CryptoKey, derivedKeyType: MsrAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
+        deriveKey(algorithm: MsrAlgorithmIdentifier, baseKey: CryptoKey, derivedKeyType: MsrAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
 
-        deriveBits(algorithm: MsrAlgorithm, baseKey: CryptoKey, length: number): Promise<ArrayBuffer>;
+        deriveBits(algorithm: MsrAlgorithmIdentifier, baseKey: CryptoKey, length: number): Promise<ArrayBuffer>;
 
-        importKey(format: "jwk", keyData: JsonWebKey, algorithm: MsrAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
-        importKey(format: "raw" | "spki" | "pkcs8", keyData: ByteSource, algorithm: MsrAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
+        importKey(format: "jwk", keyData: JsonWebKey, algorithm: MsrAlgorithmIdentifier, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
+        importKey(format: "raw" | "spki" | "pkcs8", keyData: ByteSource, algorithm: MsrAlgorithmIdentifier, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
 
         exportKey(format: "jwk", key: CryptoKey): Promise<JsonWebKey>;
         exportKey(format: "raw" | "spki" | "pkcs8", key: CryptoKey): Promise<ArrayBuffer>;
 
-        wrapKey(format: KeyFormat, key: CryptoKey, wrappingKey: CryptoKey, wrapAlgorithm: MsrAlgorithm): Promise<ArrayBuffer>;
+        wrapKey(format: KeyFormat, key: CryptoKey, wrappingKey: CryptoKey, wrapAlgorithm: MsrAlgorithmIdentifier): Promise<ArrayBuffer>;
 
-        unwrapKey(format: KeyFormat, wrappedKey: ByteSource, unwrappingKey: CryptoKey, unwrapAlgorithm: MsrAlgorithm, unwrappedKeyAlgorithm: MsrAlgorithm, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
+        unwrapKey(format: KeyFormat, wrappedKey: ByteSource, unwrappingKey: CryptoKey, unwrapAlgorithm: MsrAlgorithmIdentifier, unwrappedKeyAlgorithm: MsrAlgorithmIdentifier, extractable: boolean, keyUsages: KeyUsage[]): Promise<CryptoKey>;
     }
 
     /** The object returned when importing the library. */

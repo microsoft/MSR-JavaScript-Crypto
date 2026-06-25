@@ -102,6 +102,13 @@ function buildParameterCollection(operationName, parameterSet) {
             }
         }
 
+        // A string algorithm identifier (e.g. "SHA-256") is shorthand for
+        // { name: "SHA-256" }, per the W3C AlgorithmIdentifier (object or
+        // DOMString). Normalize it to an object before the type check below.
+        if (expectedParam.name === "algorithm" && utils.getObjectType(actualParam) === "String") {
+            actualParam = { name: actualParam };
+        }
+
         // If this parameter is a typed-array convert it to a regular array.
         if (actualParam.subarray) {
             actualParam = utils.toArray(actualParam);
