@@ -24,20 +24,20 @@
     "hmac",
     "sha"
   ],
-  "main": "lib/msrcrypto.js",
+  "main": "dist/msrcrypto.js",
   "types": "types/msrCrypto.d.ts",
   "exports": {
     ".": {
       "types": "./types/msrCrypto.d.ts",
-      "default": "./lib/msrcrypto.js"
+      "default": "./dist/msrcrypto.js"
     },
     "./package.json": "./package.json"
   },
   "sideEffects": [
-    "./lib/IE11PromiseWrapper.js"
+    "./dist/IE11PromiseWrapper.js"
   ],
   "files": [
-    "lib/",
+    "dist/",
     "types/",
     "LICENSE",
     "README.md",

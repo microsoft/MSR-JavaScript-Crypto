@@ -3,13 +3,13 @@
 // Replaces the previous Gulp pipeline. Single dev dependency: esbuild.
 //
 // Pipeline:
-//   1. Concatenate the full source list         -> lib/msrcrypto.js
+//   1. Concatenate the full source list         -> dist/msrcrypto.js
 //      - strip per-file leading license headers (avoid ~30 duplicate copies)
 //      - strip /* debug-block */ ... /* end-debug-block */ regions
 //      - prepend a single LICENSE header
 //      (the src/subtle/* files are concatenated inline, in order, so the
 //       msrcryptoSubtle IIFE scope is formed by head.js ... tail.js)
-//   2. esbuild minify lib/msrcrypto.js          -> lib/msrcrypto.min.js
+//   2. esbuild minify dist/msrcrypto.js          -> dist/msrcrypto.min.js
 //      - target: es5  (source is ES5; refuse to introduce ES6+ syntax)
 //      - minifySyntax: false  (preserves obj["catch"] form needed for IE8)
 //
@@ -23,8 +23,8 @@ import { dirname } from "node:path";
 import { performance } from "node:perf_hooks";
 
 const LICENSE_FILE = "LICENSE";
-const FULL_BUNDLE_OUT = "lib/msrcrypto.js";
-const MIN_BUNDLE_OUT = "lib/msrcrypto.min.js";
+const FULL_BUNDLE_OUT = "dist/msrcrypto.js";
+const MIN_BUNDLE_OUT = "dist/msrcrypto.min.js";
 
 // Single source of truth for the library version: package.json. The value is
 // injected into the bundle at build time so the shipped msrCryptoVersion can
@@ -284,7 +284,7 @@ async function build() {
 
     const license = await readFile(LICENSE_FILE, "utf8");
 
-    // 1. lib/msrcrypto.js — full UMD bundle.
+    // 1. dist/msrcrypto.js — full UMD bundle.
     let fullBundle = await concatFiles(fullBuild);
     fullBundle = fullBundle.replace(DEBUG_BLOCK_RE, "");
     fullBundle = stripAllComments(fullBundle);
@@ -299,7 +299,7 @@ async function build() {
     await ensureDir(FULL_BUNDLE_OUT);
     await writeFile(FULL_BUNDLE_OUT, fullBundle);
 
-    // 2. lib/msrcrypto.min.js — minified.
+    // 2. dist/msrcrypto.min.js — minified.
     // minifySyntax is intentionally OFF so esbuild does not rewrite
     // obj["catch"] to obj.catch (catch is a reserved word on IE8).
     const minified = await esbuild.transform(fullBundle, {

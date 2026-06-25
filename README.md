@@ -38,8 +38,8 @@ Keys returned by `msrCrypto.subtle` are instances of `msrCrypto.CryptoKey`. Once
 
 ## Library Files  
 
-Full library [`/lib/msrCrypto.js`](https://github.com/microsoft/MSR-JavaScript-Crypto/blob/master/lib/msrcrypto.js)  
-Minified library [`/lib/msrCrypto.min.js`](https://github.com/microsoft/MSR-JavaScript-Crypto/blob/master/lib/msrcrypto.min.js)
+Full library [`/dist/msrcrypto.js`](https://github.com/microsoft/MSR-JavaScript-Crypto/blob/master/dist/msrcrypto.js)  
+Minified library [`/dist/msrcrypto.min.js`](https://github.com/microsoft/MSR-JavaScript-Crypto/blob/master/dist/msrcrypto.min.js)
 
 
 ## Supported Algorithms
@@ -92,7 +92,7 @@ Run `npm install` from a command terminal to install the required _npm_ packages
 	>Select menu `View->Command Palette...` (or `F1`) then enter `Developer: Reload Window`  
 5. Build the project: menu `View->Command Palette...` (or `F1`) then enter `Tasks: Run Build Task`.
 	>Alternately you can use the _ctrl+shift+b_ keyboard shortcut. 
-6. The newly built library files will appear in the `lib` directory as `msrcrypto.js` and `msrcrypto.min.js`.
+6. The newly built library files will appear in the `dist` directory as `msrcrypto.js` and `msrcrypto.min.js`.
 
 #### Building from the command line:
 >_These steps require that [git](https://git-scm.com/downloads) and [Node.js](https://nodejs.org/en/) are installed on your system._  
@@ -100,7 +100,7 @@ Run `npm install` from a command terminal to install the required _npm_ packages
 2. `cd MSR-JavaScript-Crypto` to enter the project directory.
 3. `npm install` to install the required [Node.js](https://nodejs.org/en/) modules to the project's `node_modules` folder.  
 4. `npm run build` to build the library files.  
-5. The newly built library files will appear in the `lib` directory as `msrcrypto.js` and `msrcrypto.min.js`.
+5. The newly built library files will appear in the `dist` directory as `msrcrypto.js` and `msrcrypto.min.js`.
 
 
 ## Additional Utilities
@@ -151,7 +151,7 @@ var data = new Uint8Array(dataArray);
 
 #### IE11
 IE11 supports the Web Crypto API, but was based on a pre-release version of the spec and was never updated. So it uses event based calls instead of Promises and a few other quirks of the API.
-In the `/lib` folder there is a `IE11PromiseWrapper.js` file. This shim can be loaded in IE11 and allow you to call the native Web Crypto API using the Promise based calling scheme. This shim also corrects some of the quirks in the IE11 API.
+In the `/dist` folder there is a `IE11PromiseWrapper.js` file. This shim can be loaded in IE11 and allow you to call the native Web Crypto API using the Promise based calling scheme. This shim also corrects some of the quirks in the IE11 API.
 
 ## Random Number Generator (PRNG):
 
