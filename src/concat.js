@@ -16,7 +16,7 @@
 //
 //*******************************************************************************
 
-/// key derivation function from RFC 5869A https://www.ietf.org/rfc/rfc5869.txt
+/// The "concat" key derivation function from NIST SP-800-56A.
 var msrcryptoConcatKdf = (function () {
 
     function deriveBits(p) {
