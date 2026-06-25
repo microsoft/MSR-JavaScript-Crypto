@@ -177,84 +177,9 @@ A good source for documentation is:
 
 >msrCrypto uses identical calls as these documents with the addition of allowing both regular JavaScript Arrays and Typed-Arrays for data input and output.
 
-## Updates
+## Changelog
 
-#### Changes with version 1.6
-
-	Automatic web-worker usage is disabled by default. 
-	When enabled, it may cause problems when the library is bundled with other scripts.  
-
-	raw key import support for HMAC & ECDH.  
-
-	spki public key import for RSA.
-	
-	wrapKey support for AES-CBC, AES-GCM, RSA-OAEP.
-
-	PBKDF2 key derivation algorithm.
-
-	Includes additional side-channel protection.
-
-	Moved source to GitHub.
-
-#### Changes with version 1.5
-
-	Added support for streaming input/output data to crypto calls.
-	See Samples/StreamSample.html for an example on how to use this feature.
-
-	Now allow concurrent crypto calls of the same type at the same time. Before, concurrent 
-	crypto operations that shared code would possibly return incorrect results.  
-	Now, for example, you could perform multiple encryptions at the same time with streaming.
-
-	Added 'raw' keyImport/keyExport format for hmac, AES-CBC, AES-GCM.
-
-	Added IE11PromiseWrapper.js script to wrap the IE11 non-standard WebCrypto api and make
-	it function the same as current standard WebCrypto api. Your WebCrypto code should now 
-	work with msrCrypto, IE11-WebCrypto, and the current standard WebCrypto with minimal
-	special case code.
-
-	Removed RSASSA-PKCS1-v1_5 encrypt/decrypt algorithm. (considered less secure and obsolete)
-	It is no longer supported by WebCrypto in modern browsers.
-
-	Added TypeScript d.ts file.   msrCrypto.d.ts for using with type script.
-
-	Moved the Promise polyfill outside of the msrCrypto library so you can use the built-in
-	browser version when available.	 
-
-#### Changes with version 1.4
-
-The API has been updated to support the latest Web Crypto API spec and be compatible with the
-implementation on the latest browsers.
-
-Promises are now supported and the IE11 based events are removed. Crypto calls are now in the 
-form:
-
-```javascript
-// NEW STYLE with Promises
-msrCrypto.subtle.encrypt(<parameters>).then(
-	function(encryptionResult) {
-		//... do something here with the result
-	},
-	function(error) {
-		//... handle error
-	}
-);
-```
-
-This will break code that uses the pre-1.4 calling conventions:
-```javascript
-// OLD STYLE with events (before version 1.4)
-var cryptoOperation =  msrCrypto.subtle.encrypt(<parameters>);
-
-cryptoOperation.onComplete = 
-	function(encryptionResult) {
-		//... do something here with the result
-	};
-
-cryptoOperation.onError = 
-	function(encryptionResult) {
-		//... handle error
-	};
-```
+See [CHANGELOG.md](CHANGELOG.md) for the history of notable changes across versions.
 
 ## Contributing
 

@@ -3,26 +3,58 @@
   "version": "1.6.6",
   "description": "MSR JavaScript Cryptography Library",
   "license": "Apache-2.0",
+  "author": "Microsoft Corporation",
+  "homepage": "https://github.com/microsoft/MSR-JavaScript-Crypto#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/microsoft/MSR-JavaScript-Crypto.git"
   },
+  "bugs": {
+    "url": "https://github.com/microsoft/MSR-JavaScript-Crypto/issues"
+  },
+  "keywords": [
+    "crypto",
+    "webcrypto",
+    "polyfill",
+    "subtlecrypto",
+    "aes",
+    "rsa",
+    "ecdsa",
+    "ecdh",
+    "hmac",
+    "sha"
+  ],
   "main": "lib/msrcrypto.js",
   "types": "definitions/msrCrypto.d.ts",
+  "exports": {
+    ".": {
+      "types": "./definitions/msrCrypto.d.ts",
+      "default": "./lib/msrcrypto.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "./lib/IE11PromiseWrapper.js"
+  ],
   "files": [
     "lib/",
     "definitions/",
     "LICENSE",
     "README.md",
-    "SECURITY.md"
+    "SECURITY.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "node build.mjs",
     "build:watch": "node build.mjs --watch",
-    "clean": "node build.mjs --clean"
+    "clean": "node build.mjs --clean",
+    "prepublishOnly": "npm run clean && npm run build"
   },
   "devDependencies": {
     "esbuild": "^0.28.0"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "engines": {
     "node": ">=18"

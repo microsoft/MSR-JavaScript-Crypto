@@ -26,6 +26,12 @@ const SUBTLE_BUNDLE_OUT = "scripts/subtle.js";
 const FULL_BUNDLE_OUT = "lib/msrcrypto.js";
 const MIN_BUNDLE_OUT = "lib/msrcrypto.min.js";
 
+// Single source of truth for the library version: package.json. The value is
+// injected into the bundle at build time so the shipped msrCryptoVersion can
+// never drift from the published package version.
+const PKG_VERSION = JSON.parse(await readFile("package.json", "utf8")).version;
+const VERSION_RE = /var msrCryptoVersion = "[^"]*";/;
+
 const subtleBuild = [
     "scripts/subtle/head.js",
     "scripts/subtle/syncWorker.js",
@@ -292,6 +298,12 @@ async function build() {
     fullBundle = fullBundle.replace(DEBUG_BLOCK_RE, "");
     fullBundle = stripAllComments(fullBundle);
     fullBundle = collapseEmptyLines(fullBundle);
+    // Inject the package.json version so the bundle's msrCryptoVersion always
+    // matches the published package version.
+    if (!VERSION_RE.test(fullBundle)) {
+        throw new Error("build: could not find msrCryptoVersion declaration to inject version");
+    }
+    fullBundle = fullBundle.replace(VERSION_RE, `var msrCryptoVersion = "${PKG_VERSION}";`);
     fullBundle = license + "\n" + fullBundle;
     await ensureDir(FULL_BUNDLE_OUT);
     await writeFile(FULL_BUNDLE_OUT, fullBundle);
@@ -319,7 +331,7 @@ async function build() {
         }),
     );
 
-    console.log(`built in ${(t1 - t0).toFixed(0)} ms`);
+    console.log(`built in ${(t1 - t0).toFixed(0)} ms (v${PKG_VERSION})`);
     for (const s of sizes) {
         console.log(`  ${s.file.padEnd(24)} ${fmtBytes(s.bytes)}`);
     }
