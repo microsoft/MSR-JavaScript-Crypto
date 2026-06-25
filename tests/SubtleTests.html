@@ -26,7 +26,7 @@
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="X-UA-Compatible" content="IE=8">
     <title>Subtle Tests</title>
-    <link rel="stylesheet" href="../scripts/qunit/qunit-1.23.1.css">
+    <link rel="stylesheet" href="vendor/qunit-1.23.1.css">
 
 </head>
 
@@ -34,7 +34,7 @@
     <!-- qunit test runner -->
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>
-    <script src="../scripts/qunit/qunit-1.23.1.js"></script>
+    <script src="vendor/qunit-1.23.1.js"></script>
 
     <script>
         QUnit.config.autostart = false;
@@ -44,42 +44,42 @@
     <script id="msrCrypto" type="text/javascript" src="../lib/msrcrypto.js"></script>
 
     <!-- test vectors -->
-    <script src="../scripts/testVectors/tv_aes_cbc.js"></script>
-    <script src="../scripts/testVectors/tv_aes_gcm.js"></script>
-    <script src="../scripts/testVectors/tv_aes_kw.js"></script>
-    <script src="../scripts/testVectors/tv_ecdh.js"></script>
-    <script src="../scripts/testVectors/tv_ecdsa.js"></script>
-    <script src="../scripts/testVectors/tv_hmac.js"></script>
-    <script src="../scripts/testVectors/tv_sha2.js"></script>
-    <script src="../scripts/testVectors/tv_rsa_es.js"></script>
-    <script src="../scripts/testVectors/tv_rsa_oaep.js"></script>
-    <script src="../scripts/testVectors/tv_rsa_ssa.js"></script>
-    <script src="../scripts/testVectors/tv_rsa_pss.js"></script>
-    <script src="../scripts/testVectors/tv_pbkdf2.js"></script>
-    <script src="../scripts/testVectors/tv_hkdf.js"></script>
-    <script src="../scripts/testVectors/tv_hkdfCtr.js"></script>
-    <script src="../scripts/testVectors/tv_concatkdf.js"></script>
+    <script src="../testVectors/tv_aes_cbc.js"></script>
+    <script src="../testVectors/tv_aes_gcm.js"></script>
+    <script src="../testVectors/tv_aes_kw.js"></script>
+    <script src="../testVectors/tv_ecdh.js"></script>
+    <script src="../testVectors/tv_ecdsa.js"></script>
+    <script src="../testVectors/tv_hmac.js"></script>
+    <script src="../testVectors/tv_sha2.js"></script>
+    <script src="../testVectors/tv_rsa_es.js"></script>
+    <script src="../testVectors/tv_rsa_oaep.js"></script>
+    <script src="../testVectors/tv_rsa_ssa.js"></script>
+    <script src="../testVectors/tv_rsa_pss.js"></script>
+    <script src="../testVectors/tv_pbkdf2.js"></script>
+    <script src="../testVectors/tv_hkdf.js"></script>
+    <script src="../testVectors/tv_hkdfCtr.js"></script>
+    <script src="../testVectors/tv_concatkdf.js"></script>
 
     <!-- test vector execution scripts -->
-    <script src="../scripts/utilities.js"></script>
-    <script src="../scripts/tests/Test.Shared.js"></script>
-    <script src="../scripts/tests/Test.Promise.js"></script>
-    <script src="../scripts/tests/Test.Encoding.js"></script>
-    <script src="../scripts/tests/Test.Aes.Cbc.js"></script>
-    <script src="../scripts/tests/Test.Aes.Gcm.js"></script>
-    <script src="../scripts/tests/Test.Aes.Kw.js"></script>
-    <script src="../scripts/tests/Test.Rsa.Es.js"></script>
-    <script src="../scripts/tests/Test.Rsa.Oaep.js"></script>
-    <script src="../scripts/tests/Test.Rsa.Ssa.js"></script>
-    <script src="../scripts/tests/Test.Rsa.Pss.js"></script>
-    <script src="../scripts/tests/Test.Sha2.js"></script>
-    <script src="../scripts/tests/Test.Ecdh.js"></script>
-    <script src="../scripts/tests/Test.Ecdsa.js"></script>
-    <script src="../scripts/tests/Test.Hmac.js"></script>
-    <script src="../scripts/tests/Test.Pbkdf2.js"></script>
-    <script src="../scripts/tests/Test.Hkdf.js"></script>
-    <script src="../scripts/tests/Test.HkdfCtr.js"></script>
-    <script src="../scripts/tests/Test.ConcatKdf.js"></script>
+    <script src="../src/utilities.js"></script>
+    <script src="Test.Shared.js"></script>
+    <script src="Test.Promise.js"></script>
+    <script src="Test.Encoding.js"></script>
+    <script src="Test.Aes.Cbc.js"></script>
+    <script src="Test.Aes.Gcm.js"></script>
+    <script src="Test.Aes.Kw.js"></script>
+    <script src="Test.Rsa.Es.js"></script>
+    <script src="Test.Rsa.Oaep.js"></script>
+    <script src="Test.Rsa.Ssa.js"></script>
+    <script src="Test.Rsa.Pss.js"></script>
+    <script src="Test.Sha2.js"></script>
+    <script src="Test.Ecdh.js"></script>
+    <script src="Test.Ecdsa.js"></script>
+    <script src="Test.Hmac.js"></script>
+    <script src="Test.Pbkdf2.js"></script>
+    <script src="Test.Hkdf.js"></script>
+    <script src="Test.HkdfCtr.js"></script>
+    <script src="Test.ConcatKdf.js"></script>
 
     <input type="button" onclick="QUnit.start();"></input>
 

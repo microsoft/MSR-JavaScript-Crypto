@@ -78,8 +78,8 @@ Supported ECC curves:
 
 >_While this library has npm build dependencies, it has no run-time dependencies._
 
-You may build the library from the source files. The library is built using [gulp](https://gulpjs.com/) from npm to concatenate many individual JavaScript files into a single library file.  
-Run `npm install` from a command terminal to install the required _npm_ packages. `gulpfile.js` contains a list of scripts included in the build. You may remove scripts to create a subset of the library that supports fewer algorithms. Be aware, many scripts have dependencies on other scripts to function properly.
+You may build the library from the source files. The library is built using [esbuild](https://esbuild.github.io/) to concatenate many individual JavaScript files (in `src/`) into a single library file.  
+Run `npm install` from a command terminal to install the required _npm_ packages. The `fullBuild` list in `build.mjs` contains the scripts included in the build. You may remove scripts to create a subset of the library that supports fewer algorithms. Be aware, many scripts have dependencies on other scripts to function properly.
 
 #### Building from Visual Studio Code:
 >_These steps require that [git](https://git-scm.com/downloads), [Node.js](https://nodejs.org/en/), and [Visual Studio Code](https://code.visualstudio.com/) are installed on your system._  
@@ -99,7 +99,7 @@ Run `npm install` from a command terminal to install the required _npm_ packages
 1. Clone the repo to a local folder `git clone https://github.com/microsoft/MSR-JavaScript-Crypto.git`  
 2. `cd MSR-JavaScript-Crypto` to enter the project directory.
 3. `npm install` to install the required [Node.js](https://nodejs.org/en/) modules to the project's `node_modules` folder.  
-4. `node_modules\.bin\gulp` to build the library files.  
+4. `npm run build` to build the library files.  
 5. The newly built library files will appear in the `lib` directory as `msrCrypto.js` and `msrCrypto.min.js`.
 
 

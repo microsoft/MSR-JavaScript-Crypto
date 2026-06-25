@@ -7,7 +7,7 @@
 //      - strip per-file leading license headers (avoid ~30 duplicate copies)
 //      - strip /* debug-block */ ... /* end-debug-block */ regions
 //      - prepend a single LICENSE header
-//      (the scripts/subtle/* files are concatenated inline, in order, so the
+//      (the src/subtle/* files are concatenated inline, in order, so the
 //       msrcryptoSubtle IIFE scope is formed by head.js ... tail.js)
 //   2. esbuild minify lib/msrcrypto.js          -> lib/msrcrypto.min.js
 //      - target: es5  (source is ES5; refuse to introduce ES6+ syntax)
@@ -33,51 +33,51 @@ const PKG_VERSION = JSON.parse(await readFile("package.json", "utf8")).version;
 const VERSION_RE = /var msrCryptoVersion = "[^"]*";/;
 
 const fullBuild = [
-    "scripts/bundleHead.js",
-    "scripts/operations.js",
-    "scripts/global.js",
-    "scripts/utilities.js",
-    "scripts/asn1.js",
-    "scripts/worker.js",
-    "scripts/jwk.js",
-    "scripts/cryptoMath.js",
-    "scripts/cryptoECC.js",
-    "scripts/curves_NIST.js",
-    "scripts/curves_BN.js",
-    "scripts/curves_NUMS.js",
-    "scripts/sha.js",
-    "scripts/sha1.js",
-    "scripts/sha256.js",
-    "scripts/sha512.js",
-    "scripts/hmac.js",
-    "scripts/aes.js",
-    "scripts/aes-cbc.js",
-    "scripts/aes-gcm.js",
-    "scripts/aes-kw.js",
-    "scripts/random.js",
-    "scripts/entropy.js",
-    "scripts/prime.js",
-    "scripts/rsa-base.js",
-    "scripts/rsa-oaep.js",
-    "scripts/rsa-pkcs1.js",
-    "scripts/rsa-pss.js",
-    "scripts/rsa.js",
-    "scripts/concat.js",
-    "scripts/pbkdf2.js",
-    "scripts/hkdf.js",
-    "scripts/hkdf-ctr.js",
-    "scripts/ecdh.js",
-    "scripts/ecdsa.js",
-    "scripts/subtle/head.js",
-    "scripts/subtle/syncWorker.js",
-    "scripts/subtle/operations.js",
-    "scripts/subtle/keyManager.js",
-    "scripts/subtle/workerManager.js",
-    "scripts/subtle/subtleInterface.js",
-    "scripts/subtle/tail.js",
-    "scripts/wrapKey.js",
-    "scripts/bundleTail.js",
-    "scripts/subtle/promises.js",
+    "src/bundleHead.js",
+    "src/operations.js",
+    "src/global.js",
+    "src/utilities.js",
+    "src/asn1.js",
+    "src/worker.js",
+    "src/jwk.js",
+    "src/cryptoMath.js",
+    "src/cryptoECC.js",
+    "src/curves_NIST.js",
+    "src/curves_BN.js",
+    "src/curves_NUMS.js",
+    "src/sha.js",
+    "src/sha1.js",
+    "src/sha256.js",
+    "src/sha512.js",
+    "src/hmac.js",
+    "src/aes.js",
+    "src/aes-cbc.js",
+    "src/aes-gcm.js",
+    "src/aes-kw.js",
+    "src/random.js",
+    "src/entropy.js",
+    "src/prime.js",
+    "src/rsa-base.js",
+    "src/rsa-oaep.js",
+    "src/rsa-pkcs1.js",
+    "src/rsa-pss.js",
+    "src/rsa.js",
+    "src/concat.js",
+    "src/pbkdf2.js",
+    "src/hkdf.js",
+    "src/hkdf-ctr.js",
+    "src/ecdh.js",
+    "src/ecdsa.js",
+    "src/subtle/head.js",
+    "src/subtle/syncWorker.js",
+    "src/subtle/operations.js",
+    "src/subtle/keyManager.js",
+    "src/subtle/workerManager.js",
+    "src/subtle/subtleInterface.js",
+    "src/subtle/tail.js",
+    "src/wrapKey.js",
+    "src/bundleTail.js",
+    "src/subtle/promises.js",
 ];
 
 const DEBUG_BLOCK_RE =
@@ -350,7 +350,7 @@ async function watch() {
     }
     // Also watch the directories that contain source files so newly-added
     // files trigger rebuilds.
-    fsWatch("scripts", { recursive: true }, rebuild);
+    fsWatch("src", { recursive: true }, rebuild);
 }
 
 const args = process.argv.slice(2);
