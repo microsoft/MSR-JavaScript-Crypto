@@ -17,25 +17,25 @@
 //*******************************************************************************
 
 // Storage for the keyData.
-// Stored as {keyHandle: keyHandle, keyData: keyData} objects.
+// Stored as {cryptoKey: cryptoKey, keyData: keyData} objects.
 var keys = [];
 
-keys.add = function(keyHandle, keyData) {
-    keys.push({ keyHandle: keyHandle, keyData: keyData });
+keys.add = function(cryptoKey, keyData) {
+    keys.push({ cryptoKey: cryptoKey, keyData: keyData });
 };
 
-keys.remove = function(keyHandle) {
+keys.remove = function(cryptoKey) {
     for (var i = 0; i < keys.length; i += 1) {
-        if (keys[i].keyHandle === keyHandle) {
+        if (keys[i].cryptoKey === cryptoKey) {
             keys = keys.splice(i, 1);
             return;
         }
     }
 };
 
-keys.lookup = function(keyHandle) {
+keys.lookup = function(cryptoKey) {
     for (var i = 0; i < keys.length; i += 1) {
-        if (keys[i].keyHandle === keyHandle) {
+        if (keys[i].cryptoKey === cryptoKey) {
             return keys[i].keyData;
         }
     }

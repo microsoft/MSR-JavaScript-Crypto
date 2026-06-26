@@ -215,155 +215,88 @@ function executeOperation(operationName, parameterSet, keyFunc) {
 }
 var publicMethods = {
 
-    encrypt: function(algorithm, keyHandle, buffer) {
-        /// <signature>
-        /// <summary>Encrypt a UInt8Array of data. Encrypt will return an ArrayBuffer if supported,
-        ///     otherwise it will return a regular Array.</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="buffer" type="UInt8Array" optional="true">UInt8Array</param>
-        ///     <returns type="ArrayBuffer" />
-        /// </signature>
-        /// <signature>
-        /// <summary>Encrypt an array of bytes. Encrypt will return an ArrayBuffer if supported,
-        ///     otherwise it will return a regular Array.</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="buffer" type="Array" optional="true">An array of bytes (number from 0-255)</param>
-        ///     <returns type="Array" />
-        /// </signature>
-        /// <signature>
-        /// <summary>Encrypt an array of bytes. Encrypt will return an ArrayBuffer if supported,
-        ///     otherwise it will return a regular Array.</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="buffer" type="Array" optional="true">an array of bytes (number from 0-255)</param>
-        ///     <returns type="ArrayBuffer" />
-        /// </signature>
+    encrypt: function(algorithm, cryptoKey, buffer) {
+        /**
+         * Encrypt data. Returns an ArrayBuffer if supported, otherwise a regular Array.
+         * @param {Algorithm} algorithm - The encryption algorithm and its parameters.
+         * @param {CryptoKey} cryptoKey - The key to encrypt with.
+         * @param {Uint8Array|Array} [buffer] - The data to encrypt (a Uint8Array or an array of byte values 0-255).
+         * @returns {Promise<ArrayBuffer|Array>} The encrypted data.
+         */
 
         return executeOperation("encrypt", arguments, 0);
     },
 
-    decrypt: function(algorithm, keyHandle, buffer) {
-        /// <signature>
-        ///     <summary>Decrypt a UInt8Array of data.
-        ///     Decrypt will return an ArrayBuffer if supported, otherwise it will return an Array of byte
-        ///         values(numbers from 0 - 255)</summary >
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="buffer" type="UInt8Array" optional="true">UInt8Array</param>
-        ///     <returns type="CryptoOperation" />
-        /// </signature>
-        /// <signature>
-        ///     <summary>Decrypt an array of byte values. Decrypt will return an ArrayBuffer if supported,
-        ///         otherwise it will return a regular Array.</summary >
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="buffer" type="Array" optional="true">An array of bytes values (numbers from 0-255)</param>
-        ///     <returns type="CryptoOperation" />
-        /// </signature>
+    decrypt: function(algorithm, cryptoKey, buffer) {
+        /**
+         * Decrypt data. Returns an ArrayBuffer if supported, otherwise an array of byte values (0-255).
+         * @param {Algorithm} algorithm - The decryption algorithm and its parameters.
+         * @param {CryptoKey} cryptoKey - The key to decrypt with.
+         * @param {Uint8Array|Array} [buffer] - The data to decrypt (a Uint8Array or an array of byte values 0-255).
+         * @returns {Promise<ArrayBuffer|Array>} The decrypted data.
+         */
 
         return executeOperation("decrypt", arguments, 0);
     },
 
-    sign: function(algorithm, keyHandle, buffer) {
-        /// <signature>
-        ///     <summary>Sign a UInt8Array of data.
-        ///     Sign will return a signature as an ArrayBuffer if supported,
-        ///     otherwise it will return an Array of byte values (numbers from 0-255)</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="buffer" type="UInt8Array" optional="true">UInt8Array</param>
-        ///     <returns type="CryptoOperation" />
-        /// </signature>
-        /// <signature>
-        ///     <summary>Sign an array of byte values. Sign will return an ArrayBuffer if supported,
-        ///     otherwise it will return a regular Array.</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="buffer" type="Array" optional="true">An array of bytes values (numbers from 0-255)</param>
-        ///     <returns type="CryptoOperation" />
-        /// </signature>
+    sign: function(algorithm, cryptoKey, buffer) {
+        /**
+         * Sign data. Returns a signature as an ArrayBuffer if supported, otherwise an array of byte values (0-255).
+         * @param {Algorithm} algorithm - The signature algorithm and its parameters.
+         * @param {CryptoKey} cryptoKey - The key to sign with.
+         * @param {Uint8Array|Array} [buffer] - The data to sign (a Uint8Array or an array of byte values 0-255).
+         * @returns {Promise<ArrayBuffer|Array>} The signature.
+         */
 
         return executeOperation("sign", arguments, 0);
     },
 
-    verify: function(algorithm, keyHandle, signature, buffer) {
-        /// <signature>
-        ///     <summary>Verify a signature.</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="signature" type="UInt8Array">UInt8Array</param>
-        ///     <param name="buffer" type="UInt8Array" optional="true">UInt8Array</param>
-        ///     <returns type="CryptoOperation" />
-        /// </signature>
-        /// <signature>
-        ///     <summary>Verify a signature.</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="signature" type="UInt8Array">UInt8Array</param>
-        ///     <param name="buffer" type="Array" optional="true">An array of bytes values (numbers from 0-255)</param>
-        ///     <returns type="CryptoOperation" />
-        /// </signature>
-        /// <signature>
-        ///     <summary>Verify a signature.</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="signature" type="Array">An array of bytes values (numbers from 0-255)</param>
-        ///     <param name="buffer" type="Array" optional="true">An array of bytes values (numbers from 0-255)</param>
-        ///     <returns type="CryptoOperation" />
-        /// </signature>
-        /// <signature>
-        ///     <summary>Verify a signature.</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="signature" type="Array">An array of bytes values (numbers from 0-255)</param>
-        ///     <param name="buffer" type="UInt8Array" optional="true">UInt8Array</param>
-        ///     <returns type="CryptoOperation" />
-        /// </signature>
+    verify: function(algorithm, cryptoKey, signature, buffer) {
+        /**
+         * Verify a signature.
+         * @param {Algorithm} algorithm - The signature algorithm and its parameters.
+         * @param {CryptoKey} cryptoKey - The key to verify with.
+         * @param {Uint8Array|Array} signature - The signature to verify (a Uint8Array or an array of byte values 0-255).
+         * @param {Uint8Array|Array} [buffer] - The data that was signed (a Uint8Array or an array of byte values 0-255).
+         * @returns {Promise<boolean>} True if the signature is valid.
+         */
 
         return executeOperation("verify", arguments, 0);
     },
 
     digest: function(algorithm, buffer) {
-        /// <signature>
-        ///     <summary>Digest data using a specified cryptographic hash algorithm</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="buffer" type="UInt8Array" optional="true">UInt8Array</param>
-        ///     <returns type="CryptoOperation" />
-        /// </signature>
-        /// <signature>
-        ///     <summary>Digest data using a specified cryptographic hash algorithm</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="buffer" type="Array" optional="true">An array of bytes values (numbers from 0-255)</param>
-        ///     <returns type="CryptoOperation" />
-        /// </signature>
+        /**
+         * Digest data using a specified cryptographic hash algorithm.
+         * @param {Algorithm} algorithm - The hash algorithm.
+         * @param {Uint8Array|Array} [buffer] - The data to hash (a Uint8Array or an array of byte values 0-255).
+         * @returns {Promise<ArrayBuffer|Array>} The computed digest.
+         */
         return executeOperation("digest", arguments, 0);
     },
 
     generateKey: function(algorithm, extractable, keyUsage) {
-        /// <signature>
-        ///     <summary>Generate a new key for use with the algorithm specified by the algorithm parameter</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="extractable" type="Boolean" optional="true"></param>
-        ///     <param name="keyUsage" type="Array" optional="true"></param>
-        ///     <returns type="KeyOperation" />
-        /// </signature>
+        /**
+         * Generate a new key for use with the algorithm specified by the algorithm parameter.
+         * @param {Algorithm} algorithm - The algorithm the key will be used with.
+         * @param {boolean} [extractable] - Whether the key may be exported.
+         * @param {Array} [keyUsage] - The permitted key usages.
+         * @returns {Promise<Key|{publicKey: Key, privateKey: Key}>} The generated key or key pair.
+         */
 
         return executeOperation("generateKey", arguments, 1);
     },
 
     deriveKey: function(algorithm, baseKey, derivedKeyType, extractable, keyUsage) {
-        /// <signature>
-        ///     <summary>Generate a key for the specified derivedKeyType, using the specified cryptographic
-        ///         key derivation algorithm with the given baseKey as input.</summary >
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="baseKey" type="Key"></param>
-        ///     <param name="deriveKeyType" type="Algorithm"></param>
-        ///     <param name="extractable" type="Boolean" optional="true"></param>
-        ///     <param name="keyUsage" type="Array" optional="true"></param>
-        ///     <returns type="KeyOperation" />
-        /// </signature>
+        /**
+         * Generate a key for the specified derivedKeyType, using the specified cryptographic
+         * key derivation algorithm with the given baseKey as input.
+         * @param {Algorithm} algorithm - The key derivation algorithm and its parameters.
+         * @param {Key} baseKey - The base key used to derive the new key.
+         * @param {Algorithm} derivedKeyType - The algorithm the derived key will be used with.
+         * @param {boolean} [extractable] - Whether the derived key may be exported.
+         * @param {Array} [keyUsage] - The permitted key usages.
+         * @returns {Promise<Key>} The derived key.
+         */
 
         var deriveBits = this.deriveBits,
             importKey = this.importKey;
@@ -408,57 +341,56 @@ var publicMethods = {
     },
 
     deriveBits: function(algorithm, baseKey, length) {
-        /// <signature>
-        ///     <summary>Generate an array of bytes from a given baseKey as input.</summary>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="baseKey" type="Key"></param>
-        ///     <param name="length" type="Number">Number of bits to return.</param>
-        ///     <returns type="CryptoOperation" />
-        /// </signature>
+        /**
+         * Generate an array of bytes from a given baseKey as input.
+         * @param {Algorithm} algorithm - The key derivation algorithm and its parameters.
+         * @param {Key} baseKey - The base key used to derive the bits.
+         * @param {number} length - Number of bits to return.
+         * @returns {Promise<ArrayBuffer|Array>} The derived bits.
+         */
 
         return executeOperation("deriveBits", arguments, 0);
     },
 
     importKey: function(format, keyData, algorithm, extractable, keyUsage) {
-        /// <signature>
-        ///     <summary>Constructs a new Key object using the key data specified by the keyData parameter.</summary>
-        ///     <param name="format" type="String"></param>
-        ///     <param name="keyData" type="Object">An object representing a key in jwk format.</param>
-        ///     <param name="algorithm" type="Algorithm"></param>
-        ///     <param name="extractable" type="Boolean" optional="true"></param>
-        ///     <param name="keyUsage" type="Array" optional="true"></param>
-        ///     <returns type="KeyOperation" />
-        /// </signature>
+        /**
+         * Construct a new Key object using the key data specified by the keyData parameter.
+         * @param {string} format - The format of the key data (e.g. "raw", "jwk", "spki", "pkcs8").
+         * @param {Object|Array} keyData - The key data (a JWK object, or key bytes for other formats).
+         * @param {Algorithm} algorithm - The algorithm the key will be used with.
+         * @param {boolean} [extractable] - Whether the key may be exported.
+         * @param {Array} [keyUsage] - The permitted key usages.
+         * @returns {Promise<Key>} The imported key.
+         */
         return executeOperation("importKey", arguments, 1);
     },
 
-    exportKey: function(format, keyHandle) {
-        /// <signature>
-        ///     <summary>Exports the given key material of the Key object as specified by the key parameter.</summary>
-        ///     <param name="format" type="String"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <returns type="KeyOperation" />
-        /// </signature>
+    exportKey: function(format, cryptoKey) {
+        /**
+         * Export the key material of the Key object as specified by the format parameter.
+         * @param {string} format - The format to export the key in (e.g. "raw", "jwk", "spki", "pkcs8").
+         * @param {CryptoKey} cryptoKey - The key to export.
+         * @returns {Promise<Object|ArrayBuffer|Array>} The exported key material.
+         */
 
         // Export is one of the few calls where the caller does not supply an algorithm
         // since it's already a property of the key to be exported.
         // So, we're pulling it out of the key and adding it to the parameter set since
         // it is used as a switch to route the parameters to the right function.
         // Now we don't have to treat this as a special case in the underlying code.
-        return executeOperation("exportKey", [keyHandle.algorithm, format, keyHandle], 1);
+        return executeOperation("exportKey", [cryptoKey.algorithm, format, cryptoKey], 1);
     },
 
     wrapKey: function(format, key, wrappingKey, wrappingKeyAlgorithm) {
-        /// <signature>
-        ///     <summary>Returns a KeyOperation object which will asynchronously return an array containing the
-        ///         key material of key, encrypted with keyEncryptionKey using the specified
-        ///         keyWrappingAlgorithm.</summary >
-        ///     <param name="format" type="String"></param>
-        ///     <param name="key" type="Key"></param>
-        ///     <param name="wrappingKey" type="Key"></param>
-        ///     <param name="wrappingKeyAlgorithm" type="Algorithm"></param>
-        ///     <returns type="KeyOperation" />
-        /// </signature>
+        /**
+         * Asynchronously return an array containing the key material of key, encrypted with
+         * wrappingKey using the specified wrappingKeyAlgorithm.
+         * @param {string} format - The format to export the key in before wrapping.
+         * @param {Key} key - The key to wrap.
+         * @param {Key} wrappingKey - The key used to encrypt (wrap) the exported key material.
+         * @param {Algorithm} wrappingKeyAlgorithm - The algorithm used to wrap the key.
+         * @returns {Promise<ArrayBuffer|Array>} The wrapped key.
+         */
 
         var encrypt = this.encrypt,
             exportKey = this.exportKey;
@@ -493,26 +425,17 @@ var publicMethods = {
 
     unwrapKey: function(format, wrappedKey, unwrappingKey, unwrapAlgorithm, unwrappedKeyAlgorithm, extractable, keyUsages) {
         //format, unwrappingKey, unwrapAlgorithm, unwrappedKeyAlgorithm, extractable and keyUsages
-        /// <signature>
-        ///     <summary>Construct a Key object from encrypted key material.</summary>
-        ///     <param name="format" type="String"></param>
-        ///     <param name="unwrappingKey" type="Array">An array of bytes values (numbers from 0-255)</param>
-        ///     <param name="unwrapAlgorithm" type="Algorithm"></param>
-        ///     <param name="keyEncryptionKey" type="Key"></param>
-        ///     <param name="extractable" unwrappedKeyAlgorithm type="Boolean" optional="true"></param>
-        ///     <param name="keyUsage" type="Array" optional="true"></param>
-        ///     <returns type="KeyOperation" />
-        /// </signature>
-        /// <signature>
-        ///     <summary>Construct a Key object from encrypted key material.</summary>
-        ///     <param name="format" type="String"></param>
-        ///     <param name="unwrappingKey" type="UInt8Array"></param>
-        ///     <param name="unwrapAlgorithm" type="Algorithm"></param>
-        ///     <param name="unwrappedKeyAlgorithm" type="Key"></param>
-        ///     <param name="extractable" type="Boolean" optional="true"></param>
-        ///     <param name="keyUsage" type="Array" optional="true"></param>
-        ///     <returns type="KeyOperation" />
-        /// </signature>
+        /**
+         * Construct a Key object from encrypted key material.
+         * @param {string} format - The format of the wrapped key material.
+         * @param {Uint8Array|Array} wrappedKey - The encrypted key material.
+         * @param {Key} unwrappingKey - The key used to decrypt (unwrap) the wrapped key.
+         * @param {Algorithm} unwrapAlgorithm - The algorithm used to unwrap the key.
+         * @param {Algorithm} unwrappedKeyAlgorithm - The algorithm the unwrapped key will be used with.
+         * @param {boolean} [extractable] - Whether the unwrapped key may be exported.
+         * @param {Array} [keyUsages] - The permitted key usages.
+         * @returns {Promise<Key>} The unwrapped key.
+         */
 
         var decrypt = this.decrypt,
             importKey = this.importKey;

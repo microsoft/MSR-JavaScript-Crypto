@@ -9124,22 +9124,22 @@ function cryptoOperation(cryptoContext) {
 
 var keys = [];
 
-keys.add = function(keyHandle, keyData) {
-    keys.push({ keyHandle: keyHandle, keyData: keyData });
+keys.add = function(cryptoKey, keyData) {
+    keys.push({ cryptoKey: cryptoKey, keyData: keyData });
 };
 
-keys.remove = function(keyHandle) {
+keys.remove = function(cryptoKey) {
     for (var i = 0; i < keys.length; i += 1) {
-        if (keys[i].keyHandle === keyHandle) {
+        if (keys[i].cryptoKey === cryptoKey) {
             keys = keys.splice(i, 1);
             return;
         }
     }
 };
 
-keys.lookup = function(keyHandle) {
+keys.lookup = function(cryptoKey) {
     for (var i = 0; i < keys.length; i += 1) {
-        if (keys[i].keyHandle === keyHandle) {
+        if (keys[i].cryptoKey === cryptoKey) {
             return keys[i].keyData;
         }
     }
@@ -9653,22 +9653,22 @@ function executeOperation(operationName, parameterSet, keyFunc) {
 }
 var publicMethods = {
 
-    encrypt: function(algorithm, keyHandle, buffer) {
+    encrypt: function(algorithm, cryptoKey, buffer) {
 
         return executeOperation("encrypt", arguments, 0);
     },
 
-    decrypt: function(algorithm, keyHandle, buffer) {
+    decrypt: function(algorithm, cryptoKey, buffer) {
 
         return executeOperation("decrypt", arguments, 0);
     },
 
-    sign: function(algorithm, keyHandle, buffer) {
+    sign: function(algorithm, cryptoKey, buffer) {
 
         return executeOperation("sign", arguments, 0);
     },
 
-    verify: function(algorithm, keyHandle, signature, buffer) {
+    verify: function(algorithm, cryptoKey, signature, buffer) {
 
         return executeOperation("verify", arguments, 0);
     },
@@ -9733,9 +9733,9 @@ var publicMethods = {
         return executeOperation("importKey", arguments, 1);
     },
 
-    exportKey: function(format, keyHandle) {
+    exportKey: function(format, cryptoKey) {
 
-        return executeOperation("exportKey", [keyHandle.algorithm, format, keyHandle], 1);
+        return executeOperation("exportKey", [cryptoKey.algorithm, format, cryptoKey], 1);
     },
 
     wrapKey: function(format, key, wrappingKey, wrappingKeyAlgorithm) {
