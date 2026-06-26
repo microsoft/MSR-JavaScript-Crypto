@@ -328,7 +328,6 @@ async function build() {
 }
 
 async function watch() {
-    const chokidar = await import("node:fs/promises");
     const { watch: fsWatch } = await import("node:fs");
     const all = new Set([...fullBuild, LICENSE_FILE]);
     let timer = null;
@@ -340,16 +339,35 @@ async function watch() {
     };
     await build();
     console.log("watching for changes...");
+
+    // Keep references to every FSWatcher so they are not garbage-collected
+    // and stay active for the lifetime of the process.
+    const watchers = [];
+
     for (const f of all) {
         try {
-            fsWatch(f, rebuild);
+            watchers.push(fsWatch(f, rebuild));
         } catch {
             // file may not exist yet — that's fine
         }
     }
+
     // Also watch the directories that contain source files so newly-added
-    // files trigger rebuilds.
-    fsWatch("src", { recursive: true }, rebuild);
+    // files trigger rebuilds. fs.watch({ recursive: true }) is not supported
+    // on all platforms (notably Linux), where it throws — fall back to a
+    // non-recursive watch on the src directory in that case. The per-file
+    // watchers above still cover every file in the build list either way.
+    try {
+        watchers.push(fsWatch("src", { recursive: true }, rebuild));
+    } catch {
+        try {
+            watchers.push(fsWatch("src", rebuild));
+        } catch {
+            // src may not be watchable — per-file watchers still apply
+        }
+    }
+
+    return watchers;
 }
 
 const args = process.argv.slice(2);

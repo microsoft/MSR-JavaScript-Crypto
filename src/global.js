@@ -25,7 +25,7 @@ var scriptUrl = (function() {
             throw new Error();
         } catch (e) {
             if (e.stack) {
-                var match = /\w+:\/\/(.+?\/)*.+\.js/.exec(e.stack);
+                var match = /\w+:\/\/(?:[^/\s]+\/)*[^/\s]*\.js/.exec(e.stack);
                 return (match && match.length > 0) ? match[0] : null;
             }
         }

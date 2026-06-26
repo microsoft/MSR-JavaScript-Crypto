@@ -42,11 +42,33 @@ var msrcryptoWorker = (function() {
             operationSubType = e.data.operationSubType;
 
             var operation = e.data.operationType,
+                algorithmName = e.data.algorithm.name,
                 result,
-                func = operations[operation][e.data.algorithm.name],
                 p = e.data;
 
-            if (!operations.exists(operation, e.data.algorithm.name)) {
+            // Resolve the registered handler with the dynamic lookup, the
+            // own-property checks, and the function-type check all performed
+            // locally, using the direct obj.hasOwnProperty(name) form shown in
+            // CodeQL's "unvalidated dynamic method call" guidance. The registry
+            // of registered operations is itself the whitelist: a user-supplied
+            // operation/algorithm name is only honored when it is an own,
+            // registered property — so it can never dispatch to an inherited
+            // Object.prototype member (valueOf, hasOwnProperty, ...) or to a
+            // non-function value.
+            if (!operations.hasOwnProperty(operation)) {
+                throw new Error("unregistered algorithm.");
+            }
+
+            var algorithmMap = operations[operation];
+
+            if (typeof algorithmMap !== "object" || algorithmMap === null ||
+                !algorithmMap.hasOwnProperty(algorithmName)) {
+                throw new Error("unregistered algorithm.");
+            }
+
+            var func = algorithmMap[algorithmName];
+
+            if (typeof func !== "function") {
                 throw new Error("unregistered algorithm.");
             }
 

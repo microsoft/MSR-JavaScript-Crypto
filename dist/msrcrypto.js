@@ -42,24 +42,29 @@ var operations = {};
 
 operations.register = function(operationType, algorithmName, functionToCall) {
 
-    if (!operations[operationType]) {
+    if (!Object.prototype.hasOwnProperty.call(operations, operationType) ||
+        typeof operations[operationType] !== "object") {
         operations[operationType] = {};
     }
 
     var op = operations[operationType];
 
-    if (!op[algorithmName]) {
+    if (!Object.prototype.hasOwnProperty.call(op, algorithmName)) {
         op[algorithmName] = functionToCall;
     }
 
 };
 
 operations.exists = function(operationType, algorithmName) {
-    if (!operations[operationType]) {
+    if (!Object.prototype.hasOwnProperty.call(operations, operationType) ||
+        typeof operations[operationType] !== "object") {
         return false;
     }
 
-    return operations[operationType][algorithmName] ? true : false;
+    var op = operations[operationType];
+
+    return Object.prototype.hasOwnProperty.call(op, algorithmName) &&
+        typeof op[algorithmName] === "function";
 };
 
 var scriptUrl = (function() {
@@ -69,7 +74,7 @@ var scriptUrl = (function() {
             throw new Error();
         } catch (e) {
             if (e.stack) {
-                var match = /\w+:\/\/(.+?\/)*.+\.js/.exec(e.stack);
+                var match = /\w+:\/\/(?:[^/\s]+\/)*[^/\s]*\.js/.exec(e.stack);
                 return (match && match.length > 0) ? match[0] : null;
             }
         }
@@ -849,11 +854,24 @@ var msrcryptoWorker = (function() {
             operationSubType = e.data.operationSubType;
 
             var operation = e.data.operationType,
+                algorithmName = e.data.algorithm.name,
                 result,
-                func = operations[operation][e.data.algorithm.name],
                 p = e.data;
 
-            if (!operations.exists(operation, e.data.algorithm.name)) {
+            if (!operations.hasOwnProperty(operation)) {
+                throw new Error("unregistered algorithm.");
+            }
+
+            var algorithmMap = operations[operation];
+
+            if (typeof algorithmMap !== "object" || algorithmMap === null ||
+                !algorithmMap.hasOwnProperty(algorithmName)) {
+                throw new Error("unregistered algorithm.");
+            }
+
+            var func = algorithmMap[algorithmName];
+
+            if (typeof func !== "function") {
                 throw new Error("unregistered algorithm.");
             }
 

@@ -20,22 +20,27 @@ var operations = {};
 
 operations.register = function(operationType, algorithmName, functionToCall) {
 
-    if (!operations[operationType]) {
+    if (!Object.prototype.hasOwnProperty.call(operations, operationType) ||
+        typeof operations[operationType] !== "object") {
         operations[operationType] = {};
     }
 
     var op = operations[operationType];
 
-    if (!op[algorithmName]) {
+    if (!Object.prototype.hasOwnProperty.call(op, algorithmName)) {
         op[algorithmName] = functionToCall;
     }
 
 };
 
 operations.exists = function(operationType, algorithmName) {
-    if (!operations[operationType]) {
+    if (!Object.prototype.hasOwnProperty.call(operations, operationType) ||
+        typeof operations[operationType] !== "object") {
         return false;
     }
 
-    return operations[operationType][algorithmName] ? true : false;
+    var op = operations[operationType];
+
+    return Object.prototype.hasOwnProperty.call(op, algorithmName) &&
+        typeof op[algorithmName] === "function";
 };

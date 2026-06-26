@@ -43,7 +43,7 @@ function slowTest() {
 
 }
 
-// Microsoft Edges does not export key_ops or alg properties
+// Microsoft Edge does not export key_ops or alg properties
 // unless keyImport included those properties
 // So, generateKey will be missing key_ops & alg
 // This will check if this is happening
@@ -59,7 +59,7 @@ function slowTest() {
 
 var UseNative = false;
 var useWebWorkers = false;
-var iterations = 1;
+var iterations = 10;
 var skipSlowTests = true;
 var subtle = (UseNative && nativeCrypto) ? crypto.subtle : msrCrypto.subtle;
 var label = UseNative ? "(native)" : useWebWorkers ? "msrCrypto (workers)" : "msrCrypto";
