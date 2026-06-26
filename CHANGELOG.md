@@ -5,23 +5,28 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.7.0] - 2026-06-26
 
-### Fixed
+### Breaking Changes
 
-- `SubtleCrypto.generateKey` for RSA algorithms now honors the requested key
-  usages (routing each usage to the public or private key it applies to)
-  instead of forcing a fixed pair. Generating an `RSA-OAEP` key with
-  `["wrapKey", "unwrapKey"]` now yields keys usable with `wrapKey`/`unwrapKey`.
-
-### Removed
-
-- Dead, unreachable `wrapKey.js` module (legacy JWE-style key wrapping that was
-  never dispatched) and its orphaned JWK byte-serializer helper. The public
-  `wrapKey`/`unwrapKey` continue to work via the standard
-  export-then-encrypt / decrypt-then-import path.
-
-## [1.7.0] - 2026-06-25
+- Errors for invalid input and unsupported algorithms are now delivered as a
+  rejected promise instead of being thrown synchronously. Code relying on a
+  synchronous `try`/`catch` around `SubtleCrypto` calls must move to
+  `.catch()`/`await`.
+- Error objects changed shape: failures are now `DOMException`s with
+  specification names (e.g. `OperationError`, `DataError`) rather than plain
+  `Error`s. Code inspecting `error.message` or custom error fields may need to
+  switch to `error.name`.
+- `getRandomValues` now throws `QuotaExceededError` for requests larger than
+  65,536 bytes and `TypeMismatchError` for floating-point typed arrays, where
+  previously such calls may have succeeded.
+- `generateKey` validation is stricter: AES rejects key lengths other than 128,
+  192, or 256 bits, and HMAC interprets `length` as bits. Inputs accepted by
+  earlier versions may now be rejected.
+- Built output moved from `lib/` to `dist/` and type declarations from
+  `definitions/` to `types/`. Imports by package name are unaffected, but deep
+  paths such as `@microsoft/msrcrypto/lib/...` must be updated.
+- The minimum supported Node.js version is now 18.
 
 ### Added
 
@@ -50,6 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   65,536 bytes and `TypeMismatchError` for floating-point typed arrays.
 - The library version is now injected into the bundle from `package.json` at
   build time, eliminating version drift between the package and the bundle.
+- The build system was migrated to [esbuild](https://esbuild.github.io/) (driven
+  by `build.mjs`), producing the unminified and minified bundles, and the
+  minimum supported Node.js version was raised to 18.
 - Repository layout: built output moved from `lib/` to `dist/`, type
   declarations from `definitions/` to `types/`, and sources under `src/`. The
   published `main`/`types` paths are resolved through `package.json`, so
@@ -67,6 +75,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `wrapKey`.
 - Fixed an error in the worker result path that threw when assigning to the
   read-only `DOMException.code` property.
+- `SubtleCrypto.generateKey` for RSA algorithms now honors the requested key
+  usages (routing each usage to the public or private key it applies to)
+  instead of forcing a fixed pair. Generating an `RSA-OAEP` key with
+  `["wrapKey", "unwrapKey"]` now yields keys usable with `wrapKey`/`unwrapKey`.
+
+### Removed
+
+- Dead, unreachable `wrapKey.js` module (legacy JWE-style key wrapping that was
+  never dispatched) and its orphaned JWK byte-serializer helper. The public
+  `wrapKey`/`unwrapKey` continue to work via the standard
+  export-then-encrypt / decrypt-then-import path.
 
 ## [1.6.0]
 
@@ -100,7 +119,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   is a breaking change for code using the pre-1.4 `onComplete`/`onError`
   calling conventions.
 
-[Unreleased]: https://github.com/microsoft/MSR-JavaScript-Crypto/compare/v1.6.6...HEAD
+[1.7.0]: https://github.com/microsoft/MSR-JavaScript-Crypto/releases/tag/v1.7.0
 [1.6.0]: https://github.com/microsoft/MSR-JavaScript-Crypto/releases/tag/v1.6.0
 [1.5.0]: https://github.com/microsoft/MSR-JavaScript-Crypto/releases/tag/v1.5.0
 [1.4.0]: https://github.com/microsoft/MSR-JavaScript-Crypto/releases/tag/v1.4.0
