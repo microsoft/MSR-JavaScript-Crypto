@@ -900,7 +900,19 @@ if (runningInWorkerInstance) {
             return msrcryptoWorker.returnResult({ initialized: true });
         }
 
-        if (workerInitialized === true) { msrcryptoWorker.jsCryptoRunner(e); }
+        if (workerInitialized === true) {
+            try {
+                msrcryptoWorker.jsCryptoRunner(e);
+            } catch (ex) {
+                msrcryptoWorker.returnResult({
+                    error: {
+                        name: (ex && ex.name) || "OperationError",
+                        message: (ex && ex.message) || "",
+                        code: (ex && ex.code) || 0
+                    }
+                });
+            }
+        }
 
     };
 }
@@ -9294,6 +9306,15 @@ var workerManager = (function() {
             var op = worker.operation;
 
             e.target || (e.target = { data: worker.data });
+
+            if (e.data.error) {
+                jobCompleted(worker);
+                op.dispatchEvent({
+                    type: "error",
+                    data: utils.error(e.data.error.name, e.data.error.message)
+                });
+                return;
+            }
 
             for (var i = 0; i < jobQueue.length; i++) {
                 if (jobQueue[i].operation === worker.operation) {

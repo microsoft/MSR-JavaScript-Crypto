@@ -226,6 +226,19 @@ var workerManager = (function() {
             // tslint:disable-next-line: no-unused-expression
             e.target || (e.target = { data: worker.data });
 
+            // A thrown error inside the worker is posted back as a structured
+            // envelope (a native ErrorEvent loses the original name/code).
+            // Rebuild a proper DOMException and reject this operation, mirroring
+            // the synchronous syncWorker error path.
+            if (e.data.error) {
+                jobCompleted(worker);
+                op.dispatchEvent({
+                    type: "error",
+                    data: utils.error(e.data.error.name, e.data.error.message)
+                });
+                return;
+            }
+
             // Check if there are queued jobs for this operation
             for (var i = 0; i < jobQueue.length; i++) {
                 if (jobQueue[i].operation === worker.operation) {

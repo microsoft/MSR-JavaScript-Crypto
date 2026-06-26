@@ -106,7 +106,24 @@ if (runningInWorkerInstance) {
         }
 
         // Process the crypto operation
-        if (workerInitialized === true) { msrcryptoWorker.jsCryptoRunner(e); }
+        if (workerInitialized === true) {
+            try {
+                msrcryptoWorker.jsCryptoRunner(e);
+            } catch (ex) {
+                // A real web worker surfaces a thrown error as an ErrorEvent on
+                // the main thread, stripped of the original name/code (and it
+                // also bubbles as an uncaught error). Post a serializable
+                // envelope instead so the worker manager can rebuild a proper
+                // DOMException, matching the synchronous syncWorker path.
+                msrcryptoWorker.returnResult({
+                    error: {
+                        name: (ex && ex.name) || "OperationError",
+                        message: (ex && ex.message) || "",
+                        code: (ex && ex.code) || 0
+                    }
+                });
+            }
+        }
 
     };
 }
