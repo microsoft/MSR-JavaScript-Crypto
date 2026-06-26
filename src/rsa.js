@@ -477,9 +477,28 @@ if (typeof operations !== "undefined") {
         // Honor the caller's requested usages (like the other algorithms do),
         // routing each requested usage to the key half it applies to. When no
         // usages are requested, default to all usages valid for the algorithm.
+        // Note: Array.prototype.filter/indexOf are ES5 (unavailable on IE8), so
+        // use plain loops and the IE8-safe msrcryptoUtilities.indexOf helper.
         if (p.usages) {
-            publicUsage = publicUsage.filter(function(usage) { return p.usages.indexOf(usage) >= 0; });
-            privateUsage = privateUsage.filter(function(usage) { return p.usages.indexOf(usage) >= 0; });
+            var requestedUsages = p.usages;
+            var filteredPublic = [];
+            var filteredPrivate = [];
+            var usageIndex;
+
+            for (usageIndex = 0; usageIndex < publicUsage.length; usageIndex += 1) {
+                if (msrcryptoUtilities.indexOf(requestedUsages, publicUsage[usageIndex]) >= 0) {
+                    filteredPublic.push(publicUsage[usageIndex]);
+                }
+            }
+
+            for (usageIndex = 0; usageIndex < privateUsage.length; usageIndex += 1) {
+                if (msrcryptoUtilities.indexOf(requestedUsages, privateUsage[usageIndex]) >= 0) {
+                    filteredPrivate.push(privateUsage[usageIndex]);
+                }
+            }
+
+            publicUsage = filteredPublic;
+            privateUsage = filteredPrivate;
         }
 
         return {

@@ -466,7 +466,7 @@ var publicMethods = {
         return new Promise(function(resolve, reject) {
 
             if (key.extractable === false ||
-                wrappingKey.usages.indexOf("wrapKey") < 0 ||
+                utils.indexOf(wrappingKey.usages, "wrapKey") < 0 ||
                 wrappingKey.algorithm.name.toUpperCase() !== wrappingKeyAlgorithm.name) {
                 reject(utils.error("InvalidAccessError", "key cannot be wrapped with the supplied wrapping key"));
                 return;
@@ -519,7 +519,7 @@ var publicMethods = {
 
         return new Promise(function(resolve, reject) {
 
-            if (unwrappingKey.usages.indexOf("unwrapKey") < 0 ||
+            if (utils.indexOf(unwrappingKey.usages, "unwrapKey") < 0 ||
                 unwrappingKey.algorithm.name.toUpperCase() !== unwrapAlgorithm.name) {
                 reject(utils.error("InvalidAccessError", "key cannot be unwrapped with the supplied unwrapping key"));
                 return;

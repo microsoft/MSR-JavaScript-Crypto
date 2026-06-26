@@ -514,3 +514,128 @@ QUnit.test( "Promise.reject", function( assert ) {
         } );
 
 } );
+
+/// ===== rejection propagation through handler-less then() =========
+
+QUnit.test( "Promise.catch after then() chain with no rejection handlers (sync)", function( assert ) {
+    var done = assert.async();    /// <summary>
+    /// A rejection must propagate through then() calls that provide no rejection
+    /// handler and reach a trailing catch(). Regression test for a polyfill bug
+    /// that silently dropped such rejections.
+    /// </summary>
+
+    new Promise( promiseTest.executorFailSync( 4 ) )
+        .then( function( result ) { return result + 1; } )
+        .then( function( result ) { return result + 1; } )
+        ["catch"]( function( reason ) {
+            assert.equal( reason, 4 );
+            done();
+        } );
+
+} );
+
+QUnit.test( "Promise.catch after then() chain with no rejection handlers (async)", function( assert ) {
+    var done = assert.async();
+
+    new Promise( promiseTest.executorFailAsync( 4, 200 ) )
+        .then( function( result ) { return result + 1; } )
+        .then( function( result ) { return result + 1; } )
+        ["catch"]( function( reason ) {
+            assert.equal( reason, 4 );
+            done();
+        } );
+
+} );
+
+QUnit.test( "Promise.then() rejection handler skips success handlers", function( assert ) {
+    var done = assert.async();    /// <summary>
+    /// When a promise rejects, intervening success handlers are skipped and the
+    /// next rejection handler (here the onRejected argument of then) receives the
+    /// reason.
+    /// </summary>
+
+    new Promise( promiseTest.executorFailSync( 4 ) )
+        .then( function() { assert.ok( false, "success handler should not run" ); } )
+        .then(
+            function() { assert.ok( false, "success handler should not run" ); },
+            function( reason ) {
+                assert.equal( reason, 4 );
+                done();
+            } );
+
+} );
+
+QUnit.test( "Promise throw inside then() routes to catch()", function( assert ) {
+    var done = assert.async();    /// <summary>
+    /// A synchronous throw inside a then() handler must reject the chained
+    /// promise so a downstream catch() receives the thrown error.
+    /// </summary>
+
+    new Promise( promiseTest.executorSync( 1 ) )
+        .then( function() { throw "inThen"; } )
+        .then( function() { assert.ok( false, "success handler should not run" ); } )
+        ["catch"]( function( reason ) {
+            assert.equal( reason, "inThen" );
+            done();
+        } );
+
+} );
+
+QUnit.test( "Promise throw inside catch() routes to next catch()", function( assert ) {
+    var done = assert.async();    /// <summary>
+    /// A throw inside a catch() handler rejects the chained promise rather than
+    /// being swallowed.
+    /// </summary>
+
+    new Promise( promiseTest.executorFailSync( 1 ) )
+        ["catch"]( function() { throw "inCatch"; } )
+        ["catch"]( function( reason ) {
+            assert.equal( reason, "inCatch" );
+            done();
+        } );
+
+} );
+
+QUnit.test( "Promise fulfillment passes through catch() to then()", function( assert ) {
+    var done = assert.async();    /// <summary>
+    /// A fulfilled value passes through catch() (whose handler is skipped) and
+    /// reaches the following then().
+    /// </summary>
+
+    new Promise( promiseTest.executorSync( "ok" ) )
+        ["catch"]( function() { return "shouldNotRun"; } )
+        .then( function( result ) {
+            assert.equal( result, "ok" );
+            done();
+        } );
+
+} );
+
+QUnit.test( "Promise recovery: catch() returns a value then chain continues", function( assert ) {
+    var done = assert.async();    /// <summary>
+    /// After a rejection is handled by catch(), the returned value fulfills the
+    /// chained promise so a following then() runs.
+    /// </summary>
+
+    new Promise( promiseTest.executorFailSync( 4 ) )
+        .then( function( result ) { return result + 1; } )
+        ["catch"]( function( reason ) { return reason + 10; } )
+        .then( function( result ) {
+            assert.equal( result, 14 );
+            done();
+        } );
+
+} );
+
+QUnit.test( "Promise executor throw rejects the promise", function( assert ) {
+    var done = assert.async();    /// <summary>
+    /// A throw from the executor function rejects the promise.
+    /// </summary>
+
+    new Promise( function() { throw "executorError"; } )
+        ["catch"]( function( reason ) {
+            assert.equal( reason, "executorError" );
+            done();
+        } );
+
+} );

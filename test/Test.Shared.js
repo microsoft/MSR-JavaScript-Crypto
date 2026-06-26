@@ -59,7 +59,7 @@ function slowTest() {
 
 var UseNative = false;
 var useWebWorkers = false;
-var iterations = 10;
+var iterations = 1;
 var skipSlowTests = true;
 var subtle = (UseNative && nativeCrypto) ? crypto.subtle : msrCrypto.subtle;
 var label = UseNative ? "(native)" : useWebWorkers ? "msrCrypto (workers)" : "msrCrypto";

@@ -137,8 +137,12 @@ QUnit.test("importing a malformed EC point rejects with DataError", function(ass
 });
 
 QUnit.test("getRandomValues throws QuotaExceededError past 65,536 bytes", function(assert) {
+    // Fall back to a regular Array where TypedArrays are unavailable (e.g. IE8);
+    // getRandomValues enforces the quota on the array's length either way.
+    var oversized = (typeof Uint8Array !== "undefined") ? new Uint8Array(65537) : new Array(65537);
+
     assert.throws(
-        function() { msrCrypto.getRandomValues(new Uint8Array(65537)); },
+        function() { msrCrypto.getRandomValues(oversized); },
         function(err) {
             return err && err.name === "QuotaExceededError" &&
                 (typeof DOMException === "undefined" || err instanceof DOMException);
@@ -147,6 +151,11 @@ QUnit.test("getRandomValues throws QuotaExceededError past 65,536 bytes", functi
 });
 
 QUnit.test("getRandomValues throws TypeMismatchError for floating-point arrays", function(assert) {
+    if (typeof Float32Array === "undefined") {
+        assert.ok(true, "TypedArrays not supported - skipped");
+        return;
+    }
+
     assert.throws(
         function() { msrCrypto.getRandomValues(new Float32Array(4)); },
         function(err) {
@@ -157,7 +166,9 @@ QUnit.test("getRandomValues throws TypeMismatchError for floating-point arrays",
 });
 
 QUnit.test("getRandomValues fills and returns the same array for valid input", function(assert) {
-    var array = new Uint8Array(16);
+    // Where TypedArrays are unavailable (e.g. IE8) getRandomValues accepts and
+    // returns a regular Array instead.
+    var array = (typeof Uint8Array !== "undefined") ? new Uint8Array(16) : new Array(16);
     var result = msrCrypto.getRandomValues(array);
 
     assert.strictEqual(result, array, "returns the same array instance that was passed in");

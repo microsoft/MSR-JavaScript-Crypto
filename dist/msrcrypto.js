@@ -891,21 +891,6 @@ var msrcryptoJwk = (function() {
 
     var utils = msrcryptoUtilities;
 
-    function stringToArray(stringData) {
-
-        var result = [];
-
-        for (var i = 0; i < stringData.length; i++) {
-            result[i] = stringData.charCodeAt(i);
-        }
-
-        if (result[result.length - 1] === 0) {
-            result.pop();
-        }
-
-        return result;
-    }
-
     function getKeyType(keyHandle) {
 
         var algType = keyHandle.algorithm.name.slice(0, 3).toUpperCase();
@@ -993,33 +978,6 @@ var msrcryptoJwk = (function() {
         return key;
     }
 
-
-    function keyToJwkOld(keyHandle, keyData) {
-
-        var key = {};
-
-        key.kty = getKeyType(keyHandle);
-        key.extractable = keyHandle.extractable;
-
-        if (keyData.pop) {
-            key.k = utils.toBase64(keyData, true);
-        } else {
-            for (var property in keyData) {
-                if (keyData[property].pop) {
-                    key[property] = utils.toBase64(keyData[property], true);
-                }
-            }
-        }
-
-        if (keyHandle.algorithm.namedCurve) {
-            key.crv = keyHandle.algorithm.namedCurve;
-        }
-
-        var stringData = JSON.stringify(key, null, "\t");
-
-        return stringToArray(stringData);
-    }
-
     function jwkToKey(keyData, algorithm, propsToArray) {
         var jsonKeyObject = JSON.parse(JSON.stringify(keyData));
 
@@ -1035,7 +993,6 @@ var msrcryptoJwk = (function() {
     }
 
     return {
-        keyToJwkOld: keyToJwkOld,
         keyToJwk: keyToJwk,
         jwkToKey: jwkToKey
     };
@@ -6681,8 +6638,6 @@ var msrcryptoRsaBase = function(keyStruct) {
         var base = group.createElementFromBytes(dataBytes);
         var result = group.modexp(base, exponent);
 
-
-
         return result.m_digits;
     }
 
@@ -7524,8 +7479,30 @@ if (typeof operations !== "undefined") {
             publicUsage = ["verify"];
             privateUsage = ["sign"];
         } else {
-            publicUsage = ["encrypt"];
-            privateUsage = ["decrypt"];
+            publicUsage = ["encrypt", "wrapKey"];
+            privateUsage = ["decrypt", "unwrapKey"];
+        }
+
+        if (p.usages) {
+            var requestedUsages = p.usages;
+            var filteredPublic = [];
+            var filteredPrivate = [];
+            var usageIndex;
+
+            for (usageIndex = 0; usageIndex < publicUsage.length; usageIndex += 1) {
+                if (msrcryptoUtilities.indexOf(requestedUsages, publicUsage[usageIndex]) >= 0) {
+                    filteredPublic.push(publicUsage[usageIndex]);
+                }
+            }
+
+            for (usageIndex = 0; usageIndex < privateUsage.length; usageIndex += 1) {
+                if (msrcryptoUtilities.indexOf(requestedUsages, privateUsage[usageIndex]) >= 0) {
+                    filteredPrivate.push(privateUsage[usageIndex]);
+                }
+            }
+
+            publicUsage = filteredPublic;
+            privateUsage = filteredPrivate;
         }
 
         return {
@@ -7536,7 +7513,7 @@ if (typeof operations !== "undefined") {
                     keyHandle: {
                         algorithm: p.algorithm,
                         extractable: p.extractable,
-                        usages: null || publicUsage,
+                        usages: publicUsage,
                         type: "public"
                     }
                 },
@@ -7545,7 +7522,7 @@ if (typeof operations !== "undefined") {
                     keyHandle: {
                         algorithm: p.algorithm,
                         extractable: p.extractable,
-                        usages: null || privateUsage,
+                        usages: privateUsage,
                         type: "private"
                     }
                 }
@@ -7615,8 +7592,6 @@ var msrcryptoConcatKdf = (function () {
     };
 
 }());
-
-var msrcryptoConcatKdfInstance = null;
 
 if (typeof operations !== "undefined") {
 
@@ -7725,8 +7700,6 @@ var msrcryptoPbkdf2 = (function() {
 
 }());
 
-var msrcryptoKdfInstance = null;
-
 if (typeof operations !== "undefined") {
 
     msrcryptoPbkdf2.importKey = function(p) {
@@ -7829,8 +7802,6 @@ var msrcryptoHkdf = (function() {
 
 }());
 
-var msrcryptoKdfInstance = null;
-
 if (typeof operations !== "undefined") {
 
     msrcryptoHkdf.importKey = function(p) {
@@ -7901,7 +7872,6 @@ var msrcryptoHkdfCtr = (function () {
         if (byteLen > 255 * hLen) {
             throw new Error("The length provided for HKDF-CTR is too large.");
         }
-
 
         hmacContext = {
             workerid: 0,
@@ -9507,9 +9477,7 @@ var subtleParametersSets = {
     importKeyJwk: [4, 5, 0, 10, 11],
     exportKey: [0, 4, 1, 6, 7],
     deriveKey: [0, 1, 8, 6, 7],
-    deriveBits: [0, 1, 9],
-    wrapKey: [1, 1, 0],
-    unwrapKey: [2, 0, 1, 6, 7]
+    deriveBits: [0, 1, 9]
 };
 
 function lookupKeyData(handle) {
@@ -9626,7 +9594,7 @@ function executeOperation(operationName, parameterSet, keyFunc) {
 
         var op = keyFunc ? keyOperation(pc) : cryptoOperation(pc);
 
-        if (keyFunc || pc.buffer || operationName === "deriveBits" || operationName === "wrapKey") {
+        if (keyFunc || pc.buffer || operationName === "deriveBits") {
             workerManager.runJob(op, pc);
         }
 
@@ -9735,7 +9703,7 @@ var publicMethods = {
         return new Promise(function(resolve, reject) {
 
             if (key.extractable === false ||
-                wrappingKey.usages.indexOf("wrapKey") < 0 ||
+                utils.indexOf(wrappingKey.usages, "wrapKey") < 0 ||
                 wrappingKey.algorithm.name.toUpperCase() !== wrappingKeyAlgorithm.name) {
                 reject(utils.error("InvalidAccessError", "key cannot be wrapped with the supplied wrapping key"));
                 return;
@@ -9766,7 +9734,7 @@ var publicMethods = {
 
         return new Promise(function(resolve, reject) {
 
-            if (unwrappingKey.usages.indexOf("unwrapKey") < 0 ||
+            if (utils.indexOf(unwrappingKey.usages, "unwrapKey") < 0 ||
                 unwrappingKey.algorithm.name.toUpperCase() !== unwrapAlgorithm.name) {
                 reject(utils.error("InvalidAccessError", "key cannot be unwrapped with the supplied unwrapping key"));
                 return;
@@ -9801,129 +9769,6 @@ return {
     internalMethods: internalMethods};
 
 }) ();
-
-var msrcryptoWrapKey = (function() {
-
-    var utils = msrcryptoUtilities;
-
-    function wrapKey(params) {
-
-        var rsaObj = msrcryptoRsa(
-            params.keyData1,
-            params.keyHandle1.algorithm.name,
-            msrcryptoHashFunctions["SHA-1"])();
-
-        var tagLength = 128;
-
-        var keyToWrapJwk = msrcryptoJwk.keyToJwkOld(params.keyHandle, params.keyData);
-
-        var jweHeader = {
-            "alg": params.keyHandle1.algorithm.name.toUpperCase(),
-            "enc": "A128GCM"
-        };
-
-        var encodedJweHeader =
-            utils.toBase64(JSON.stringify(jweHeader), true);
-
-        var cmk = msrcryptoPseudoRandom.getBytes(32);
-
-        var jweEncryptedKey = rsaObj.encrypt(cmk);
-
-        var encodedJweEncryptedKey = utils.toBase64(jweEncryptedKey, true);
-
-        var jweIv = msrcryptoPseudoRandom.getBytes(12);
-
-        var encodedJweIv = utils.toBase64(jweIv, true);
-
-        var additionalData = encodedJweHeader.concat(".", encodedJweEncryptedKey, ".", encodedJweIv);
-
-        var gcm = msrcryptoGcm(msrcryptoBlockCipher.aes(cmk));
-        gcm.init(jweIv, utils.stringToBytes(additionalData), tagLength);
-
-        var ciphertextPlusTag = gcm.encrypt(keyToWrapJwk);
-
-        var tag = ciphertextPlusTag.slice(-(tagLength / 8));
-
-        var encodedIntegrityValue = utils.toBase64(tag, true);
-
-        var encodedCiphertext =
-            utils.toBase64(ciphertextPlusTag.slice(0, ciphertextPlusTag.length - tag.length), true);
-
-        var jwe = {
-
-            recipients: [{
-                header: encodedJweHeader,
-                encrypted_key: encodedJweEncryptedKey,
-                integrity_value: encodedIntegrityValue
-            }
-            ],
-            initialization_vector: encodedJweIv,
-            ciphertext: encodedCiphertext
-
-        };
-
-        return utils.stringToBytes(JSON.stringify(jwe));
-
-    }
-
-    function unwrapKey(params) {
-
-        var b64Tobytes = utils.fromBase64;
-
-        var keyDataJwk =
-            JSON.parse(String.fromCharCode.apply(null, params.buffer));
-
-        var header = utils.fromBase64(keyDataJwk.recipients[0].header);
-
-        var encrypted_key =
-            b64Tobytes(keyDataJwk.recipients[0].encrypted_key);
-
-        var integrity_value =
-            b64Tobytes(keyDataJwk.recipients[0].integrity_value);
-
-        var initialization_vector =
-            b64Tobytes(keyDataJwk.initialization_vector);
-
-        var ciphertext =
-            b64Tobytes(keyDataJwk.ciphertext);
-
-        var hashFunc = msrcryptoHashFunctions["SHA-1"]();
-        var rsaObj = msrcryptoRsa(params.keyData, params.keyHandle.algorithm.name, hashFunc);
-        var inKey = rsaObj.decrypt(encrypted_key);
-
-        var additionalData =
-            keyDataJwk.recipients[0].header.concat(".", keyDataJwk.recipients[0].encrypted_key, ".",
-                keyDataJwk.initialization_vector);
-
-        var gcm = msrcryptoGcm(msrcryptoBlockCipher.aes(inKey));
-        gcm.init(initialization_vector, utils.stringToBytes(additionalData), 128);
-
-        var result = gcm.decrypt(ciphertext, integrity_value);
-
-        var keyObject = msrcryptoJwk.jwkToKey(result, params.algorithm, ["k"]);
-
-        return {
-            type: "keyImport",
-            keyData: keyObject.k,
-            keyHandle: {
-                algorithm: { name: params.algorithm.name },
-                extractable: params.extractable || keyObject.extractable,
-                usages: params.usages,
-                type: "secret"
-            }
-        };
-    }
-    return {
-        wrapKey: wrapKey,
-        unwrapKey: unwrapKey
-
-    };
-
-})();
-if (typeof operations !== "undefined") {
-    operations.register("wrapKey", "AES-GCM", msrcryptoWrapKey.wrapKey);
-    operations.register("unwrapKey", "AES-CBC", msrcryptoWrapKey.unwrapKey);
-}
 
 var publicMethods = {
 
@@ -10047,122 +9892,111 @@ return msrCrypto();
             throw new Error("use 'new' keyword with Promise constructor");
         }
 
-        var successResult = null,
-            failReason = null,
-            thenResolved = [],
-            thenRejected = [],
-            rejectThenPromise = [],
-            resolveThenPromise = [];
+        var state = 0,
+            settledValue = null,
+            handlers = [];
 
-        this.then = function(onCompleted, onRejected) {
+        function runHandler(handler) {
 
-            var thenFunctionResult;
+            var callback = (state === 1) ? handler.onCompleted : handler.onRejected;
 
-            if (successResult) {
-                thenFunctionResult = onCompleted(successResult.result);
+            if (!callback) {
+                (state === 1 ? handler.resolveNext : handler.rejectNext)(settledValue);
+                return;
+            }
 
-                if (thenFunctionResult && thenFunctionResult.then) {
-                    return thenFunctionResult;
+            var result;
+            try {
+                result = callback(settledValue);
+            } catch (handlerError) {
+                handler.rejectNext(handlerError);
+                return;
+            }
+
+            handler.resolveNext(result);
+        }
+
+        function settle(newState, value) {
+
+            if (state !== 0) {
+                return;
+            }
+
+            if (newState === 1 && value && (typeof value === "object" || typeof value === "function")) {
+
+                var thenFunction;
+                try {
+                    thenFunction = value.then;
+                } catch (accessError) {
+                    settle(2, accessError);
+                    return;
                 }
 
-                return Promise.resolve(thenFunctionResult);
-            }
-
-            if (failReason) {
-                thenFunctionResult = onRejected ? onRejected(failReason.result) : failReason.result;
-
-                if (thenFunctionResult && thenFunctionResult.then) {
-                    return thenFunctionResult;
+                if (typeof thenFunction === "function") {
+                    var handled = false;
+                    try {
+                        thenFunction.call(
+                            value,
+                            function(result) { if (!handled) { handled = true; settle(1, result); } },
+                            function(reason) { if (!handled) { handled = true; settle(2, reason); } });
+                    } catch (thenableError) {
+                        if (!handled) { handled = true; settle(2, thenableError); }
+                    }
+                    return;
                 }
-
-                return Promise.resolve(thenFunctionResult);
             }
 
-            thenResolved.push(onCompleted);
-            if (onRejected) {
-                thenRejected.push(onRejected);
+            state = newState;
+            settledValue = value;
+
+            for (var i = 0; i < handlers.length; i += 1) {
+                runHandler(handlers[i]);
             }
-
-            return new Promise(function(resolve, reject) {
-                resolveThenPromise.push(resolve);
-                rejectThenPromise.push(reject);
-            });
-        };
-
-        this["catch"] = function(onRejected) {
-
-            var catchFunctionResult;
-
-            if (failReason) {
-                catchFunctionResult = onRejected(failReason.result);
-
-                if (catchFunctionResult && catchFunctionResult.then) {
-                    return catchFunctionResult;
-                }
-
-                return Promise.resolve(catchFunctionResult);
-            }
-
-            thenRejected.push(onRejected);
-
-            return new Promise(function(resolve, reject) {
-                resolveThenPromise.push(resolve);
-                rejectThenPromise.push(reject);
-            });
-        };
+            handlers = [];
+        }
 
         function resolve(param) {
-
-            var result, i;
-
-            for (i = 0; i < thenResolved.length; i += 1) {
-
-                result = thenResolved[i](param);
-
-                if (result && result.then) {
-                    result.then(resolveThenPromise[i]);
-
-                    if (rejectThenPromise[i]) {
-                        result["catch"](rejectThenPromise[i]);
-                    }
-
-                } else {
-
-                    if (resolveThenPromise[i]) {
-                        resolveThenPromise[i](result);
-                    }
-                }
-            }
-
-            successResult = { result: param };
-
-            return;
+            settle(1, param);
         }
 
         function reject(param) {
-
-            var reason, i;
-
-            for (i = 0; i < thenRejected.length; i += 1) {
-
-                reason = thenRejected[i](param);
-
-                if (reason && reason.then) {
-                    reason.then(resolveThenPromise[i], rejectThenPromise[i]);
-
-                } else {
-                    if (resolveThenPromise[i]) {
-                        resolveThenPromise[i](reason);
-                    }
-                }
-            }
-
-            failReason = { result: param };
-
-            return;
+            settle(2, param);
         }
 
-        executor(resolve, reject);
+        this.then = function(onCompleted, onRejected) {
+
+            var resolveNext, rejectNext;
+
+            var nextPromise = new Promise(function(resolve, reject) {
+                resolveNext = resolve;
+                rejectNext = reject;
+            });
+
+            var handler = {
+                onCompleted: (typeof onCompleted === "function") ? onCompleted : null,
+                onRejected: (typeof onRejected === "function") ? onRejected : null,
+                resolveNext: resolveNext,
+                rejectNext: rejectNext
+            };
+
+            if (state === 0) {
+                handlers.push(handler);
+            } else {
+                runHandler(handler);
+            }
+
+            return nextPromise;
+        };
+
+        this["catch"] = function(onRejected) {
+            return this.then(null, onRejected);
+        };
+
+        try {
+            executor(resolve, reject);
+        } catch (executorError) {
+            reject(executorError);
+        }
 
         return;
     };

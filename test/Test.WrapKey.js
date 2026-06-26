@@ -16,188 +16,143 @@
 //
 //*******************************************************************************
 
-// #region WrapKey
+"use strict";
 
 QUnit.module("Wrap Key");
 
-/// Wrap an AES-CBC key with a RSA-OAEP key using msrCrypto
-/// then unwrap the key using IE11 msCrypto
+// Exercises subtle.wrapKey / subtle.unwrapKey as a round-trip: a freshly
+// generated AES key is exported, wrapped with a wrapping key, unwrapped with
+// the matching unwrapping key, and the recovered key material is compared to
+// the original. A match proves wrap and unwrap are inverse operations for the
+// given algorithm and key format.
+function wrapUnwrapRoundTrip(assert, options) {
+    var done = assert.async();
 
-if (typeof msCrypto !== "undefined") {  // msCrypto is only defined in IE
+    var originalRaw;
+    var keyToWrap;
+    var wrappingKey;
+    var unwrappingKey;
 
-    var ieCrypto = crypto;
-
-    asyncTest("JS to IE OAEP/AES-GCM", function() {
-
-        var encryptedData,
-            encryptedData1;
-
-        // Generate encryptionKey:
-        msrCrypto.subtle.generateKey({ name: "Aes-CBC", length: 128 }, true, ["sign", "verify"]).then(
-
-            function(encryptionKey) {
-
-                msrCrypto.subtle.encrypt(
-                    {
-                        name: "Aes-CBC",
-                        iv: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-                    }, encryptionKey, [1, 2, 3]).then(
-
-                    function(e) {
-
-                        encryptedData = shared.getArrayResult(e);
-
-                        shared.getRsaKeyPair(
-                            { name: "rSa-OAEP", modulusLength: 1024 },
-                            function(keyPair) {
-
-                                var publicKey = keyPair.keyHandlePublic;
-                                var privateKey = keyPair.keyHandlePrivateIE;
-
-                                msrCrypto.subtle.wrapKey(
-                                    encryptionKey,
-                                    publicKey,
-                                    { name: "Aes-GCM" }).then(
-
-                                    function(wrappedKeyData) {
-
-                                        var key = wrappedKeyData;
-
-                                        if (msrCrypto) {
-                                            wrappedKeyData = JSON.stringify(wrappedKeyData);
-                                            wrappedKeyData = shared.toBase64(wrappedKeyData);
-                                            key = shared.base64ToBytes(wrappedKeyData);
-                                        }
-
-                                        var cryptoObj = ieCrypto.subtle.unwrapKey(
-                                            //new Uint8Array(wrappedKeyData),
-                                            key,
-                                            { name: "Aes-CBC" },
-                                            privateKey, true, ["encrypt", "decrypt"]);
-
-                                        cryptoObj.oncomplete =
-
-                                            function(e0) {
-
-                                                var unwrappedEncryptionKey = e0.target.result;
-
-                                                var encryptObj = ieCrypto.subtle.encrypt(
-                                                    {
-                                                        name: "Aes-CBC",
-                                                        iv: new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-                                                            13, 14, 15])
-                                                    }, unwrappedEncryptionKey, new Uint8Array([1, 2, 3]));
-
-                                                encryptObj.oncomplete =
-
-                                                        function(e1) {
-                                                            start();
-                                                            encryptedData1 = shared.getArrayResult(e1.target.result);
-                                                            equal(encryptedData.join(), encryptedData1.join(),
-                                                                encryptedData.join() + "==" + encryptedData1.join());
-                                                        };
-                                            };
-                                        cryptoObj.onerror = shared.error("unwrapKey");
-
-                                    },
-                                    shared.error("wrapKey")
-                                );
-                            }
-                        );
-                    }
-                );
-            }
-        );
-    });
-
-    asyncTest("IE to JS OAEP/AES-GCM", function() {
-
-        // Generate encryptionKey:
-        var importOp = ieCrypto.subtle.generateKey(
-        { name: "Aes-CBC", length: 128 },
-        true, ["sign", "verify"]);
-
-        importOp.oncomplete =
-
-            function(e) {
-
-                var encryptionKey = e.target.result;
-
-                shared.getRsaKeyPair({ name: "rSa-OAEP", modulusLength: 1024 }, function(keyPair) {
-
-                    var publicKey = keyPair.keyHandlePublicIE;
-                    var privateKey = keyPair.keyHandlePrivate;
-
-                    var wrapOp = ieCrypto.subtle.wrapKey(
-                        encryptionKey,
-                        publicKey,
-                        { name: "Aes-GCM" });
-
-                    wrapOp.oncomplete =
-
-                        function(e0) {
-
-                            var wrappedKeyData = e0.target.result;
-
-                            var unWrapOp = msrCrypto.subtle.unwrapKey(
-                                new Uint8Array(wrappedKeyData),
-                                { name: "Aes-CBC" },
-                                privateKey, true, ["encrypt", "decrypt"]).then(
-
-                                function(e1) {
-                                    start();
-                                    var unwrappedEncryptionKey = ENGINE_METHOD_PKEY_ASN1_METHS;
-                                    ok(true);
-                                },
-                                shared.error("unwrapKey")
-                            );
-
-                        };
-                    wrapOp.onerror = shared.error("wrapKey");
-
-                });
-            };
-    });
-
-    asyncTest("JS to JS OAEP/AES-GCM", function() {
-
-        // Generate encryptionKey:
-        var importOp = msrCrypto.subtle.generateKey(
-        { name: "Aes-CBC", length: 128 },
-        true, ["sign", "verify"]).then(
-
-            function(encryptionKey) {
-
-                shared.getRsaKeyPair({ name: "rSa-OAEP", modulusLength: 1024 }, function(keyPair) {
-
-                    var publicKey = keyPair.keyHandlePublic;
-                    var privateKey = keyPair.keyHandlePrivate;
-
-                    msrCrypto.subtle.wrapKey(
-                        encryptionKey,
-                        publicKey,
-                        { name: "Aes-GCM" }).then(
-
-                            function(wrappedKeyData) {
-
-                                msrCrypto.subtle.unwrapKey(
-                                    new Uint8Array(wrappedKeyData),
-                                    { name: "Aes-CBC" },
-                                    privateKey, true, ["encrypt", "decrypt"]).then(
-
-                                function(unwrappedEncryptionKey) {
-                                    start();
-                                    ok(true);
-                                },
-                                    shared.error("unwrapKey")
-                                );
-
-                            },
-                            shared.error("wrapKey")
-                    );
-                });
-            }
-        );
-    });
+    Promise.all([options.generateKeyToWrap(), options.generateWrappingKeys()])
+        .then(function(results) {
+            keyToWrap = results[0];
+            wrappingKey = results[1].wrappingKey;
+            unwrappingKey = results[1].unwrappingKey;
+            return subtle.exportKey("raw", keyToWrap);
+        })
+        .then(function(raw) {
+            originalRaw = testShared.toArray(raw);
+            return subtle.wrapKey(options.format, keyToWrap, wrappingKey, options.wrapAlgorithm);
+        })
+        .then(function(wrapped) {
+            // Pass the wrapped key through unchanged: native WebCrypto requires a
+            // BufferSource (ArrayBuffer/TypedArray) here, not a plain Array.
+            return subtle.unwrapKey(options.format, wrapped, unwrappingKey,
+                options.wrapAlgorithm, options.unwrappedKeyAlgorithm, true, options.unwrappedKeyUsages);
+        })
+        .then(function(unwrappedKey) {
+            return subtle.exportKey("raw", unwrappedKey);
+        })
+        .then(function(roundTrippedRaw) {
+            assert.deepEqual(testShared.toArray(roundTrippedRaw), originalRaw,
+                "unwrapped key material matches the original");
+            done();
+        })
+        // IE8 will not allow .catch()
+        // tslint:disable-next-line: no-string-literal
+        ["catch"](function(err) {
+            assert.ok(false, "round-trip failed: " + (err && (err.name || err)));
+            done();
+        });
 }
-// #endregion WrapKey
+
+// The key that gets wrapped in every test: an extractable AES-CBC key whose
+// raw bytes can be compared before and after the round-trip.
+function generateAesKeyToWrap() {
+    return subtle.generateKey({ name: "AES-CBC", length: 128 }, true, ["encrypt", "decrypt"]);
+}
+
+// Builds a symmetric wrapping/unwrapping pair where the same key does both.
+function symmetricWrappingKeys(algorithm) {
+    return function() {
+        return subtle.generateKey(algorithm, true, ["wrapKey", "unwrapKey"]).then(function(key) {
+            return { wrappingKey: key, unwrappingKey: key };
+        });
+    };
+}
+
+// Builds an RSA-OAEP key pair: the public key wraps, the private key unwraps.
+function rsaWrappingKeys() {
+    // Native WebCrypto requires publicExponent as a Uint8Array; fall back to a
+    // plain Array where TypedArrays are unavailable (e.g. IE8 + msrCrypto).
+    var publicExponent = (typeof Uint8Array !== "undefined")
+        ? new Uint8Array([0x01, 0x00, 0x01])
+        : [0x01, 0x00, 0x01];
+
+    return subtle.generateKey(
+        { name: "RSA-OAEP", modulusLength: 1024, publicExponent: publicExponent, hash: "SHA-256" },
+        true,
+        ["wrapKey", "unwrapKey"])
+        .then(function(keyPair) {
+            return { wrappingKey: keyPair.publicKey, unwrappingKey: keyPair.privateKey };
+        });
+}
+
+var wrapIv = (typeof Uint8Array !== "undefined")
+    ? new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
+    : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+QUnit.test("AES-KW wraps and unwraps a raw AES key", function(assert) {
+    wrapUnwrapRoundTrip(assert, {
+        format: "raw",
+        wrapAlgorithm: { name: "AES-KW" },
+        generateKeyToWrap: generateAesKeyToWrap,
+        generateWrappingKeys: symmetricWrappingKeys({ name: "AES-KW", length: 256 }),
+        unwrappedKeyAlgorithm: { name: "AES-CBC" },
+        unwrappedKeyUsages: ["encrypt", "decrypt"]
+    });
+});
+
+QUnit.test("AES-CBC wraps and unwraps a raw AES key", function(assert) {
+    wrapUnwrapRoundTrip(assert, {
+        format: "raw",
+        wrapAlgorithm: { name: "AES-CBC", iv: wrapIv },
+        generateKeyToWrap: generateAesKeyToWrap,
+        generateWrappingKeys: symmetricWrappingKeys({ name: "AES-CBC", length: 256 }),
+        unwrappedKeyAlgorithm: { name: "AES-CBC" },
+        unwrappedKeyUsages: ["encrypt", "decrypt"]
+    });
+});
+
+QUnit.test("AES-GCM wraps and unwraps a raw AES key", function(assert) {
+    wrapUnwrapRoundTrip(assert, {
+        format: "raw",
+        wrapAlgorithm: { name: "AES-GCM", iv: wrapIv },
+        generateKeyToWrap: generateAesKeyToWrap,
+        generateWrappingKeys: symmetricWrappingKeys({ name: "AES-GCM", length: 256 }),
+        unwrappedKeyAlgorithm: { name: "AES-CBC" },
+        unwrappedKeyUsages: ["encrypt", "decrypt"]
+    });
+});
+
+QUnit.test("AES-GCM wraps and unwraps a key in jwk format", function(assert) {
+    wrapUnwrapRoundTrip(assert, {
+        format: "jwk",
+        wrapAlgorithm: { name: "AES-GCM", iv: wrapIv },
+        generateKeyToWrap: generateAesKeyToWrap,
+        generateWrappingKeys: symmetricWrappingKeys({ name: "AES-GCM", length: 256 }),
+        unwrappedKeyAlgorithm: { name: "AES-CBC" },
+        unwrappedKeyUsages: ["encrypt", "decrypt"]
+    });
+});
+
+QUnit.test("RSA-OAEP wraps and unwraps a raw AES key", function(assert) {
+    wrapUnwrapRoundTrip(assert, {
+        format: "raw",
+        wrapAlgorithm: { name: "RSA-OAEP" },
+        generateKeyToWrap: generateAesKeyToWrap,
+        generateWrappingKeys: rsaWrappingKeys,
+        unwrappedKeyAlgorithm: { name: "AES-CBC" },
+        unwrappedKeyUsages: ["encrypt", "decrypt"]
+    });
+});

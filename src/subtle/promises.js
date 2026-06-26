@@ -63,158 +63,141 @@
             throw new Error("use 'new' keyword with Promise constructor");
         }
 
-        var successResult = null,
-            failReason = null,
-            thenResolved = [],
-            thenRejected = [],
-            rejectThenPromise = [],
-            resolveThenPromise = [];
+        // State: 0 = pending, 1 = fulfilled, 2 = rejected.
+        var state = 0,
+            settledValue = null,
+            // Queue of handlers registered while pending. Each entry is
+            // { onCompleted, onRejected, resolveNext, rejectNext } so a single
+            // list keeps each handler aligned with its chained promise's
+            // resolve/reject. This lets rejections propagate through then()
+            // calls that omit a rejection handler so a trailing catch() still
+            // receives the error. (The previous implementation tracked these in
+            // separate arrays that fell out of alignment and dropped such
+            // rejections, silently swallowing errors.)
+            handlers = [];
+
+        // Invoke a single registered handler against the settled value and
+        // route the outcome to its chained promise. A missing handler passes
+        // the value through (fulfilled -> resolveNext, rejected -> rejectNext)
+        // so a later catch() still sees an earlier rejection. A throwing
+        // handler rejects the chained promise.
+        function runHandler(handler) {
+
+            var callback = (state === 1) ? handler.onCompleted : handler.onRejected;
+
+            if (!callback) {
+                (state === 1 ? handler.resolveNext : handler.rejectNext)(settledValue);
+                return;
+            }
+
+            var result;
+            try {
+                result = callback(settledValue);
+            } catch (handlerError) {
+                handler.rejectNext(handlerError);
+                return;
+            }
+
+            handler.resolveNext(result);
+        }
+
+        // Move the promise to its final state and flush any queued handlers.
+        // When fulfilled with a thenable, adopt that thenable's eventual state
+        // so returning a promise from then() chains as expected.
+        function settle(newState, value) {
+
+            if (state !== 0) {
+                return;
+            }
+
+            if (newState === 1 && value && (typeof value === "object" || typeof value === "function")) {
+
+                var thenFunction;
+                try {
+                    thenFunction = value.then;
+                } catch (accessError) {
+                    settle(2, accessError);
+                    return;
+                }
+
+                if (typeof thenFunction === "function") {
+                    var handled = false;
+                    try {
+                        thenFunction.call(
+                            value,
+                            function(result) { if (!handled) { handled = true; settle(1, result); } },
+                            function(reason) { if (!handled) { handled = true; settle(2, reason); } });
+                    } catch (thenableError) {
+                        if (!handled) { handled = true; settle(2, thenableError); }
+                    }
+                    return;
+                }
+            }
+
+            state = newState;
+            settledValue = value;
+
+            for (var i = 0; i < handlers.length; i += 1) {
+                runHandler(handlers[i]);
+            }
+            handlers = [];
+        }
+
+        function resolve(param) {
+            /// <summary>
+            /// Called by the executor function when the operation has succeeded.
+            /// </summary>
+            /// <param name="param">A result value passed to the then() function.</param>
+            settle(1, param);
+        }
+
+        function reject(param) {
+            /// <summary>
+            /// Called by the executor function when the operation has failed.
+            /// </summary>
+            /// <param name="param">A reason value passed to the catch() function.</param>
+            settle(2, param);
+        }
 
         this.then = function(onCompleted, onRejected) {
 
-            var thenFunctionResult;
+            var resolveNext, rejectNext;
 
-            // If we already have a result because resolveFunction was synchronous,
-            // then just call onCompleted with the result.
-            if (successResult) {
-                thenFunctionResult = onCompleted(successResult.result);
-
-                if (thenFunctionResult && thenFunctionResult.then) {
-                    return thenFunctionResult;
-                }
-
-                // Create a new promise; resolve with the result;
-                // return the resolved promise.
-                return Promise.resolve(thenFunctionResult);
-            }
-
-            // If we already have a fail reason from a rejected promise
-            if (failReason) {
-                thenFunctionResult = onRejected ? onRejected(failReason.result) : failReason.result;
-
-                if (thenFunctionResult && thenFunctionResult.then) {
-                    return thenFunctionResult;
-                }
-
-                // Create a new promise; reject with the result;
-                // return the resolved promise.
-                return Promise.resolve(thenFunctionResult);
-            }
-
-            // If we do not have a result, store the onCompleted/onRejected functions
-            // to call when we do get a result.
-            thenResolved.push(onCompleted);
-            if (onRejected) {
-                thenRejected.push(onRejected);
-            }
-
-            // Return a new promise object. This will allow chaining with then/catch().
             // tslint:disable-next-line: no-shadowed-variable
-            return new Promise(function(resolve, reject) {
-                resolveThenPromise.push(resolve);
-                rejectThenPromise.push(reject);
+            var nextPromise = new Promise(function(resolve, reject) {
+                resolveNext = resolve;
+                rejectNext = reject;
             });
+
+            var handler = {
+                onCompleted: (typeof onCompleted === "function") ? onCompleted : null,
+                onRejected: (typeof onRejected === "function") ? onRejected : null,
+                resolveNext: resolveNext,
+                rejectNext: rejectNext
+            };
+
+            // Run immediately if already settled, otherwise queue until it is.
+            if (state === 0) {
+                handlers.push(handler);
+            } else {
+                runHandler(handler);
+            }
+
+            return nextPromise;
         };
 
         // tslint:disable-next-line: no-string-literal
         this["catch"] = function(onRejected) {
-
-            var catchFunctionResult;
-
-            // If we already have a result because resolveFunction was synchronous,
-            // then just call onRejected with the result.
-            if (failReason) {
-                catchFunctionResult = onRejected(failReason.result);
-
-                if (catchFunctionResult && catchFunctionResult.then) {
-                    return catchFunctionResult;
-                }
-
-                return Promise.resolve(catchFunctionResult);
-            }
-
-            // If we do not have a result, store the onRejected function
-            // to call when we do get a result.
-            thenRejected.push(onRejected);
-
-            // Return a new promise object. This will allow chaining with then/catch().
-            // tslint:disable-next-line: no-shadowed-variable
-            return new Promise(function(resolve, reject) {
-                resolveThenPromise.push(resolve);
-                rejectThenPromise.push(reject);
-            });
+            return this.then(null, onRejected);
         };
 
-        function resolve(param) {
-            /// <summary>
-            /// Called by the executor function when the function has succeeded.
-            /// </summary>
-            /// <param name="param">A result value that will be passed to the then() function.</param>
-
-            var result, i;
-
-            // Call each attached Then function with the result
-            for (i = 0; i < thenResolved.length; i += 1) {
-
-                result = thenResolved[i](param);
-
-                // If the result of the then() function is a Promise,
-                // set then() to call the chained resolve function.
-                if (result && result.then) {
-                    result.then(resolveThenPromise[i]);
-
-                    // Also set catch() if present
-                    if (rejectThenPromise[i]) {
-                        // tslint:disable-next-line: no-string-literal
-                        result["catch"](rejectThenPromise[i]);
-                    }
-
-                } else {
-
-                    // If a then() promise was chained to this promise, call its resolve
-                    // function.
-                    if (resolveThenPromise[i]) {
-                        resolveThenPromise[i](result);
-                    }
-                }
-            }
-
-            // If the onCompleted function has not yet been assigned, store the result.
-            successResult = { result: param };
-
-            return;
-        }
-
-        function reject(param) {
-
-            var reason, i;
-
-            // Call each catch function on this promise
-            for (i = 0; i < thenRejected.length; i += 1) {
-
-                reason = thenRejected[i](param);
-
-                // If the result of the catch() function is a Promise,
-                // set then() to call the chained resolve function.
-                if (reason && reason.then) {
-                    reason.then(resolveThenPromise[i], rejectThenPromise[i]);
-
-                } else {
-                    if (resolveThenPromise[i]) {
-                        resolveThenPromise[i](reason);
-                    }
-                }
-            }
-
-            // If the onCompleted function has not yet been assigned, store the result.
-            failReason = { result: param };
-
-            return;
-        }
-
         // Call the executor function passing the resolve & reject functions of
-        // this instance.
-        executor(resolve, reject);
+        // this instance. A throw from the executor rejects the promise.
+        try {
+            executor(resolve, reject);
+        } catch (executorError) {
+            reject(executorError);
+        }
 
         return;
     };
