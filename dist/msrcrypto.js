@@ -9299,6 +9299,10 @@ var workerManager = (function() {
 
         worker.onmessage = function( e) {
 
+            if (!e.data) {
+                return;
+            }
+
             if (e.data.initialized === true) {
                 return;
             }

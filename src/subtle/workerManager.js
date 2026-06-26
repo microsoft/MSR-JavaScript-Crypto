@@ -214,6 +214,13 @@ var workerManager = (function() {
         // The worker will call this function when it completes its job.
         worker.onmessage = function(/*@type(typeEvent)*/ e) {
 
+            // Guard against messages that arrive without a data payload. A
+            // well-behaved worker always posts a data object, but a malformed
+            // or empty event must not throw while reading e.data.* below.
+            if (!e.data) {
+                return;
+            }
+
             // onmessage will return initialized==true when the worker is first created.
             // we don't need to do any work yet.
             if (e.data.initialized === true) {
