@@ -1995,19 +1995,24 @@ function msrcryptoMath() {
             }
         }
 
+        var windowSizeThresholds = [
+            [158, 2],
+            [634, 3],
+            [1984, 4],
+            [5568, 5],
+            [14670, 6]
+        ];
+
         function optimalWindowSize(length) {
 
-            var i = 2,
-                t1, t0, bits = length * DIGIT_BITS;
+            var bits = length * DIGIT_BITS;
+            for (var i = 0; i < windowSizeThresholds.length; i++) {
+                if (bits <= windowSizeThresholds[i][0]) {
+                    return windowSizeThresholds[i][1];
+                }
+            }
 
-            t0 = 4 + Math.ceil(bits / 2) * 3 + 1;
-            do {
-                i++;
-                t1 = t0;
-                t0 = Math.pow(2, i) + Math.ceil(bits / i) * (i + 1) + 1;
-            } while (t0 < t1);
-
-            return i - 1;
+            return windowSizeThresholds[windowSizeThresholds.length - 1][1] + 1;
         }
 
         function modExp(base, exponent, result, skipSideChannel) {
