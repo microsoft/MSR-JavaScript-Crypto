@@ -248,6 +248,10 @@ function ecdsaTests() {
         ts.keyGeneratePairTest( ecdsaKeyAlg( "P-521" ), [VERIFY, SIGN], inspectEcdsaKey, context( iterations, assert ) );
     } );
 
+    QUnit.test(label + " generateKeyTest BN-254", function(assert) {
+        ts.keyGeneratePairTest(ecdsaKeyAlg("BN-254"), [VERIFY, SIGN], inspectEcdsaKey, context(iterations, assert));
+    });
+
     QUnit.test(label + " generateKeyTest NUMSP256D1", function(assert) {
         ts.keyGeneratePairTest(ecdsaKeyAlg("NUMSP256D1"), [VERIFY, SIGN], inspectEcdsaKey, context(iterations, assert));
     });
@@ -423,6 +427,7 @@ var ecdsaKeyLengths = {
     "P-256": 32,
     "P-384": 48,
     "P-521": 66,
+    "BN-254": 32,
     "NUMSP256D1": 32,
     "NUMSP256T1": 32,
     "NUMSP384D1": 48,
