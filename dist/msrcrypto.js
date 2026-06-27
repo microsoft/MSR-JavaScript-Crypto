@@ -9299,7 +9299,7 @@ var workerManager = (function() {
 
         worker.onmessage = function( e) {
 
-            if (!e.data) {
+            if (e.data == null) {
                 return;
             }
 

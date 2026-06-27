@@ -215,9 +215,12 @@ var workerManager = (function() {
         worker.onmessage = function(/*@type(typeEvent)*/ e) {
 
             // Guard against messages that arrive without a data payload. A
-            // well-behaved worker always posts a data object, but a malformed
-            // or empty event must not throw while reading e.data.* below.
-            if (!e.data) {
+            // well-behaved worker always posts a result, but a malformed or
+            // empty event must not throw while reading e.data.* below. Use a
+            // null/undefined check (not a falsy check): a legitimate result can
+            // itself be falsy, e.g. `verify` posts the boolean `false`, which
+            // must still complete the operation rather than be dropped.
+            if (e.data == null) {
                 return;
             }
 
