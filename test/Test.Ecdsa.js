@@ -248,6 +248,10 @@ function ecdsaTests() {
         ts.keyGeneratePairTest( ecdsaKeyAlg( "P-521" ), [VERIFY, SIGN], inspectEcdsaKey, context( iterations, assert ) );
     } );
 
+    QUnit.test(label + " generateKeyTest BN-254", function(assert) {
+        ts.keyGeneratePairTest(ecdsaKeyAlg("BN-254"), [VERIFY, SIGN], inspectEcdsaKey, context(iterations, assert));
+    });
+
     QUnit.test(label + " generateKeyTest NUMSP256D1", function(assert) {
         ts.keyGeneratePairTest(ecdsaKeyAlg("NUMSP256D1"), [VERIFY, SIGN], inspectEcdsaKey, context(iterations, assert));
     });
@@ -419,17 +423,9 @@ function ecdsaTests() {
     });
 }
 
-var ecdsaKeyLengths = {
-    "P-256": 32,
-    "P-384": 48,
-    "P-521": 66,
-    "NUMSP256D1": 32,
-    "NUMSP256T1": 32,
-    "NUMSP384D1": 48,
-    "NUMSP384T1": 48,
-    "NUMSP512D1": 64,
-    "NUMSP512T1": 64
-};
+function ecdsaCurveElementLength(namedCurve) {
+    return cryptoECC.curveElementLength(namedCurve);
+}
 
 function ecdsaKeyAlg(curve) {
     return {
@@ -450,7 +446,7 @@ var inspectEcdsaKey = {
 
         var fail = [];
 
-        var expLenMax = ecdsaKeyLengths[algorithm.namedCurve];
+        var expLenMax = ecdsaCurveElementLength(algorithm.namedCurve);
         var expLenMin = expLenMax;
 
         // has crv property equal to "P-521"
@@ -493,7 +489,7 @@ var inspectEcdsaKey = {
     },
     private: function(keyObj, algorithm, usages, reason) {
 
-        var expLenMax = ecdsaKeyLengths[algorithm.namedCurve];
+        var expLenMax = ecdsaCurveElementLength(algorithm.namedCurve);
         var expLenMin = expLenMax;
 
         this.public(keyObj, algorithm, usages, reason);

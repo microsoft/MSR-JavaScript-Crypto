@@ -156,12 +156,7 @@ if ( typeof operations !== "undefined" ) {
 
         // Pad each value to the curve's fixed element length so leading zeros
         // are preserved (matches Chrome / Chromium-based Edge behavior).
-        var partLen = {
-            "P-256": 32, "P-384": 48, "P-521": 66,
-            "NUMSP256D1": 32, "NUMSP256T1": 32,
-            "NUMSP384D1": 48, "NUMSP384T1": 48,
-            "NUMSP512D1": 64, "NUMSP512T1": 64
-        }[p.algorithm.namedCurve];
+        var partLen = cryptoECC.curveElementLength(p.algorithm.namedCurve);
         var pad = msrcryptoUtilities.padFront;
         keyPairData.publicKey.x = pad(keyPairData.publicKey.x, 0, partLen);
         keyPairData.publicKey.y = pad(keyPairData.publicKey.y, 0, partLen);
@@ -250,12 +245,7 @@ if ( typeof operations !== "undefined" ) {
 
                 // Accept keys with or without trimmed leading zeros and pad each
                 // value to the curve's fixed element length (Chrome/Chromium behavior).
-                var partLen = {
-                    "P-256": 32, "P-384": 48, "P-521": 66,
-                    "NUMSP256D1": 32, "NUMSP256T1": 32,
-                    "NUMSP384D1": 48, "NUMSP384T1": 48,
-                    "NUMSP512D1": 64, "NUMSP512T1": 64
-                }[p.algorithm.namedCurve];
+                var partLen = cryptoECC.curveElementLength(p.algorithm.namedCurve);
                 if ( keyObject.x ) { keyObject.x = msrcryptoUtilities.padFront(keyObject.x, 0, partLen); }
                 if ( keyObject.y ) { keyObject.y = msrcryptoUtilities.padFront(keyObject.y, 0, partLen); }
                 if ( keyObject.d ) { keyObject.d = msrcryptoUtilities.padFront(keyObject.d, 0, partLen); }
