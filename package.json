@@ -1,27 +1,62 @@
 {
   "name": "@microsoft/msrcrypto",
-  "version": "1.6.6",
+  "version": "1.7.0",
   "description": "MSR JavaScript Cryptography Library",
   "license": "Apache-2.0",
+  "author": "Microsoft Corporation",
+  "homepage": "https://github.com/microsoft/MSR-JavaScript-Crypto#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/microsoft/MSR-JavaScript-Crypto.git"
   },
+  "bugs": {
+    "url": "https://github.com/microsoft/MSR-JavaScript-Crypto/issues"
+  },
+  "keywords": [
+    "crypto",
+    "webcrypto",
+    "polyfill",
+    "subtlecrypto",
+    "aes",
+    "rsa",
+    "ecdsa",
+    "ecdh",
+    "hmac",
+    "sha"
+  ],
+  "main": "dist/msrcrypto.js",
+  "types": "types/msrCrypto.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/msrCrypto.d.ts",
+      "default": "./dist/msrcrypto.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "./dist/IE11PromiseWrapper.js"
+  ],
+  "files": [
+    "dist/",
+    "types/",
+    "LICENSE",
+    "README.md",
+    "SECURITY.md",
+    "CHANGELOG.md"
+  ],
   "scripts": {
-    "build": "gulp"
-  },  
+    "build": "node build.mjs",
+    "build:watch": "node build.mjs --watch",
+    "clean": "node build.mjs --clean",
+    "prepublishOnly": "npm run clean && npm run build"
+  },
   "devDependencies": {
-    "@types/gulp": "^4.0.9",
-    "@types/gulp-concat": "0.0.32",
-    "@types/gulp-header": "^2.0.1",
-    "@types/gulp-strip-comments": "^2.5.1",
-    "gulp": "^4.0.2",
-    "gulp-beautify": "^3.0.0",
-    "gulp-clean": "^0.4.0",
-    "gulp-concat": "^2.6.1",
-    "gulp-header": "^2.0.9",
-    "gulp-minify": "^3.1.0",
-    "gulp-strip-code": "^0.1.4",
-    "gulp-strip-comments": "^2.5.2"
+    "esbuild": "^0.28.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }

@@ -1,0 +1,219 @@
+﻿<!--
+//*******************************************************************************
+//
+//    Copyright 2020 Microsoft
+//
+//    Licensed under the Apache License, Version 2.0 (the "License");
+//    you may not use this file except in compliance with the License.
+//    You may obtain a copy of the License at
+//
+//        http://www.apache.org/licenses/LICENSE-2.0
+//
+//    Unless required by applicable law or agreed to in writing, software
+//    distributed under the License is distributed on an "AS IS" BASIS,
+//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//    See the License for the specific language governing permissions and
+//    limitations under the License.
+//
+//*******************************************************************************
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <title>Subtle Tests</title>
+    <link rel="stylesheet" href="vendor/qunit-1.23.1.css">
+
+    <style>
+        #qunit-stop-button {
+            margin-left: 0.5em;
+            font: bold small Arial, Helvetica, sans-serif;
+            color: #fff;
+            background: #c0392b;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 10px;
+            cursor: pointer;
+            vertical-align: middle;
+        }
+
+        #qunit-stop-button:hover {
+            background: #a93226;
+        }
+
+        #qunit-stop-button[disabled] {
+            background: #b9b9b9;
+            cursor: default;
+        }
+    </style>
+
+</head>
+
+<body style="background-color: gray">
+    <!-- qunit test runner -->
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <script src="vendor/qunit-1.23.1.js"></script>
+
+    <!-- load msrCrypto & ie11 wrapper by default -->
+    <script id="msrCrypto" type="text/javascript" src="../dist/msrcrypto.js"></script>
+
+    <!-- test vectors -->
+    <script src="vectors/tv_aes_cbc.js"></script>
+    <script src="vectors/tv_aes_gcm.js"></script>
+    <script src="vectors/tv_aes_kw.js"></script>
+    <script src="vectors/tv_ecdh.js"></script>
+    <script src="vectors/tv_ecdsa.js"></script>
+    <script src="vectors/tv_hmac.js"></script>
+    <script src="vectors/tv_sha2.js"></script>
+    <script src="vectors/tv_rsa_es.js"></script>
+    <script src="vectors/tv_rsa_oaep.js"></script>
+    <script src="vectors/tv_rsa_ssa.js"></script>
+    <script src="vectors/tv_rsa_pss.js"></script>
+    <script src="vectors/tv_pbkdf2.js"></script>
+    <script src="vectors/tv_hkdf.js"></script>
+    <script src="vectors/tv_hkdfCtr.js"></script>
+    <script src="vectors/tv_concatkdf.js"></script>
+
+    <!-- test vector execution scripts -->
+    <script src="../src/utilities.js"></script>
+    <script src="Test.Shared.js"></script>
+    <script src="Test.Promise.js"></script>
+    <script src="Test.Encoding.js"></script>
+    <script src="Test.CryptoKey.js"></script>
+    <script src="Test.Aes.Cbc.js"></script>
+    <script src="Test.Aes.Gcm.js"></script>
+    <script src="Test.Aes.Kw.js"></script>
+    <script src="Test.Rsa.Es.js"></script>
+    <script src="Test.Rsa.Oaep.js"></script>
+    <script src="Test.Rsa.Ssa.js"></script>
+    <script src="Test.Rsa.Pss.js"></script>
+    <script src="Test.Sha2.js"></script>
+    <script src="Test.Ecdh.js"></script>
+    <script src="Test.Ecdsa.js"></script>
+    <script src="Test.Hmac.js"></script>
+    <script src="Test.Pbkdf2.js"></script>
+    <script src="Test.Hkdf.js"></script>
+    <script src="Test.HkdfCtr.js"></script>
+    <script src="Test.ConcatKdf.js"></script>
+    <script src="Test.WrapKey.js"></script>
+    <script src="Test.Errors.js"></script>
+
+    <!-- test runner controls: stop the in-progress run -->
+    <script>
+        (function () {
+
+            var button;
+
+            // Auto-scroll ("tail -f"): keep the most recently finished test in
+            // view while a run is in progress. Genuine user input (wheel,
+            // touch, or the navigation keys) pauses following so a result can
+            // be inspected; scrolling back to the bottom resumes it. Detecting
+            // the input directly is more reliable than inferring intent from
+            // scroll events, which the programmatic scroll itself fires.
+            var followOutput = true;
+
+            // IE8 has no addEventListener; fall back to attachEvent.
+            function addEvent(target, type, handler) {
+                if (target.addEventListener) {
+                    target.addEventListener(type, handler, false);
+                } else if (target.attachEvent) {
+                    target.attachEvent("on" + type, handler);
+                }
+            }
+
+            function nearBottom() {
+                var scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+                var viewport = window.innerHeight || document.documentElement.clientHeight;
+                var docHeight = document.documentElement.scrollHeight;
+                return (docHeight - (scrollPos + viewport)) < 40;
+            }
+
+            // Normalize the modern "wheel" event (e.deltaY: negative = up) and
+            // the legacy IE8 "mousewheel" event (e.wheelDelta: positive = up).
+            function onWheel(e) {
+                e = e || window.event;
+                var scrolledUp;
+                if (typeof e.deltaY === "number") {
+                    scrolledUp = e.deltaY < 0;
+                } else if (typeof e.wheelDelta === "number") {
+                    scrolledUp = e.wheelDelta > 0;
+                } else {
+                    return;
+                }
+                if (scrolledUp) { followOutput = false; }
+            }
+            addEvent(window, "wheel", onWheel);
+            addEvent(document, "mousewheel", onWheel);
+
+            addEvent(document, "touchmove", function () {
+                followOutput = false;
+            });
+
+            addEvent(document, "keydown", function (e) {
+                e = e || window.event;
+                // Page Up (33), Home (36), Arrow Up (38).
+                if (e.keyCode === 33 || e.keyCode === 36 || e.keyCode === 38) {
+                    followOutput = false;
+                }
+            });
+
+            addEvent(window, "scroll", function () {
+                if (nearBottom()) { followOutput = true; }
+            });
+
+            function stopRun() {
+                if (QUnit.config.queue) {
+                    QUnit.config.queue.length = 0;
+                }
+                button.disabled = true;
+            }
+
+            // QUnit only builds its toolbar (and module picker) when a run
+            // begins, so add the Stop button to the toolbar at that point,
+            // next to QUnit's native module picker. This begin callback runs
+            // after QUnit's own (which builds the toolbar) because it is
+            // registered later.
+            QUnit.begin(function () {
+                var container = document.getElementById("qunit-modulefilter-container") ||
+                    document.getElementById("qunit-testrunner-toolbar");
+                if (container && !button) {
+                    button = document.createElement("button");
+                    button.id = "qunit-stop-button";
+                    button.innerHTML = "Stop";
+                    // Abort the in-progress run by clearing QUnit's task queue.
+                    // QUnit's process loop halts once the queue is empty,
+                    // leaving the native UI (including its module picker) on
+                    // screen so a specific module can be selected and run next.
+                    button.onclick = stopRun;
+                    container.appendChild(button);
+                }
+                if (button) {
+                    button.disabled = false;
+                }
+            });
+
+            // After each test renders, keep the newest result at the bottom of
+            // the viewport unless the user has scrolled up to look at something.
+            QUnit.testDone(function () {
+                if (followOutput) {
+                    window.scrollTo(0, document.documentElement.scrollHeight);
+                }
+            });
+
+            QUnit.done(function () {
+                if (button) {
+                    button.disabled = true;
+                }
+            });
+
+        })();
+    </script>
+
+</body>
+
+</html>

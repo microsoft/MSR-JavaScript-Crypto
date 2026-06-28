@@ -1,8 +1,8 @@
-# npm packages loaded on user's system
+# Installed dependencies
 node_modules/
 
-# This gets re-built by gulp with each build.
-scripts/subtle.js
+# OS / editor artifacts
+.DS_Store
 
-/.history
-/.DS_Store
+# Local test comparison page
+test/hmac-export-compare.html

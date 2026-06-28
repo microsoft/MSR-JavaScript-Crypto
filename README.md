@@ -22,10 +22,24 @@ var crypto =  window.crypto /*native*/ || window.msCrypto /*IE11 native*/ || win
 crypto.subtle.encrypt(...);
 ```
 
+The library is exposed only under the name `msrCrypto`; it does **not** assign `crypto` or `CryptoKey` to the global scope automatically.
+Some libraries (for example, [`jose`](https://github.com/panva/jose)) expect a top-level `CryptoKey` to be available and will fail to recognize keys if it is missing.
+If you are using msrCrypto as a polyfill in an environment without native Web Crypto, assign both globals yourself:  
+```javascript
+// Only install the polyfill where native Web Crypto is not available.
+if (!window.crypto || !window.crypto.subtle) {
+    window.crypto = window.msrCrypto;             // exposes crypto.subtle, crypto.getRandomValues, etc.
+    window.CryptoKey = window.msrCrypto.CryptoKey; // top-level CryptoKey constructor
+}
+```
+> Use `globalThis` instead of `window` in non-browser environments.
+
+Keys returned by `msrCrypto.subtle` are instances of `msrCrypto.CryptoKey`. Once `CryptoKey` is assigned to the global scope, `key instanceof CryptoKey` evaluates to `true`, which satisfies the polyfill detection used by consumers such as `jose`.
+
 ## Library Files  
 
-Full library [`/lib/msrCrypto.js`](https://github.com/microsoft/MSR-JavaScript-Crypto/blob/master/lib/msrcrypto.js)  
-Minified library [`/lib/msrCrypto.min.js`](https://github.com/microsoft/MSR-JavaScript-Crypto/blob/master/lib/msrcrypto.min.js)
+Full library [`/dist/msrcrypto.js`](https://github.com/microsoft/MSR-JavaScript-Crypto/blob/master/dist/msrcrypto.js)  
+Minified library [`/dist/msrcrypto.min.js`](https://github.com/microsoft/MSR-JavaScript-Crypto/blob/master/dist/msrcrypto.min.js)
 
 
 ## Supported Algorithms
@@ -64,8 +78,8 @@ Supported ECC curves:
 
 >_While this library has npm build dependencies, it has no run-time dependencies._
 
-You may build the library from the source files. The library is built using [gulp](https://gulpjs.com/) from npm to concatenate many individual JavaScript files into a single library file.  
-Run `npm install` from a command terminal to install the required _npm_ packages. `gulpfile.js` contains a list of scripts included in the build. You may remove scripts to create a subset of the library that supports fewer algorithms. Be aware, many scripts have dependencies on other scripts to function properly.
+You may build the library from the source files. The library is built using [esbuild](https://esbuild.github.io/) to concatenate many individual JavaScript files (in `src/`) into a single library file.  
+Run `npm install` from a command terminal to install the required _npm_ packages. The `fullBuild` list in `build.mjs` contains the scripts included in the build. You may remove scripts to create a subset of the library that supports fewer algorithms. Be aware, many scripts have dependencies on other scripts to function properly.
 
 #### Building from Visual Studio Code:
 >_These steps require that [git](https://git-scm.com/downloads), [Node.js](https://nodejs.org/en/), and [Visual Studio Code](https://code.visualstudio.com/) are installed on your system._  
@@ -78,15 +92,15 @@ Run `npm install` from a command terminal to install the required _npm_ packages
 	>Select menu `View->Command Palette...` (or `F1`) then enter `Developer: Reload Window`  
 5. Build the project: menu `View->Command Palette...` (or `F1`) then enter `Tasks: Run Build Task`.
 	>Alternately you can use the _ctrl+shift+b_ keyboard shortcut. 
-6. The newly built library files will appear in the `lib` directory as `msrCrypto.js` and `msrCrypto.min.js`.
+6. The newly built library files will appear in the `dist` directory as `msrcrypto.js` and `msrcrypto.min.js`.
 
 #### Building from the command line:
 >_These steps require that [git](https://git-scm.com/downloads) and [Node.js](https://nodejs.org/en/) are installed on your system._  
 1. Clone the repo to a local folder `git clone https://github.com/microsoft/MSR-JavaScript-Crypto.git`  
 2. `cd MSR-JavaScript-Crypto` to enter the project directory.
 3. `npm install` to install the required [Node.js](https://nodejs.org/en/) modules to the project's `node_modules` folder.  
-4. `node_modules\.bin\gulp` to build the library files.  
-5. The newly built library files will appear in the `lib` directory as `msrCrypto.js` and `msrCrypto.min.js`.
+4. `npm run build` to build the library files.  
+5. The newly built library files will appear in the `dist` directory as `msrcrypto.js` and `msrcrypto.min.js`.
 
 
 ## Additional Utilities
@@ -137,7 +151,7 @@ var data = new Uint8Array(dataArray);
 
 #### IE11
 IE11 supports the Web Crypto API, but was based on a pre-release version of the spec and was never updated. So it uses event based calls instead of Promises and a few other quirks of the API.
-In the `/lib` folder there is a `IE11PromiseWrapper.js` file. This shim can be loaded in IE11 and allow you to call the native Web Crypto API using the Promise based calling scheme. This shim also corrects some of the quirks in the IE11 API.
+In the `/dist` folder there is a `IE11PromiseWrapper.js` file. This shim can be loaded in IE11 and allow you to call the native Web Crypto API using the Promise based calling scheme. This shim also corrects some of the quirks in the IE11 API.
 
 ## Random Number Generator (PRNG):
 
@@ -163,84 +177,9 @@ A good source for documentation is:
 
 >msrCrypto uses identical calls as these documents with the addition of allowing both regular JavaScript Arrays and Typed-Arrays for data input and output.
 
-## Updates
+## Changelog
 
-#### Changes with version 1.6
-
-	Automatic web-worker usage is disabled by default. 
-	When enabled, it may cause problems when the library is bundled with other scripts.  
-
-	raw key import support for HMAC & ECDH.  
-
-	spki public key import for RSA.
-	
-	wrapKey support for AES-CBC, AES-GCM, RSA-OAEP.
-
-	PBKDF2 key derivation algorithm.
-
-	Includes additional side-channel protection.
-
-	Moved source to GitHub.
-
-#### Changes with version 1.5
-
-	Added support for streaming input/output data to crypto calls.
-	See Samples/StreamSample.html for an example on how to use this feature.
-
-	Now allow concurrent crypto calls of the same type at the same time. Before, concurrent 
-	crypto operations that shared code would possibly return incorrect results.  
-	Now, for example, you could perform multiple encryptions at the same time with streaming.
-
-	Added 'raw' keyImport/keyExport format for hmac, AES-CBC, AES-GCM.
-
-	Added IE11PromiseWrapper.js script to wrap the IE11 non-standard WebCrypto api and make
-	it function the same as current standard WebCrypto api. Your WebCrypto code should now 
-	work with msrCrypto, IE11-WebCrypto, and the current standard WebCrypto with minimal
-	special case code.
-
-	Removed RSASSA-PKCS1-v1_5 encrypt/decrypt algorithm. (considered less secure and obsolete)
-	It is no longer supported by WebCrypto in modern browsers.
-
-	Added TypeScript d.ts file.   msrCrypto.d.ts for using with type script.
-
-	Moved the Promise polyfill outside of the msrCrypto library so you can use the built-in
-	browser version when available.	 
-
-#### Changes with version 1.4
-
-The API has been updated to support the latest Web Crypto API spec and be compatible with the
-implementation on the latest browsers.
-
-Promises are now supported and the IE11 based events are removed. Crypto calls are now in the 
-form:
-
-```javascript
-// NEW STYLE with Promises
-msrCrypto.subtle.encrypt(<parameters>).then(
-	function(encryptionResult) {
-		//... do something here with the result
-	},
-	function(error) {
-		//... handle error
-	}
-);
-```
-
-This will break code that uses the pre-1.4 calling conventions:
-```javascript
-// OLD STYLE with events (before version 1.4)
-var cryptoOperation =  msrCrypto.subtle.encrypt(<parameters>);
-
-cryptoOperation.onComplete = 
-	function(encryptionResult) {
-		//... do something here with the result
-	};
-
-cryptoOperation.onError = 
-	function(encryptionResult) {
-		//... handle error
-	};
-```
+See [CHANGELOG.md](CHANGELOG.md) for the history of notable changes across versions.
 
 ## Contributing
 
