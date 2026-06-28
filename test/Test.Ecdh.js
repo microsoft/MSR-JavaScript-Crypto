@@ -244,7 +244,7 @@ var inspectEcdhKey = {
         var expLenMax = ecdhCurveElementLength(algorithm.namedCurve);
         var expLenMin = expLenMax;
 
-        // has crv property equal to "P-521"
+        // has crv property equal to the algorithm's namedCurve
         if (!validation.prop.string(keyObj, "crv", algorithm.namedCurve)) {
             fail.push("key.crv !== " + algorithm.namedCurve);
         }
