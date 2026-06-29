@@ -2002,6 +2002,19 @@ function MsrcryptoECC() {
 
     var curvesInternal = {};
 
+    var curveElementLengths = {
+        "P-256": 32,
+        "P-384": 48,
+        "P-521": 66,
+        "BN-254": 32,
+        "NUMSP256D1": 32,
+        "NUMSP256T1": 32,
+        "NUMSP384D1": 48,
+        "NUMSP384T1": 48,
+        "NUMSP512D1": 64,
+        "NUMSP512T1": 64
+    };
+
     var createCurve = function(curveName) {
 
         var curveData = curvesInternal[curveName.toUpperCase()];
@@ -2028,8 +2041,17 @@ function MsrcryptoECC() {
         return opp.validatePoint(point);
     };
 
+    var curveElementLength = function(curveName) {
+        if (!curveName) {
+            return undefined;
+        }
+
+        return curveElementLengths[curveName.toUpperCase()];
+    };
+
     return {
         createCurve: createCurve,
+        curveElementLength: curveElementLength,
         curves: curvesInternal,
         sec1EncodingFp: sec1EncodingFp,
         validatePoint: validateEccPoint,

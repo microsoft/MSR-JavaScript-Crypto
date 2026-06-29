@@ -125,6 +125,10 @@ function ecdhTests() {
         ts.keyGeneratePairTest(ecdhKeyAlg("P-521"), ["deriveKey", "deriveBits"], inspectEcdhKey, context(iterations, assert));
     });
 
+    QUnit.test(label + " generateKeyTest BN-254", function(assert) {
+        ts.keyGeneratePairTest(ecdhKeyAlg("BN-254"), ["deriveKey", "deriveBits"], inspectEcdhKey, context(iterations, assert));
+    });
+
     QUnit.test(label + " ts.deriveKeyTest P-256 --> Aes-Cbc-256 ", function(assert) {
         ts.deriveKeyTest(ecdh.p256.DeriveKey, undefined, context(iterations, assert));
     });
@@ -226,6 +230,7 @@ var ecdhKeyLengths = {
     "P-256": 32,
     "P-384": 48,
     "P-521": 66,
+    "BN-254": 32,
     "NUMSP256D1": 32,
     "NUMSP256T1": 32,
     "NUMSP384D1": 48,
@@ -248,7 +253,7 @@ var inspectEcdhKey = {
         var expLenMax = ecdhKeyLengths[algorithm.namedCurve];
         var expLenMin = expLenMax;
 
-        // has crv property equal to "P-521"
+        // has crv property equal to the algorithm's namedCurve
         if (!validation.prop.string(keyObj, "crv", algorithm.namedCurve)) {
             fail.push("key.crv !== " + algorithm.namedCurve);
         }

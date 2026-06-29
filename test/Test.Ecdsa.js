@@ -248,6 +248,10 @@ function ecdsaTests() {
         ts.keyGeneratePairTest( ecdsaKeyAlg( "P-521" ), [VERIFY, SIGN], inspectEcdsaKey, context( iterations, assert ) );
     } );
 
+    QUnit.test(label + " generateKeyTest BN-254", function(assert) {
+        ts.keyGeneratePairTest(ecdsaKeyAlg("BN-254"), [VERIFY, SIGN], inspectEcdsaKey, context(iterations, assert));
+    });
+
     QUnit.test(label + " generateKeyTest NUMSP256D1", function(assert) {
         ts.keyGeneratePairTest(ecdsaKeyAlg("NUMSP256D1"), [VERIFY, SIGN], inspectEcdsaKey, context(iterations, assert));
     });
@@ -423,6 +427,7 @@ var ecdsaKeyLengths = {
     "P-256": 32,
     "P-384": 48,
     "P-521": 66,
+    "BN-254": 32,
     "NUMSP256D1": 32,
     "NUMSP256T1": 32,
     "NUMSP384D1": 48,
@@ -453,7 +458,7 @@ var inspectEcdsaKey = {
         var expLenMax = ecdsaKeyLengths[algorithm.namedCurve];
         var expLenMin = expLenMax;
 
-        // has crv property equal to "P-521"
+        // has crv property equal to the algorithm's namedCurve
         if (!validation.prop.string(keyObj, "crv", algorithm.namedCurve)) {
             fail.push("key.crv !== " + algorithm.namedCurve);
         }
